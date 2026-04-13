@@ -700,6 +700,84 @@ footer {
 }
 .card-link-btn:hover { background: rgba(255,255,255,1); }
 .card-link-insta { background: rgba(255,255,255,0.75); }
+
+/* ===== WEBTOON SECTION ===== */
+.webtoon-section {
+  padding: 80px 40px;
+  background: #FFFFFF;
+}
+.webtoon-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 30px 0 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.webtoon-card {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #9AB2C8;
+  box-shadow: 2px 5px 20px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  text-decoration: none;
+  transform: rotate(-0.4deg);
+  min-height: 140px;
+}
+.webtoon-card:hover {
+  transform: translateY(-6px) rotate(-0.8deg);
+  box-shadow: 4px 14px 32px rgba(0,0,0,0.14);
+}
+.webtoon-thumb {
+  width: 100px;
+  min-width: 100px;
+  object-fit: cover;
+  display: block;
+  mix-blend-mode: multiply;
+  filter: grayscale(30%) contrast(1.1);
+}
+.webtoon-body {
+  padding: 18px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.webtoon-tag {
+  font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--charcoal);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  opacity: 0.6;
+}
+.webtoon-title {
+  font-family: 'Special Elite', 'Noto Sans JP', serif;
+  font-size: 0.95rem; font-weight: 400;
+  color: var(--charcoal);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.webtoon-title-kr {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 0.7rem;
+  color: rgba(42,42,42,0.5);
+  margin-bottom: 8px;
+}
+.webtoon-desc {
+  font-size: 0.68rem;
+  color: rgba(42,42,42,0.65);
+  line-height: 1.7;
+}
+@media (max-width: 768px) {
+  .webtoon-section { padding: 50px 20px; }
+  .webtoon-grid { max-width: 100%; }
+}
+
 </style>
 </head>
 <body>
@@ -1003,6 +1081,29 @@ footer {
 </section>
 
 <!-- FOOTER -->
+
+<!-- WEBTOON SECTION -->
+<section class="webtoon-section" id="webtoon">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Webtoon Pick
+        <span class="section-title-kr">おすすめ韓国ウェブトゥーン</span>
+      </h2>
+    </div>
+  </div>
+  <div class="webtoon-grid">
+    <a href="https://naver.me/G9UEGeVa" target="_blank" class="webtoon-card reveal">
+      <img class="webtoon-thumb" src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&q=80" alt="">
+      <div class="webtoon-body">
+        <div class="webtoon-tag">NAVER WEBTOON · ドラマ</div>
+        <div class="webtoon-title">お母さんは男しか好きじゃない</div>
+        <div class="webtoon-title-kr">엄마는 남자만 좋아해</div>
+        <div class="webtoon-desc">兄ばかり可愛がられてきたナヒは、ずっとお母さんの愛を求めていた。兄の結婚相手が現れたことをきっかけに、お母さん・ナヒ・新しいお義姉さん、三人の女たちの関係が動き始める。</div>
+      </div>
+    </a>
+  </div>
+</section>
+
 <footer>
   <div class="footer-top">
     <div>
