@@ -11,6 +11,10 @@
     height: 100%;
     background: #ffffff;
     overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
   .stage {
     position: relative;
@@ -60,7 +64,12 @@
     transition: background 200ms ease;
   }
   .insta-hit:hover {
-    background: rgba(255, 20, 147, 0.1);
+    background: transparent;
+  }
+  .insta-hit:active,
+  .insta-hit:focus {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* 네온 인디 핑크 파장 (진동) */
@@ -128,8 +137,23 @@
     transition: background 200ms ease;
     text-decoration: none;
   }
-  .char-hit:hover {
-    background: rgba(255, 20, 147, 0.06);
+  .char-hit:hover,
+  .char-hit:active,
+  .char-hit:focus,
+  .char-hit:focus-visible {
+    background: transparent !important;
+    outline: none !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+    box-shadow: none !important;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .char-hit {
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+    -webkit-appearance: none;
+    appearance: none;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
 
