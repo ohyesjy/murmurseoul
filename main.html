@@ -46,15 +46,14 @@
   .board {
     position: relative;
     width: min(432px, 92vw);
-    aspect-ratio: 5 / 7;
     margin: 0 auto;
     background: var(--paper);
     border: 1.2px solid var(--red);
     padding: 18px 18px 14px;
     box-sizing: border-box;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
   /* 상단 빨간 띠 + 화이트 역상 텍스트 */
@@ -220,13 +219,14 @@
   .bottom-jp .review {
     writing-mode: vertical-rl;
     font-family: "Zen Kaku Gothic New", sans-serif;
-    font-size: 11px;
-    line-height: 1.9;
-    letter-spacing: 0.08em;
+    font-size: 10px;
+    line-height: 1.85;
+    letter-spacing: 0.06em;
     color: var(--ink);
     margin: 0;
-    height: 120px;
+    height: 160px;
     direction: ltr;
+    overflow: hidden;
   }
   .more-review {
     writing-mode: vertical-rl;
@@ -237,7 +237,7 @@
     color: var(--ink);
     text-decoration: underline;
     text-underline-offset: 3px;
-    height: 120px;
+    height: 160px;
     direction: ltr;
     transition: opacity 200ms ease;
   }
@@ -247,13 +247,12 @@
   @media (max-width: 540px) {
     .board {
       width: 92vw;
-      aspect-ratio: 5 / 7;
       padding: 14px;
     }
     .content { grid-template-columns: 28px 1fr 48px; }
     .title-jp { font-size: 22px; }
     .quote { font-size: 9px; }
-    .bottom-jp .review, .more-review { font-size: 9px; height: 96px; }
+    .bottom-jp .review, .more-review { font-size: 9px; height: 130px; }
   }
 
   /* 중앙 가게 카드 (네이버 링크) */
