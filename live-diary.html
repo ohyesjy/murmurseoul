@@ -274,7 +274,11 @@
         </div>
         <button class="btn" id="btnUndo" title="마지막 그림 한 획 지우기">↶</button>
         <button class="btn" id="btnPhoto">📷</button>
-        <button class="btn" id="btnText">T</button>
+        <button class="btn" id="btnText" title="원하는 위치에 붙이기">T</button>
+      </div>
+      <div class="row" style="margin-top: 6px;">
+        <input class="comment-input" id="hostChatInput" placeholder="여기 바로 타이핑 → Enter (캔버스에 올라감) / 채팅처럼" style="flex:1; min-width:140px;" />
+        <button class="btn primary" id="btnHostChatSend">SEND ▸</button>
       </div>
     </div>
     <div class="tools-visitor" id="toolsVisitor">
@@ -430,6 +434,34 @@
       canvas.style.cursor = textMode ? 'text' : 'crosshair';
       if (textMode) toast('텍스트 채팅 모드 ON — 캔버스 아무 곳이나 클릭해서 입력. ESC로 종료.');
       else toast('텍스트 모드 OFF');
+    });
+
+    // 채팅처럼 바로 타이핑 — 캔버스에 자동으로 자리잡음
+    const hostChatInput = document.getElementById('hostChatInput');
+    const btnHostChatSend = document.getElementById('btnHostChatSend');
+    let chatNotePos = 0; // 자리 위치 카운터
+    async function sendHostChat() {
+      if (role !== 'host') return toast('HOST 모드에서만 가능');
+      const txt = hostChatInput.value.trim();
+      if (!txt) return;
+      // 위치 계산 — 좌상단부터 한 줄씩 내려오며 쌓이고, 바닥 닿으면 우측으로 다음 칼럼
+      const col = Math.floor(chatNotePos / 14);
+      const row = chatNotePos % 14;
+      const px = Math.min(0.05 + col * 0.32, 0.7);
+      const py = 0.06 + row * 0.065;
+      chatNotePos++;
+      const item = {
+        session_date: today, type: 'note', content: txt,
+        pos_x: px, pos_y: py, rotation: 0,
+        client_id: clientId, nickname: nickname || null
+      };
+      hostChatInput.value = '';
+      const { data } = await supabase.from('diary_items').insert(item).select().single();
+      if (data) renderItem(data);
+    }
+    btnHostChatSend.addEventListener('click', sendHostChat);
+    hostChatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); sendHostChat(); }
     });
 
     // UNDO — 마지막 내가 그은 stroke 한 획 지우기
