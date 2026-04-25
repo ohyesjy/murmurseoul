@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>murmur josun · picture diary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; background: #ffffff; color: #0a0a0a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
+  .back-link { display: inline-block; font-family: "Special Elite", monospace; font-size: 13px; color: #0a0a0a; text-decoration: none; margin-bottom: 32px; letter-spacing: 0.1em; opacity: 0.7; }
+  .back-link:hover { opacity: 1; }
+  h1 { font-family: "Special Elite", monospace; font-size: 32px; letter-spacing: 0.08em; margin: 0 0 8px; font-weight: 400; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 40px; letter-spacing: 0.05em; }
+  .lock-card { border: 1px solid #c8243a; padding: 36px 28px; margin-top: 24px; text-align: center; background: #fff; }
+  .lock-icon { font-size: 32px; margin-bottom: 14px; }
+  .lock-title { font-family: "Special Elite", monospace; font-size: 16px; letter-spacing: 0.12em; margin-bottom: 14px; }
+  .lock-text { font-size: 13px; line-height: 1.8; color: #444; margin: 0; }
+  .lock-text .ja { display: block; margin-top: 6px; font-size: 12px; color: #888; }
+  form.access { margin-top: 26px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  form.access input { font-family: "Special Elite", monospace; font-size: 13px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 4px; min-width: 220px; text-align: center; letter-spacing: 0.1em; }
+  form.access button { font-family: "Special Elite", monospace; font-size: 12px; padding: 10px 22px; background: #0a0a0a; color: #fff; border: none; border-radius: 4px; letter-spacing: 0.15em; cursor: pointer; }
+  form.access button:hover { opacity: 0.85; }
+  .err { color: #c8243a; font-size: 12px; min-height: 16px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back-link" href="index.html">← back</a>
+    <h1>picture diary</h1>
+    <p class="subtitle">韓国に住む女の、毎日の小さな絵日記。</p>
+    <div class="lock-card">
+      <div class="lock-icon">⚲</div>
+      <div class="lock-title">MEMBERS ONLY</div>
+      <p class="lock-text">
+        この部屋は会員のみご覧いただけます。
+        <span class="ja">パスワードを入力してください。</span>
+      </p>
+      <form class="access" onsubmit="check(event)">
+        <input type="password" id="pw" placeholder="password" autocomplete="off" />
+        <div class="err" id="err"></div>
+        <button type="submit">ENTER</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    function check(e) {
+      e.preventDefault();
+      const v = document.getElementById('pw').value.trim().toLowerCase();
+      const err = document.getElementById('err');
+      if (v === 'murmur') {
+        err.textContent = '';
+        document.body.style.opacity = '0';
+        setTimeout(() => { window.location.href = 'diary-room.html'; }, 350);
+      } else {
+        err.textContent = '不正なパスワードです / wrong password';
+      }
+    }
+  </script>
+</body>
+</html>
