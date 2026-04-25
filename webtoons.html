@@ -12,9 +12,6 @@
   html, body { margin: 0; padding: 0; min-height: 100vh; background: #ffffff; color: #0a0a0a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; }
   .wrap { max-width: 760px; margin: 0 auto; padding: 36px 22px 80px; }
 
-  .back-link { display: inline-block; font-family: "Special Elite", monospace; font-size: 13px; color: #0a0a0a; text-decoration: none; margin-bottom: 24px; letter-spacing: 0.1em; opacity: 0.7; }
-  .back-link:hover { opacity: 1; }
-
   h1 { font-family: "Special Elite", monospace; font-size: 30px; letter-spacing: 0.06em; margin: 0 0 4px; font-weight: 400; }
   .subtitle { font-size: 13px; color: #666; margin-bottom: 24px; letter-spacing: 0.04em; }
 
@@ -181,6 +178,28 @@
     .featured-title { font-size: 19px; }
     .featured-pitch { font-size: 14px; }
     .tab { font-size: 12px; padding: 12px 4px; }
+  }
+
+  .back-link {
+    position: fixed;
+    top: 50%;
+    left: 24px;
+    transform: translateY(-50%);
+    font-family: "Special Elite", monospace;
+    font-size: 13px;
+    color: #1a1a1a;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+    padding: 8px 12px;
+    z-index: 50;
+    background: rgba(255,255,255,0.85);
+    border-radius: 4px;
+    transition: opacity 200ms ease;
+  }
+  .back-link:hover { opacity: 1; }
+  @media (max-width: 540px) {
+    .back-link { left: 12px; font-size: 12px; padding: 6px 10px; }
   }
 </style>
 </head>
