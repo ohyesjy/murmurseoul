@@ -163,6 +163,31 @@
     .rule { margin: 10px 0 20px; }
     .footer-row { margin-top: 22px; }
   }
+
+  .enter-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .enter-link {
+    font-family: "Special Elite", monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: #0a0a0a;
+    text-decoration: none;
+    opacity: 0.7;
+    white-space: nowrap;
+    transition: opacity 200ms ease;
+  }
+  .enter-link:hover { opacity: 1; }
+  .enter-link .sub {
+    font-size: 9px;
+    opacity: 0.65;
+    letter-spacing: 0.1em;
+    margin-left: 2px;
+  }
+
 </style>
 </head>
 <body>
@@ -191,7 +216,11 @@
 
     <div class="footer-row">
       <a href="https://www.instagram.com/murmur_josun/" target="_blank" rel="noopener noreferrer">@murmur_josun</a>
-      <a href="#" id="enterLink">ENTER ▸</a>
+      <div class="enter-stack">
+        <a href="diary.html" class="enter-link">PICTURE DIARY <span class="sub">(MEMBERS ONLY)</span> ▸</a>
+        <a href="main.html" class="enter-link">BUNDANG ▸</a>
+        <a href="webtoons.html" class="enter-link">WEBTOONS + WEB NOVELS ▸</a>
+      </div>
     </div>
   </div>
 
@@ -199,17 +228,26 @@
 
   <script>
     const cloud = document.getElementById('cloud');
-    const enterLink = document.getElementById('enterLink');
     const fade = document.getElementById('fade');
 
-    function go() {
+    // 클라우드 클릭 → 메인(분당) 페이지로
+    cloud.addEventListener('click', function (e) {
       if (cloud.classList.contains('is-shaking')) return;
+      e.preventDefault();
       cloud.classList.add('is-shaking');
       setTimeout(() => fade.classList.add('is-on'), 350);
       setTimeout(() => { window.location.href = 'main.html'; }, 700);
-    }
-    cloud.addEventListener('click', function (e) { e.preventDefault(); go(); });
-    enterLink.addEventListener('click', function (e) { e.preventDefault(); go(); });
+    });
+
+    // 스택 버튼들 — 부드러운 페이드 후 이동
+    document.querySelectorAll('.enter-link').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const href = this.getAttribute('href');
+        fade.classList.add('is-on');
+        setTimeout(() => { window.location.href = href; }, 400);
+      });
+    });
   </script>
 </body>
 </html>
