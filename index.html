@@ -141,6 +141,10 @@
   }
   @keyframes blink { 50% { opacity: 0; } }
 
+
+  .live-link { color: #c8243a !important; opacity: 1 !important; }
+  .live-link::after { content: ""; }
+
 </style>
 </head>
 <body>
@@ -170,7 +174,8 @@
     <div class="footer-row">
       <a href="https://www.instagram.com/murmur_josun/" target="_blank" rel="noopener noreferrer">@murmur_josun</a>
       <div class="enter-stack">
-        <a href="diary.html" class="enter-link diary-link">PICTURE DIARY ▸</a>
+        <a href="diary.html" class="enter-link">PICTURE DIARY ▸</a>
+        <a href="live-diary.html" class="enter-link live-link">PICTURE DIARY LIVE ✦</a>
         <a href="main.html" class="enter-link">BUNDANG ▸</a>
         <a href="webtoons.html" class="enter-link">WEBTOONS + WEB NOVELS ▸</a>
       </div>
@@ -182,10 +187,10 @@
   <div class="modal-overlay" id="diaryModal">
     <div class="modal-card">
       <div class="modal-icon">⚲</div>
-      <div class="modal-title">MEMBERS ONLY</div>
+      <div class="modal-title">PICTURE DIARY LIVE</div>
       <p class="modal-text">
-        会員登録された方のみご入場いただけます。
-        <span class="modal-ja">회원가입해야 입장가능해요!</span>
+        ライブ協力ボードは会員のみご参加いただけます。
+        <span class="modal-ja">실시간 그림일기 — 회원만 참여 가능해요!</span>
       </p>
       <div class="modal-actions">
         <button type="button" class="modal-btn primary" id="signupBtn">등록하기</button>
@@ -229,7 +234,7 @@
     document.querySelectorAll('.enter-link').forEach(link => {
       link.addEventListener('click', function (e) {
         e.preventDefault();
-        if (this.classList.contains('diary-link')) {
+        if (this.classList.contains('live-link')) {
           modal.classList.add('is-open');
           return;
         }
@@ -242,7 +247,7 @@
     document.getElementById('signupBtn').addEventListener('click', function () {
       modal.classList.remove('is-open');
       fade.classList.add('is-on');
-      setTimeout(() => { window.location.href = 'diary.html'; }, 400);
+      setTimeout(() => { window.location.href = 'live-diary.html'; }, 400);
     });
     document.getElementById('cancelBtn').addEventListener('click', function () {
       modal.classList.remove('is-open');
