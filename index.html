@@ -112,6 +112,37 @@
   }
   @keyframes blink { 50% { opacity: 0; } }
 
+
+  /* 타이핑 — 별 아래, 페이지 가운데 / 텍스트는 좌측정렬 */
+  .typing-below {
+    width: 100%;
+    max-width: 480px;
+    margin: 18px auto 8px;
+    padding: 0 12px;
+    min-height: 160px;
+    display: flex;
+    justify-content: center;
+  }
+  .typing-line {
+    font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif;
+    font-size: clamp(12px, 1.88vw, 15.5px);
+    line-height: 1.85;
+    letter-spacing: 0.04em;
+    color: #1a1a1a;
+    white-space: pre-line;
+    text-align: left;
+    min-height: 1em;
+  }
+  .typing-line .cursor {
+    display: inline-block;
+    width: 0.5em;
+    background: #1a1a1a;
+    animation: blink 1s steps(2) infinite;
+    margin-left: 1px;
+    vertical-align: -2px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
 </style>
 </head>
 <body>
