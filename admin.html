@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>murmur josun · admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; background: #f5f3ec; color: #1a1a1a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 24px 18px 80px; }
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #1a1a1a; }
+  .header h1 { font-family: "Special Elite", monospace; font-size: 20px; letter-spacing: 0.16em; margin: 0; }
+  .header .right { display: flex; gap: 8px; align-items: center; }
+  .header a, .header button { font-family: "Special Elite", monospace; font-size: 11px; padding: 6px 12px; border: 1px solid #1a1a1a; background: #fff; border-radius: 4px; cursor: pointer; text-decoration: none; color: #1a1a1a; letter-spacing: 0.1em; }
+  .header button.danger { color: #c8243a; border-color: #c8243a; }
+  .header button.primary { background: #1a1a1a; color: #fff; }
+
+  /* 로그인 */
+  .login-box { max-width: 400px; margin: 80px auto; background: #fff; padding: 32px 28px; border: 1px solid #ddd; border-radius: 8px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .login-box h2 { font-family: "Special Elite", monospace; font-size: 16px; letter-spacing: 0.18em; margin: 0 0 16px; }
+  .login-box p { font-size: 13px; color: #666; margin-bottom: 20px; line-height: 1.6; }
+  .login-box input { width: 100%; padding: 12px 14px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; margin-bottom: 12px; font-family: "Special Elite", monospace; letter-spacing: 0.1em; text-align: center; }
+  .login-box .btn { width: 100%; padding: 12px; font-family: "Special Elite", monospace; font-size: 12px; letter-spacing: 0.18em; background: #1a1a1a; color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+  .err { color: #c8243a; font-size: 12px; min-height: 18px; margin: 8px 0; }
+
+  /* 카테고리 탭 */
+  .cat-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+  .cat-tabs button {
+    font-family: "Special Elite", monospace; font-size: 11px; padding: 8px 14px;
+    border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer;
+    letter-spacing: 0.12em;
+  }
+  .cat-tabs button.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+  /* 작품 카드 리스트 */
+  .item-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .item-card {
+    background: #fff; border: 1px solid #e0ddd0; border-radius: 6px;
+    padding: 14px; display: flex; gap: 14px; align-items: center;
+  }
+  .item-card.unpublished { opacity: 0.5; background: #faf8f0; }
+  .item-thumb { width: 70px; height: 70px; flex-shrink: 0; background: #eee; border-radius: 4px; overflow: hidden; }
+  .item-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .item-info { flex: 1; min-width: 0; }
+  .item-info .t { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+  .item-info .s { font-size: 11px; color: #888; font-family: "Special Elite", monospace; letter-spacing: 0.06em; }
+  .item-info .p { font-size: 12px; color: #555; margin-top: 4px; line-height: 1.4; max-height: 2.8em; overflow: hidden; }
+  .item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .item-actions button {
+    font-family: "Special Elite", monospace; font-size: 9px; padding: 5px 9px;
+    border: 1px solid #ccc; background: #fff; border-radius: 3px; cursor: pointer;
+    letter-spacing: 0.08em;
+  }
+  .item-actions button.edit { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .item-actions button.delete { color: #c8243a; border-color: #c8243a; }
+
+  .add-btn {
+    width: 100%; padding: 14px;
+    background: #fff; border: 2px dashed #1a1a1a; border-radius: 6px;
+    font-family: "Special Elite", monospace; font-size: 12px;
+    letter-spacing: 0.16em; cursor: pointer; color: #1a1a1a;
+    margin-bottom: 24px;
+  }
+  .add-btn:hover { background: #1a1a1a; color: #fff; }
+
+  /* 폼 모달 */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; overflow-y: auto; }
+  .modal-bg.hidden { display: none; }
+  .form-modal { background: #fff; border-radius: 8px; padding: 24px; max-width: 600px; width: 100%; max-height: 92vh; overflow-y: auto; }
+  .form-modal h3 { font-family: "Special Elite", monospace; font-size: 14px; letter-spacing: 0.16em; margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
+  .form-row { margin-bottom: 14px; }
+  .form-row label { display: block; font-size: 11px; font-family: "Special Elite", monospace; letter-spacing: 0.1em; color: #666; margin-bottom: 5px; }
+  .form-row input[type="text"], .form-row input[type="url"], .form-row textarea, .form-row select {
+    width: 100%; padding: 9px 11px; border: 1px solid #ddd; border-radius: 4px;
+    font-size: 13px; font-family: inherit;
+  }
+  .form-row textarea { resize: vertical; min-height: 60px; }
+  .form-row .small { font-size: 11px; color: #999; margin-top: 4px; }
+  .form-thumb-preview { max-width: 120px; max-height: 120px; border: 1px solid #ddd; border-radius: 4px; margin-top: 6px; }
+  .points-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+  .point-row { display: flex; gap: 6px; }
+  .point-row input { flex: 1; }
+  .point-row button { padding: 6px 10px; border: 1px solid #c8243a; background: #fff; color: #c8243a; border-radius: 3px; cursor: pointer; font-size: 11px; }
+  .add-point-btn { padding: 6px 12px; border: 1px dashed #1a1a1a; background: #fff; border-radius: 3px; cursor: pointer; font-size: 11px; font-family: "Special Elite", monospace; letter-spacing: 0.1em; }
+
+  .form-actions { display: flex; gap: 8px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #eee; }
+  .form-actions button { flex: 1; padding: 11px; font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.16em; border-radius: 4px; cursor: pointer; }
+  .btn-save { background: #1a1a1a; color: #fff; border: 0; }
+  .btn-cancel { background: #fff; color: #1a1a1a; border: 1px solid #ddd; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.85); color: #fff; padding: 10px 20px; border-radius: 999px; font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.1em; z-index: 200; opacity: 0; pointer-events: none; transition: 0.3s; }
+  .toast.show { opacity: 1; }
+
+  .empty { text-align: center; padding: 40px; color: #999; font-size: 13px; }
+
+  @media (max-width: 540px) {
+    .header h1 { font-size: 16px; }
+    .item-card { flex-direction: column; align-items: flex-start; }
+    .item-thumb { width: 100%; height: 140px; }
+    .item-actions { width: 100%; }
+    .item-actions button { flex: 1; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="login-box" id="loginBox">
+    <h2>ADMIN ✦</h2>
+    <p>관리자 비밀번호를 입력해주세요</p>
+    <input type="password" id="pwInput" placeholder="password" autocomplete="off" />
+    <div class="err" id="loginErr"></div>
+    <button class="btn" id="btnLogin">ENTER</button>
+  </div>
+
+  <div class="wrap" id="adminPanel" style="display:none;">
+    <div class="header">
+      <h1>m·j ADMIN ✦</h1>
+      <div class="right">
+        <a href="webtoons.html" target="_blank">VIEW SITE ▸</a>
+        <button id="btnLogout">LOGOUT</button>
+      </div>
+    </div>
+
+    <div class="cat-tabs" id="catTabs">
+      <button data-cat="webtoons" class="active">WEBTOONS</button>
+      <button data-cat="eroi">エロイ</button>
+      <button data-cat="novels">WEB NOVELS</button>
+      <button data-cat="youtube">YOUTUBE</button>
+    </div>
+
+    <button class="add-btn" id="btnAdd">+ ADD NEW ITEM</button>
+
+    <div class="item-list" id="itemList">
+      <div class="empty">로딩 중...</div>
+    </div>
+  </div>
+
+  <!-- 폼 모달 -->
+  <div class="modal-bg hidden" id="formModal">
+    <div class="form-modal">
+      <h3 id="formTitle">+ ADD NEW ITEM</h3>
+
+      <div class="form-row">
+        <label>CATEGORY</label>
+        <select id="fCategory">
+          <option value="webtoons">WEBTOONS (일반)</option>
+          <option value="eroi">エロイ (19+ / 감성)</option>
+          <option value="novels">WEB NOVELS (웹소설)</option>
+          <option value="youtube">YOUTUBE (유튜버)</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>TITLE (한국어 / 원제)</label>
+        <input type="text" id="fTitle" placeholder="예: 엄마는 남자만 좋아해" />
+      </div>
+
+      <div class="form-row">
+        <label>SUBTITLE (영문 / 작가)</label>
+        <input type="text" id="fTitleEn" placeholder="예: MOM ONLY LOVES MEN — by 작가명" />
+      </div>
+
+      <div class="form-row">
+        <label>URL (네이버/유튜브 등 외부 링크)</label>
+        <input type="url" id="fUrl" placeholder="https://comic.naver.com/webtoon/list?titleId=..." />
+        <p class="small">네이버 웹툰 링크 붙여넣기만 하면 자동으로 썸네일+정보 가져옴</p>
+        <button type="button" class="btn-cancel" id="btnAutoFetch" style="margin-top:6px; padding:6px 12px; font-size:10px;">⤓ FETCH FROM NAVER</button>
+      </div>
+
+      <div class="form-row">
+        <label>THUMBNAIL (이미지 업로드 또는 URL에서 자동)</label>
+        <input type="file" id="fThumbFile" accept="image/*" />
+        <img id="thumbPreview" class="form-thumb-preview" style="display:none;" />
+      </div>
+
+      <div class="form-row">
+        <label>PITCH (메인 카피 — 일본어)</label>
+        <textarea id="fPitch" placeholder="例: 母娘の関係がチクッと刺さる、韓国家族ドラマの現在形。"></textarea>
+        <p class="small">&lt;b&gt;단어&lt;/b&gt; 로 감싸면 노란색 형광펜 강조</p>
+      </div>
+
+      <div class="form-row">
+        <label>DESCRIPTION (상세 설명 — 일본어)</label>
+        <textarea id="fDesc" rows="4" placeholder="줄거리, 세계관 등..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <label>POINTS (추천 포인트)</label>
+        <div class="points-list" id="pointsList"></div>
+        <button type="button" class="add-point-btn" id="btnAddPoint">+ ADD POINT</button>
+      </div>
+
+      <div class="form-row">
+        <label>AGE RATING (연령등급)</label>
+        <input type="text" id="fAge" placeholder="예: 15+ / 19+ / ALL" />
+      </div>
+
+      <div class="form-row">
+        <label>BADGE (특별 배지 텍스트, 비워두면 안 보임)</label>
+        <input type="text" id="fBadge" placeholder="예: EDITOR'S PICK / 🔥 MUST READ / ★ 19+ ROMANCE" />
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-cancel" id="btnFormCancel">CANCEL</button>
+        <button class="btn-save" id="btnFormSave">SAVE ▸</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const SB_URL = 'https://zhaabmqdbgmisyurcslv.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoYWFibXFkYmdtaXN5dXJjc2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTEyMTcsImV4cCI6MjA5MjY2NzIxN30.pcN8mQHPKhws2mMxeScDb3bc9rPJnZlYMRM23T8ksVE';
+    const supabase = createClient(SB_URL, SB_KEY);
+
+    const ADMIN_PASSWORD = 'murmurseoul'; // 영석님만 아는 키 (나중에 변경 가능)
+
+    // 로그인
+    function checkAuth() {
+      return localStorage.getItem('mj_admin_pw') === ADMIN_PASSWORD;
+    }
+    function showPanel() {
+      document.getElementById('loginBox').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      loadItems();
+    }
+    document.getElementById('btnLogin').addEventListener('click', () => {
+      const v = document.getElementById('pwInput').value;
+      if (v === ADMIN_PASSWORD) {
+        localStorage.setItem('mj_admin_pw', v);
+        showPanel();
+      } else {
+        document.getElementById('loginErr').textContent = '비밀번호가 틀렸어요';
+      }
+    });
+    document.getElementById('pwInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('btnLogin').click();
+    });
+    document.getElementById('btnLogout').addEventListener('click', () => {
+      localStorage.removeItem('mj_admin_pw');
+      location.reload();
+    });
+    if (checkAuth()) showPanel();
+
+    // 토스트
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    // 카테고리 탭
+    let activeCategory = 'webtoons';
+    document.querySelectorAll('#catTabs button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#catTabs button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCategory = btn.dataset.cat;
+        loadItems();
+      });
+    });
+
+    // 아이템 로드
+    async function loadItems() {
+      const list = document.getElementById('itemList');
+      list.innerHTML = '<div class="empty">로딩 중...</div>';
+      const { data, error } = await supabase.from('webtoons_cms')
+        .select('*')
+        .eq('category', activeCategory)
+        .order('display_order')
+        .order('created_at', { ascending: false });
+      if (error) { list.innerHTML = '<div class="empty">에러: ' + error.message + '</div>'; return; }
+      if (!data || data.length === 0) {
+        list.innerHTML = '<div class="empty">아직 등록된 작품이 없어요. + ADD NEW ITEM 으로 추가해주세요.</div>';
+        return;
+      }
+      list.innerHTML = '';
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card' + (item.is_published ? '' : ' unpublished');
+        card.innerHTML = `
+          <div class="item-thumb">
+            ${item.thumbnail_b64 ? `<img src="${item.thumbnail_b64}" />` : ''}
+          </div>
+          <div class="item-info">
+            <div class="t">${escapeHtml(item.title)}</div>
+            <div class="s">${escapeHtml(item.title_en || '')}</div>
+            <div class="p">${escapeHtml((item.pitch || '').replace(/<[^>]+>/g, ''))}</div>
+          </div>
+          <div class="item-actions">
+            <button class="edit" data-id="${item.id}" data-act="edit">EDIT</button>
+            <button data-id="${item.id}" data-act="toggle">${item.is_published ? 'HIDE' : 'SHOW'}</button>
+            <button class="delete" data-id="${item.id}" data-act="delete">×</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+      list.querySelectorAll('.item-actions button').forEach(btn => {
+        btn.addEventListener('click', () => handleAction(btn.dataset.act, btn.dataset.id));
+      });
+    }
+
+    function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    async function handleAction(act, id) {
+      if (act === 'edit') {
+        const { data } = await supabase.from('webtoons_cms').select('*').eq('id', id).single();
+        if (data) openForm(data);
+      } else if (act === 'toggle') {
+        const { data: cur } = await supabase.from('webtoons_cms').select('is_published').eq('id', id).single();
+        await supabase.from('webtoons_cms').update({ is_published: !cur.is_published, updated_at: new Date().toISOString() }).eq('id', id);
+        loadItems();
+      } else if (act === 'delete') {
+        if (!confirm('정말 삭제할까요?')) return;
+        await supabase.from('webtoons_cms').delete().eq('id', id);
+        loadItems(); toast('삭제됨');
+      }
+    }
+
+    // 폼 모달
+    let editingId = null;
+    function openForm(item) {
+      editingId = item ? item.id : null;
+      document.getElementById('formTitle').textContent = item ? 'EDIT ITEM' : '+ ADD NEW ITEM';
+      document.getElementById('fCategory').value = item?.category || activeCategory;
+      document.getElementById('fTitle').value = item?.title || '';
+      document.getElementById('fTitleEn').value = item?.title_en || '';
+      document.getElementById('fUrl').value = item?.url || '';
+      document.getElementById('fPitch').value = item?.pitch || '';
+      document.getElementById('fDesc').value = item?.description || '';
+      document.getElementById('fAge').value = item?.age_rating || '';
+      document.getElementById('fBadge').value = item?.badge || '';
+
+      const tp = document.getElementById('thumbPreview');
+      if (item?.thumbnail_b64) { tp.src = item.thumbnail_b64; tp.style.display = 'block'; tp.dataset.b64 = item.thumbnail_b64; }
+      else { tp.style.display = 'none'; tp.dataset.b64 = ''; }
+
+      // points
+      const pl = document.getElementById('pointsList');
+      pl.innerHTML = '';
+      const pts = item?.points || [];
+      pts.forEach(p => addPointRow(p));
+      if (pts.length === 0) addPointRow('');
+
+      document.getElementById('formModal').classList.remove('hidden');
+    }
+    function addPointRow(val) {
+      const pl = document.getElementById('pointsList');
+      const row = document.createElement('div');
+      row.className = 'point-row';
+      row.innerHTML = `<input type="text" value="${escapeHtml(val)}" placeholder="추천 포인트 (일본어)" /><button type="button">×</button>`;
+      row.querySelector('button').addEventListener('click', () => row.remove());
+      pl.appendChild(row);
+    }
+    document.getElementById('btnAdd').addEventListener('click', () => openForm(null));
+    document.getElementById('btnAddPoint').addEventListener('click', () => addPointRow(''));
+    document.getElementById('btnFormCancel').addEventListener('click', () => document.getElementById('formModal').classList.add('hidden'));
+
+    // 썸네일 업로드
+    document.getElementById('fThumbFile').addEventListener('change', async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = async (ev) => {
+        const img = new Image(); img.src = ev.target.result; await img.decode();
+        const max = 800;
+        const ratio = Math.min(max / img.width, max / img.height, 1);
+        const c = document.createElement('canvas');
+        c.width = img.width * ratio; c.height = img.height * ratio;
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        const b64 = c.toDataURL('image/jpeg', 0.8);
+        const tp = document.getElementById('thumbPreview');
+        tp.src = b64; tp.style.display = 'block'; tp.dataset.b64 = b64;
+      };
+      r.readAsDataURL(f);
+    });
+
+    // 네이버 웹툰 자동 가져오기
+    document.getElementById('btnAutoFetch').addEventListener('click', async () => {
+      const url = document.getElementById('fUrl').value.trim();
+      const m = url.match(/titleId=(\d+)/);
+      if (!m) return toast('네이버 웹툰 URL이 아니에요');
+      const tid = m[1];
+      try {
+        toast('가져오는 중...');
+        const resp = await fetch(`https://comic.naver.com/api/article/list/info?titleId=${tid}`, { headers: { 'Accept': 'application/json' }});
+        const data = await resp.json();
+        if (data.titleName) {
+          if (!document.getElementById('fTitle').value) document.getElementById('fTitle').value = data.titleName;
+          const artists = (data.communityArtists || []).map(a => a.name).join(' × ');
+          if (!document.getElementById('fTitleEn').value && artists) document.getElementById('fTitleEn').value = `by ${artists}`;
+          if (!document.getElementById('fDesc').value && data.synopsis) document.getElementById('fDesc').value = data.synopsis;
+          if (!document.getElementById('fAge').value && data.age) document.getElementById('fAge').value = data.age.description || '';
+          // 썸네일 가져오기
+          if (data.sharedThumbnailUrl) {
+            try {
+              const imgResp = await fetch(data.sharedThumbnailUrl);
+              const blob = await imgResp.blob();
+              const r = new FileReader();
+              r.onload = (ev) => {
+                const tp = document.getElementById('thumbPreview');
+                tp.src = ev.target.result; tp.style.display = 'block'; tp.dataset.b64 = ev.target.result;
+              };
+              r.readAsDataURL(blob);
+            } catch(e) {}
+          }
+          toast('정보 자동 입력 완료 ✓');
+        }
+      } catch(e) {
+        toast('가져오기 실패: ' + e.message);
+      }
+    });
+
+    // 저장
+    document.getElementById('btnFormSave').addEventListener('click', async () => {
+      const points = Array.from(document.querySelectorAll('#pointsList input')).map(i => i.value.trim()).filter(Boolean);
+      const payload = {
+        category: document.getElementById('fCategory').value,
+        title: document.getElementById('fTitle').value.trim(),
+        title_en: document.getElementById('fTitleEn').value.trim(),
+        url: document.getElementById('fUrl').value.trim(),
+        thumbnail_b64: document.getElementById('thumbPreview').dataset.b64 || null,
+        pitch: document.getElementById('fPitch').value.trim(),
+        description: document.getElementById('fDesc').value.trim(),
+        points: points,
+        age_rating: document.getElementById('fAge').value.trim(),
+        badge: document.getElementById('fBadge').value.trim(),
+        updated_at: new Date().toISOString()
+      };
+      if (!payload.title) return toast('제목 필수');
+      if (!payload.url) return toast('URL 필수');
+
+      let res;
+      if (editingId) {
+        res = await supabase.from('webtoons_cms').update(payload).eq('id', editingId);
+      } else {
+        res = await supabase.from('webtoons_cms').insert(payload);
+      }
+      if (res.error) { toast('저장 실패: ' + res.error.message); return; }
+      document.getElementById('formModal').classList.add('hidden');
+      toast(editingId ? '수정 완료 ✓' : '추가 완료 ✓');
+      loadItems();
+    });
+  </script>
+</body>
+</html>
