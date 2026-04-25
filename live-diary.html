@@ -272,6 +272,7 @@
           <div class="size" data-size="6"><span class="dot s2"></span></div>
           <div class="size" data-size="12"><span class="dot s3"></span></div>
         </div>
+        <button class="btn" id="btnUndo" title="마지막 그림 한 획 지우기">↶</button>
         <button class="btn" id="btnPhoto">📷</button>
         <button class="btn" id="btnText">T</button>
       </div>
@@ -427,7 +428,23 @@
       textMode = !textMode;
       btnText.classList.toggle('primary', textMode);
       canvas.style.cursor = textMode ? 'text' : 'crosshair';
-      if (textMode) toast('텍스트 모드 — 캔버스를 클릭하면 글자 입력');
+      if (textMode) toast('텍스트 채팅 모드 ON — 캔버스 아무 곳이나 클릭해서 입력. ESC로 종료.');
+      else toast('텍스트 모드 OFF');
+    });
+
+    // UNDO — 마지막 내가 그은 stroke 한 획 지우기
+    const btnUndo = document.getElementById('btnUndo');
+    btnUndo.addEventListener('click', async () => {
+      if (role !== 'host') return toast('HOST 만 사용 가능');
+      // 내가 그린 마지막 stroke 찾기
+      const mine = allStrokes.filter(s => s.client_id === clientId);
+      if (mine.length === 0) return toast('지울 그림이 없어요');
+      const last = mine[mine.length - 1];
+      const { error } = await supabase.from('diary_strokes').delete().eq('id', last.id);
+      if (error) { toast('지우기 실패: ' + error.message); return; }
+      // 로컬에서도 즉시 제거 (realtime 안 와도 바로 반영)
+      allStrokes = allStrokes.filter(s => s.id !== last.id);
+      redraw();
     });
 
     // 캔버스 클릭 → 텍스트 입력 (텍스트 모드일 때만)
@@ -475,11 +492,13 @@
           const { data } = await supabase.from('diary_items').insert(item).select().single();
           if (data) renderItem(data);
           textInputEl.remove(); textInputEl = null;
+          // textMode 유지 — 채팅처럼 계속 입력 가능. ESC 또는 T 다시 누르면 종료.
+        } else if (ke.key === 'Escape') {
+          textInputEl.remove(); textInputEl = null;
           textMode = false;
           btnText.classList.remove('primary');
           canvas.style.cursor = 'crosshair';
-        } else if (ke.key === 'Escape') {
-          textInputEl.remove(); textInputEl = null;
+          toast('텍스트 모드 OFF');
         }
       });
       textInputEl.addEventListener('blur', () => {
@@ -526,6 +545,7 @@
       renderedItems.add(item.id);
       const el = document.createElement('div');
       el.className = 'item ' + item.type;
+      el.dataset.itemId = item.id;
       el.style.left = (item.pos_x * 100) + '%'; el.style.top = (item.pos_y * 100) + '%';
       el.style.transform = `translate(-50%, -50%) rotate(${item.rotation || 0}deg)`;
       if (item.type === 'photo') {
@@ -540,6 +560,33 @@
         el.style.padding = '2px 4px';
         el.style.whiteSpace = 'pre-wrap';
         el.textContent = item.content;
+      }
+      // host는 자기 항목 위에 마우스 올리면 × 삭제 버튼
+      if (role === 'host' && item.client_id === clientId) {
+        el.style.cursor = 'pointer';
+        const x = document.createElement('span');
+        x.textContent = '×';
+        Object.assign(x.style, {
+          position: 'absolute', top: '-10px', right: '-10px',
+          width: '20px', height: '20px', borderRadius: '50%',
+          background: '#c8243a', color: '#fff',
+          fontSize: '14px', lineHeight: '20px', textAlign: 'center',
+          cursor: 'pointer', display: 'none', zIndex: '20',
+          fontFamily: 'sans-serif', fontWeight: 'bold',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.25)'
+        });
+        el.style.position = 'absolute';
+        el.appendChild(x);
+        el.addEventListener('mouseenter', () => x.style.display = 'block');
+        el.addEventListener('mouseleave', () => x.style.display = 'none');
+        x.addEventListener('click', async (ev) => {
+          ev.stopPropagation();
+          if (!confirm('이 항목을 지울까요?')) return;
+          const { error } = await supabase.from('diary_items').delete().eq('id', item.id);
+          if (error) { toast('삭제 실패: ' + error.message); return; }
+          el.remove();
+          renderedItems.delete(item.id);
+        });
       }
       itemsLayer.appendChild(el);
     }
@@ -652,6 +699,12 @@
           (p) => { allStrokes = allStrokes.filter(s => s.id !== p.old.id); redraw(); })
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'diary_items', filter: `session_date=eq.${today}` },
           (p) => renderItem(p.new))
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'diary_items' },
+          (p) => {
+            const el = document.querySelector(`.item[data-item-id="${p.old.id}"]`);
+            if (el) el.remove();
+            renderedItems.delete(p.old.id);
+          })
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'diary_comments', filter: `session_date=eq.${today}` },
           (p) => { if (p.new.client_id !== clientId) renderComment(p.new); })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'diary_main', filter: `session_date=eq.${today}` },
