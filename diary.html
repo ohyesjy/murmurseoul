@@ -79,23 +79,6 @@
 
   .bottom-gif { display: block; width: min(420px, 88vw); height: auto; margin: 48px auto 0; }
 
-  .lock-overlay {
-    position: fixed; inset: 0;
-    background: rgba(255,255,255,0.96);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 100;
-    padding: 24px;
-  }
-  .lock-card { border: 1px solid #c8243a; padding: 36px 28px; max-width: 420px; width: 100%; text-align: center; background: #fff; }
-  .lock-icon { font-size: 32px; margin-bottom: 14px; }
-  .lock-title { font-family: "Special Elite", monospace; font-size: 16px; letter-spacing: 0.12em; margin-bottom: 14px; }
-  .lock-text { font-size: 13px; line-height: 1.8; color: #444; margin: 0; }
-  .lock-text .ja { display: block; margin-top: 6px; font-size: 12px; color: #888; }
-  form.access { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
-  form.access input { font-family: "Special Elite", monospace; font-size: 13px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 4px; min-width: 220px; text-align: center; letter-spacing: 0.1em; }
-  form.access button { font-family: "Special Elite", monospace; font-size: 12px; padding: 10px 22px; background: #0a0a0a; color: #fff; border: none; border-radius: 4px; letter-spacing: 0.15em; cursor: pointer; }
-  .err { color: #c8243a; font-size: 12px; min-height: 16px; }
-
   .back-link { position: fixed; bottom: 24px; right: 24px; font-family: "Special Elite", monospace; font-size: 13px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; opacity: 0.6; padding: 8px 12px; z-index: 50; background: rgba(255,255,255,0.85); border-radius: 4px; transition: opacity 200ms ease; }
   .back-link:hover { opacity: 1; }
   @media (max-width: 540px) {
@@ -109,17 +92,17 @@
     <h1>diary wall</h1>
     <p class="subtitle">
       韓国旅行で感じたこと、絵や写真で残してください。
-      <span class="ja">A wall for members to leave their feelings from the journey — in drawings or photos.</span>
+      <span class="ja">An open wall for travelers to share their feelings — in drawings or photos.</span>
     </p>
 
     <div class="intro">
-      <b>会員のみ投稿できる、みんなの絵日記の壁。</b>
-      <span class="ja">Members-only journal wall — drawings, photos, small notes from your trip.</span>
+      <b>みんなの絵日記の壁。誰でも見て、書いて、共有できる空間。</b>
+      <span class="ja">Open journal wall — drawings, photos, small notes from your trip.</span>
     </div>
 
     <div class="actions">
-      <a class="btn btn-primary" href="#" onclick="alert('투고 기능은 곧 열려요 / Submission opens soon'); return false;">+ POST YOUR DIARY</a>
-      <a class="btn btn-secondary" href="#" onclick="alert('회원가입은 곧 열려요 / Sign-up opens soon'); return false;">SIGN UP</a>
+      <a class="btn btn-primary" href="#" onclick="alert('투고 기능은 라이브 그림일기에서 열려요!\nLive diary is coming soon ✦'); return false;">+ POST YOUR DIARY</a>
+      <a class="btn btn-secondary" href="live-diary.html">▸ LIVE DIARY (会員専用)</a>
     </div>
 
     <div class="gallery">
@@ -136,34 +119,6 @@
     <img class="bottom-gif" src="diary-1.gif" alt="diary" />
   </div>
 
-  <div class="lock-overlay" id="lockOverlay">
-    <div class="lock-card">
-      <div class="lock-icon">⚲</div>
-      <div class="lock-title">MEMBERS ONLY</div>
-      <p class="lock-text">
-        この部屋は会員のみご覧いただけます。
-        <span class="ja">パスワードを入力してください。 / password required</span>
-      </p>
-      <form class="access" onsubmit="check(event)">
-        <input type="password" id="pw" placeholder="password" autocomplete="off" />
-        <div class="err" id="err"></div>
-        <button type="submit">ENTER</button>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    function check(e) {
-      e.preventDefault();
-      const v = document.getElementById('pw').value.trim().toLowerCase();
-      const err = document.getElementById('err');
-      if (v === 'murmur') {
-        err.textContent = '';
-        document.getElementById('lockOverlay').style.display = 'none';
-      } else {
-        err.textContent = '不正なパスワードです / wrong password';
-      }
-    }
-  </script>
+  <script></script>
 </body>
 </html>
