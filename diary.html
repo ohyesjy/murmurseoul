@@ -11,8 +11,6 @@
   * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; }
   html, body { margin: 0; padding: 0; min-height: 100vh; background: #ffffff; color: #0a0a0a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; }
   .wrap { max-width: 760px; margin: 0 auto; padding: 48px 24px 100px; }
-  .back-link { display: inline-block; font-family: "Special Elite", monospace; font-size: 13px; color: #0a0a0a; text-decoration: none; margin-bottom: 32px; letter-spacing: 0.1em; opacity: 0.7; }
-  .back-link:hover { opacity: 1; }
   h1 { font-family: "Special Elite", monospace; font-size: 32px; letter-spacing: 0.08em; margin: 0 0 8px; font-weight: 400; }
   .subtitle { font-size: 14px; color: #555; margin-bottom: 12px; letter-spacing: 0.04em; line-height: 1.7; }
   .subtitle .ja { display: block; margin-top: 4px; color: #888; font-size: 13px; }
@@ -97,6 +95,28 @@
   form.access input { font-family: "Special Elite", monospace; font-size: 13px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 4px; min-width: 220px; text-align: center; letter-spacing: 0.1em; }
   form.access button { font-family: "Special Elite", monospace; font-size: 12px; padding: 10px 22px; background: #0a0a0a; color: #fff; border: none; border-radius: 4px; letter-spacing: 0.15em; cursor: pointer; }
   .err { color: #c8243a; font-size: 12px; min-height: 16px; }
+
+  .back-link {
+    position: fixed;
+    top: 50%;
+    left: 24px;
+    transform: translateY(-50%);
+    font-family: "Special Elite", monospace;
+    font-size: 13px;
+    color: #1a1a1a;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+    padding: 8px 12px;
+    z-index: 50;
+    background: rgba(255,255,255,0.85);
+    border-radius: 4px;
+    transition: opacity 200ms ease;
+  }
+  .back-link:hover { opacity: 1; }
+  @media (max-width: 540px) {
+    .back-link { left: 12px; font-size: 12px; padding: 6px 10px; }
+  }
 </style>
 </head>
 <body>
