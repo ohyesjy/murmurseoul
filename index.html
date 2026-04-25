@@ -220,6 +220,59 @@
   }
   @keyframes blink { 50% { opacity: 0; } }
 
+
+  /* 회원전용 모달 */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 24px;
+  }
+  .modal-overlay.is-open { display: flex; }
+  .modal-card {
+    background: #ffffff;
+    border: 1px solid #c8243a;
+    padding: 36px 28px 26px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    border-radius: 4px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.15);
+  }
+  .modal-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.85; }
+  .modal-title {
+    font-family: "Special Elite", monospace;
+    font-size: 15px;
+    letter-spacing: 0.16em;
+    margin-bottom: 14px;
+    color: #0a0a0a;
+  }
+  .modal-text {
+    font-family: "Zen Kaku Gothic New", sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #1a1a1a;
+    margin: 0 0 24px;
+  }
+  .modal-text .modal-ja { display: block; margin-top: 6px; font-size: 13px; color: #555; }
+  .modal-actions { display: flex; gap: 10px; justify-content: center; }
+  .modal-btn {
+    font-family: "Special Elite", monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    padding: 10px 22px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #0a0a0a;
+    transition: opacity 200ms ease;
+  }
+  .modal-btn:hover { opacity: 0.78; }
+  .modal-btn.primary { background: #0a0a0a; color: #fff; }
+  .modal-btn.secondary { background: #fff; color: #0a0a0a; }
+
 </style>
 </head>
 <body>
@@ -254,7 +307,7 @@
     <div class="footer-row">
       <a href="https://www.instagram.com/murmur_josun/" target="_blank" rel="noopener noreferrer">@murmur_josun</a>
       <div class="enter-stack">
-        <a href="diary.html" class="enter-link">PICTURE DIARY <span class="sub">(MEMBERS ONLY)</span> ▸</a>
+        <a href="diary.html" class="enter-link diary-link">PICTURE DIARY ▸</a>
         <a href="main.html" class="enter-link">BUNDANG ▸</a>
         <a href="webtoons.html" class="enter-link">WEBTOONS + WEB NOVELS ▸</a>
       </div>
@@ -262,6 +315,22 @@
   </div>
 
   <div class="fade" id="fade"></div>
+
+  <!-- 회원전용 모달 -->
+  <div class="modal-overlay" id="diaryModal">
+    <div class="modal-card">
+      <div class="modal-icon">⚲</div>
+      <div class="modal-title">MEMBERS ONLY</div>
+      <p class="modal-text">
+        会員登録された方のみご入場いただけます。
+        <span class="modal-ja">회원가입해야 입장가능해요!</span>
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn primary" id="signupBtn">등록하기</button>
+        <button type="button" class="modal-btn secondary" id="cancelBtn">취소</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     // 타이핑 효과
@@ -302,10 +371,31 @@
     document.querySelectorAll('.enter-link').forEach(link => {
       link.addEventListener('click', function (e) {
         e.preventDefault();
+
+        // diary는 멤버 모달을 띄움
+        if (this.classList.contains('diary-link')) {
+          document.getElementById('diaryModal').classList.add('is-open');
+          return;
+        }
+
         const href = this.getAttribute('href');
         fade.classList.add('is-on');
         setTimeout(() => { window.location.href = href; }, 400);
       });
+    });
+
+    // 모달 버튼들
+    document.getElementById('signupBtn').addEventListener('click', function () {
+      // 등록하기 → diary 페이지로 이동 (현재 placeholder, 추후 회원가입 페이지로 변경)
+      document.getElementById('diaryModal').classList.remove('is-open');
+      fade.classList.add('is-on');
+      setTimeout(() => { window.location.href = 'diary.html'; }, 400);
+    });
+    document.getElementById('cancelBtn').addEventListener('click', function () {
+      document.getElementById('diaryModal').classList.remove('is-open');
+    });
+    document.getElementById('diaryModal').addEventListener('click', function (e) {
+      if (e.target === this) this.classList.remove('is-open');
     });
   </script>
 </body>
