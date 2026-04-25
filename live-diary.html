@@ -2,48 +2,298 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
 <title>murmur josun · live diary</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; min-height: 100vh; background: #fff; color: #0a0a0a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; text-align: center; }
-  h1 { font-family: "Special Elite", monospace; font-size: 32px; letter-spacing: 0.06em; margin: 24px 0 8px; font-weight: 400; }
-  .tag { font-family: "Special Elite", monospace; font-size: 12px; letter-spacing: 0.18em; color: #c8243a; }
-  .desc { font-size: 14px; line-height: 1.85; color: #555; margin: 32px auto; max-width: 480px; }
-  .desc b { color: #1a1a1a; }
-  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin: 40px auto; max-width: 520px; }
-  .feat { padding: 16px 12px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; }
-  .feat-icon { font-size: 24px; margin-bottom: 8px; }
-  .feat-name { font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.15em; color: #c8243a; margin-bottom: 4px; }
-  .feat-desc { font-size: 11px; color: #888; line-height: 1.5; }
-  .coming-pill { display: inline-block; padding: 8px 18px; background: #0a0a0a; color: #fff; font-family: "Special Elite", monospace; font-size: 12px; letter-spacing: 0.2em; margin-top: 8px; }
-  .back-link { position: fixed; top: 50%; right: 24px; transform: translateY(-50%); font-family: "Special Elite", monospace; font-size: 13px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; opacity: 0.6; padding: 8px 12px; z-index: 50; background: rgba(255,255,255,0.85); border-radius: 4px; }
-  .back-link:hover { opacity: 1; }
-  @media (max-width: 540px) { .back-link { right: 12px; font-size: 12px; padding: 6px 10px; } }
+  * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+  html, body { margin: 0; padding: 0; height: 100%; background: #fafaf7; color: #0a0a0a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; overflow: hidden; }
+  .stage { position: fixed; inset: 0; display: flex; flex-direction: column; }
+  .header { flex-shrink: 0; padding: 12px 16px 10px; background: #fafaf7; border-bottom: 1px solid #e8e6e0; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
+  .header-left { display: flex; flex-direction: column; }
+  .title-line { font-family: "Special Elite", monospace; font-size: 13px; letter-spacing: 0.16em; }
+  .date-line { font-family: "Special Elite", monospace; font-size: 11px; color: #888; letter-spacing: 0.12em; margin-top: 2px; }
+  .live-dot { display: inline-block; width: 6px; height: 6px; background: #c8243a; border-radius: 50%; margin-right: 6px; vertical-align: 1px; animation: live-pulse 1.4s ease-in-out infinite; }
+  @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .users-badge { font-family: "Special Elite", monospace; font-size: 10px; color: #555; background: #fff; padding: 4px 8px; border: 1px solid #ddd; border-radius: 999px; letter-spacing: 0.1em; }
+  .back-btn { font-family: "Special Elite", monospace; font-size: 11px; color: #1a1a1a; text-decoration: none; padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; opacity: 0.8; background: #fff; }
+  .back-btn:hover { opacity: 1; }
+  .canvas-wrap { flex: 1; position: relative; overflow: hidden; background: #fff; margin: 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px dashed #e0ddd0; }
+  #canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+  #items-layer { position: absolute; inset: 0; pointer-events: none; }
+  .item { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer; }
+  .item.photo img { max-width: 140px; max-height: 140px; border: 4px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 2px; display: block; }
+  .item.note { background: #fffbe0; padding: 10px 12px; font-size: 13px; line-height: 1.4; border-radius: 2px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); max-width: 180px; word-break: break-word; }
+  .item .item-author { display: block; font-size: 9px; color: #888; margin-top: 4px; font-family: "Special Elite", monospace; letter-spacing: 0.08em; }
+  .toolbar { flex-shrink: 0; background: #fff; border-top: 1px solid #e8e6e0; padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+  .colors { display: flex; gap: 6px; }
+  .color { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #ccc; cursor: pointer; transition: transform 0.15s ease; }
+  .color.active { transform: scale(1.18); box-shadow: 0 0 0 2px #1a1a1a; }
+  .sizes { display: flex; gap: 4px; align-items: center; }
+  .size { width: 32px; height: 26px; border: 1px solid #ddd; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .size.active { background: #1a1a1a; }
+  .size .dot { background: #1a1a1a; border-radius: 50%; }
+  .size.active .dot { background: #fff; }
+  .size .small { width: 4px; height: 4px; }
+  .size .mid { width: 7px; height: 7px; }
+  .size .big { width: 11px; height: 11px; }
+  .action-btns { display: flex; gap: 6px; }
+  .btn { font-family: "Special Elite", monospace; font-size: 10px; letter-spacing: 0.12em; padding: 7px 10px; border: 1px solid #ddd; background: #fff; border-radius: 4px; cursor: pointer; }
+  .btn:hover { background: #f5f5f5; }
+  .btn.primary { background: #0a0a0a; color: #fff; border-color: #0a0a0a; }
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+  .modal-bg.hidden { display: none; }
+  .modal { background: #fff; border-radius: 8px; padding: 24px; max-width: 360px; width: 100%; text-align: center; }
+  .modal h2 { font-family: "Special Elite", monospace; font-size: 14px; letter-spacing: 0.16em; margin: 0 0 8px; }
+  .modal p { font-size: 12px; color: #666; margin: 0 0 16px; line-height: 1.6; }
+  .modal input, .modal textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-family: "Zen Kaku Gothic New", sans-serif; font-size: 13px; margin-bottom: 10px; -webkit-user-select: text; user-select: text; }
+  .modal textarea { resize: none; height: 80px; }
+  .modal-actions { display: flex; gap: 8px; }
+  .modal-actions .btn { flex: 1; padding: 10px; font-size: 11px; }
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.85); color: #fff; padding: 8px 16px; border-radius: 999px; font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.1em; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .toast.show { opacity: 1; }
+  @media (max-width: 540px) { .toolbar { gap: 4px; padding: 8px; } .color { width: 24px; height: 24px; } .btn { font-size: 9px; padding: 6px 8px; } .item.photo img { max-width: 100px; max-height: 100px; } }
 </style>
 </head>
 <body>
-  <a class="back-link" href="index.html">← back</a>
-  <div class="wrap">
-    <span class="tag">PICTURE DIARY LIVE</span>
-    <h1>みんなの 화보<span style="opacity:0.5">.</span></h1>
-    <p class="desc">
-      韓国に住む女と、韓国を訪れた日本の女性が <br/>
-      <b>同じ一枚の紙の上で</b> 絵を描き、写真を貼り、文字を残す ——<br/>
-      一日ごとの<b>協力グラフィティ・ダイアリー</b>。
-    </p>
-    <div class="features">
-      <div class="feat"><div class="feat-icon">✏️</div><div class="feat-name">DRAW</div><div class="feat-desc">同じ画面に皆で絵を描く</div></div>
-      <div class="feat"><div class="feat-icon">📷</div><div class="feat-name">PHOTO</div><div class="feat-desc">旅の写真を貼り付け</div></div>
-      <div class="feat"><div class="feat-icon">📝</div><div class="feat-name">NOTE</div><div class="feat-desc">短い感想を残す</div></div>
-      <div class="feat"><div class="feat-icon">⚡</div><div class="feat-name">REALTIME</div><div class="feat-desc">他の人の手が今すぐ見える</div></div>
+  <div class="stage">
+    <div class="header">
+      <div class="header-left">
+        <div class="title-line"><span class="live-dot"></span>みんなの 화보</div>
+        <div class="date-line" id="dateLine">— LOADING —</div>
+      </div>
+      <div class="header-right">
+        <span class="users-badge" id="usersBadge">— ONLINE</span>
+        <a class="back-btn" href="index.html">← back</a>
+      </div>
     </div>
-    <span class="coming-pill">SETTING UP — coming very soon</span>
-    <p style="font-size:12px; color:#999; margin-top:24px;">Supabase接続後すぐオープン / Will open right after Supabase setup</p>
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="canvas"></canvas>
+      <div id="items-layer"></div>
+    </div>
+    <div class="toolbar">
+      <div class="colors" id="colors">
+        <div class="color active" data-color="#1a1a1a" style="background:#1a1a1a"></div>
+        <div class="color" data-color="#c8243a" style="background:#c8243a"></div>
+        <div class="color" data-color="#ff5a8e" style="background:#ff5a8e"></div>
+        <div class="color" data-color="#3a78d8" style="background:#3a78d8"></div>
+        <div class="color" data-color="#f0b820" style="background:#f0b820"></div>
+        <div class="color" data-color="#3aa867" style="background:#3aa867"></div>
+      </div>
+      <div class="sizes" id="sizes">
+        <div class="size active" data-size="3"><span class="dot small"></span></div>
+        <div class="size" data-size="6"><span class="dot mid"></span></div>
+        <div class="size" data-size="12"><span class="dot big"></span></div>
+      </div>
+      <div class="action-btns">
+        <button class="btn" id="btnPhoto">📷 PHOTO</button>
+        <button class="btn" id="btnNote">📝 NOTE</button>
+        <button class="btn primary" id="btnUndo">⤺ UNDO</button>
+      </div>
+    </div>
   </div>
+  <input type="file" id="photoInput" accept="image/*" style="display:none" />
+  <div class="modal-bg" id="nicknameModal">
+    <div class="modal">
+      <h2>WELCOME ✦</h2>
+      <p>みんなの화보ボードへようこそ。<br/>닉네임을 입력하고 들어와주세요 (선택)</p>
+      <input type="text" id="nicknameInput" placeholder="nickname / ニックネーム" maxlength="20" />
+      <div class="modal-actions">
+        <button class="btn primary" id="btnEnter">ENTER ▸</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-bg hidden" id="noteModal">
+    <div class="modal">
+      <h2>LEAVE A NOTE 📝</h2>
+      <p>화보에 짧은 글을 남겨보세요</p>
+      <textarea id="noteInput" placeholder="今日の旅で感じたこと..."></textarea>
+      <div class="modal-actions">
+        <button class="btn" id="btnNoteCancel">CANCEL</button>
+        <button class="btn primary" id="btnNoteSubmit">POST ▸</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const SUPABASE_URL = 'https://zhaabmqdbgmisyurcslv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoYWFibXFkYmdtaXN5dXJjc2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTEyMTcsImV4cCI6MjA5MjY2NzIxN30.pcN8mQHPKhws2mMxeScDb3bc9rPJnZlYMRM23T8ksVE';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let clientId = localStorage.getItem('mj_client_id');
+    if (!clientId) { clientId = 'c_' + Math.random().toString(36).slice(2, 10); localStorage.setItem('mj_client_id', clientId); }
+    let nickname = localStorage.getItem('mj_nickname') || '';
+    const today = new Date().toISOString().slice(0, 10);
+    const dateDisplay = today.replace(/-/g, '.');
+    const weekday = ['SUN','MON','TUE','WED','THU','FRI','SAT'][new Date().getDay()];
+    document.getElementById('dateLine').textContent = `${dateDisplay} (${weekday})`;
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let dpr = window.devicePixelRatio || 1;
+    function resizeCanvas() {
+      const wrap = document.getElementById('canvasWrap');
+      const rect = wrap.getBoundingClientRect();
+      canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + 'px'; canvas.style.height = rect.height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      redraw();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    let allStrokes = [];
+    function drawStroke(stroke) {
+      const path = stroke.path; if (!path || path.length < 1) return;
+      ctx.strokeStyle = stroke.color; ctx.lineWidth = stroke.size;
+      ctx.beginPath();
+      const w = canvas.width / dpr, h = canvas.height / dpr;
+      ctx.moveTo(path[0].x * w, path[0].y * h);
+      for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x * w, path[i].y * h);
+      ctx.stroke();
+    }
+    function redraw() { ctx.clearRect(0, 0, canvas.width, canvas.height); allStrokes.forEach(drawStroke); }
+    let drawing = false, currentColor = '#1a1a1a', currentSize = 3, currentPath = [];
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const t = e.touches ? e.touches[0] : e;
+      return { x: (t.clientX - rect.left) / rect.width, y: (t.clientY - rect.top) / rect.height };
+    }
+    function startDraw(e) { e.preventDefault(); drawing = true; currentPath = [getPos(e)]; }
+    function moveDraw(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      const p = getPos(e); currentPath.push(p);
+      const w = canvas.width / dpr, h = canvas.height / dpr;
+      ctx.strokeStyle = currentColor; ctx.lineWidth = currentSize;
+      ctx.beginPath();
+      const last = currentPath[currentPath.length - 2];
+      ctx.moveTo(last.x * w, last.y * h); ctx.lineTo(p.x * w, p.y * h); ctx.stroke();
+    }
+    async function endDraw(e) {
+      if (!drawing) return;
+      drawing = false;
+      if (currentPath.length < 2) return;
+      const stroke = { session_date: today, path: currentPath, color: currentColor, size: currentSize, client_id: clientId };
+      const { data, error } = await supabase.from('diary_strokes').insert(stroke).select().single();
+      if (error) showToast('저장 실패'); else allStrokes.push(data);
+      currentPath = [];
+    }
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', moveDraw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', moveDraw, { passive: false });
+    canvas.addEventListener('touchend', endDraw);
+    document.querySelectorAll('.color').forEach(el => el.addEventListener('click', () => {
+      document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
+      el.classList.add('active'); currentColor = el.dataset.color;
+    }));
+    document.querySelectorAll('.size').forEach(el => el.addEventListener('click', () => {
+      document.querySelectorAll('.size').forEach(c => c.classList.remove('active'));
+      el.classList.add('active'); currentSize = parseInt(el.dataset.size);
+    }));
+    function showToast(msg) {
+      const t = document.getElementById('toast'); t.textContent = msg;
+      t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2400);
+    }
+    document.getElementById('btnUndo').addEventListener('click', async () => {
+      const myStrokes = allStrokes.filter(s => s.client_id === clientId);
+      if (myStrokes.length === 0) return showToast('지울 내 그림이 없어요');
+      const last = myStrokes[myStrokes.length - 1];
+      await supabase.from('diary_strokes').delete().eq('id', last.id);
+      allStrokes = allStrokes.filter(s => s.id !== last.id);
+      redraw();
+    });
+    const photoInput = document.getElementById('photoInput');
+    document.getElementById('btnPhoto').addEventListener('click', () => photoInput.click());
+    photoInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        img.src = ev.target.result;
+        await img.decode();
+        const max = 600;
+        const ratio = Math.min(max / img.width, max / img.height, 1);
+        const c = document.createElement('canvas');
+        c.width = img.width * ratio; c.height = img.height * ratio;
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        const b64 = c.toDataURL('image/jpeg', 0.78);
+        const item = {
+          session_date: today, type: 'photo', content: b64,
+          pos_x: 0.3 + Math.random() * 0.4, pos_y: 0.3 + Math.random() * 0.4,
+          rotation: (Math.random() - 0.5) * 14, client_id: clientId, nickname: nickname || null
+        };
+        const { data, error } = await supabase.from('diary_items').insert(item).select().single();
+        if (error) showToast('업로드 실패');
+        else { renderItem(data); showToast('사진 업로드 완료 ✓'); }
+      };
+      reader.readAsDataURL(file); photoInput.value = '';
+    });
+    const noteModal = document.getElementById('noteModal');
+    document.getElementById('btnNote').addEventListener('click', () => { noteModal.classList.remove('hidden'); document.getElementById('noteInput').focus(); });
+    document.getElementById('btnNoteCancel').addEventListener('click', () => noteModal.classList.add('hidden'));
+    document.getElementById('btnNoteSubmit').addEventListener('click', async () => {
+      const txt = document.getElementById('noteInput').value.trim(); if (!txt) return;
+      const item = {
+        session_date: today, type: 'note', content: txt,
+        pos_x: 0.3 + Math.random() * 0.4, pos_y: 0.3 + Math.random() * 0.4,
+        rotation: (Math.random() - 0.5) * 10, client_id: clientId, nickname: nickname || null
+      };
+      const { data, error } = await supabase.from('diary_items').insert(item).select().single();
+      if (error) showToast('등록 실패');
+      else { renderItem(data); document.getElementById('noteInput').value = ''; noteModal.classList.add('hidden'); showToast('노트 추가됨 ✓'); }
+    });
+    const itemsLayer = document.getElementById('items-layer');
+    const renderedItems = new Set();
+    function renderItem(item) {
+      if (renderedItems.has(item.id)) return;
+      renderedItems.add(item.id);
+      const el = document.createElement('div');
+      el.className = 'item ' + item.type; el.dataset.id = item.id;
+      el.style.left = (item.pos_x * 100) + '%'; el.style.top = (item.pos_y * 100) + '%';
+      el.style.transform = `translate(-50%, -50%) rotate(${item.rotation || 0}deg)`;
+      if (item.type === 'photo') {
+        el.innerHTML = `<img src="${item.content}" /><span class="item-author">— @${item.nickname || 'guest'}</span>`;
+      } else {
+        const safe = item.content.replace(/</g,'&lt;').replace(/\n/g,'<br/>');
+        el.innerHTML = `${safe}<span class="item-author">— @${item.nickname || 'guest'}</span>`;
+      }
+      itemsLayer.appendChild(el);
+    }
+    async function loadToday() {
+      const { data: strokes } = await supabase.from('diary_strokes').select('*').eq('session_date', today).order('created_at');
+      allStrokes = strokes || []; redraw();
+      const { data: items } = await supabase.from('diary_items').select('*').eq('session_date', today).order('created_at');
+      (items || []).forEach(renderItem);
+    }
+    function subscribeRealtime() {
+      supabase.channel('strokes-' + today)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'diary_strokes', filter: `session_date=eq.${today}` },
+          (payload) => { const s = payload.new; if (s.client_id === clientId) return; allStrokes.push(s); drawStroke(s); })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'diary_strokes' },
+          (payload) => { allStrokes = allStrokes.filter(s => s.id !== payload.old.id); redraw(); })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'diary_items', filter: `session_date=eq.${today}` },
+          (payload) => renderItem(payload.new))
+        .subscribe();
+      const presence = supabase.channel('presence-' + today, { config: { presence: { key: clientId } } });
+      presence.on('presence', { event: 'sync' }, () => {
+        const state = presence.presenceState();
+        const count = Object.keys(state).length;
+        document.getElementById('usersBadge').textContent = `● ${count} ONLINE`;
+      }).subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') await presence.track({ nickname: nickname || 'guest', joinedAt: new Date().toISOString() });
+      });
+    }
+    document.getElementById('btnEnter').addEventListener('click', () => {
+      const v = document.getElementById('nicknameInput').value.trim();
+      if (v) { nickname = v; localStorage.setItem('mj_nickname', v); }
+      document.getElementById('nicknameModal').classList.add('hidden');
+      resizeCanvas(); loadToday(); subscribeRealtime();
+    });
+    if (nickname) document.getElementById('nicknameInput').value = nickname;
+  </script>
 </body>
 </html>
