@@ -75,7 +75,7 @@
   #canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
   .canvas-area #items-layer { position: absolute; inset: 0; pointer-events: none; }
   .canvas-area .item { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; }
-  .canvas-area .item img {
+  .canvas-area .item.photo img {
     max-width: 30%; max-height: 60%;
     border: 4px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.18); border-radius: 1px;
     display: block;
@@ -273,7 +273,7 @@
           <div class="size" data-size="12"><span class="dot s3"></span></div>
         </div>
         <button class="btn" id="btnPhoto">📷</button>
-        <button class="btn danger" id="btnUndo">⤺</button>
+        <button class="btn" id="btnText">T</button>
       </div>
     </div>
     <div class="tools-visitor" id="toolsVisitor">
@@ -419,13 +419,72 @@
       el.classList.add('active'); currentSize = parseInt(el.dataset.size);
     }));
 
-    document.getElementById('btnUndo').addEventListener('click', async () => {
-      const mine = allStrokes.filter(s => s.client_id === clientId);
-      if (!mine.length) return toast('내 그림이 없어요');
-      const last = mine[mine.length - 1];
-      await supabase.from('diary_strokes').delete().eq('id', last.id);
-      allStrokes = allStrokes.filter(s => s.id !== last.id);
-      redraw();
+    // 텍스트 입력 모드
+    let textMode = false;
+    const btnText = document.getElementById('btnText');
+    btnText.addEventListener('click', () => {
+      if (role !== 'host') return toast('HOST 만 사용 가능');
+      textMode = !textMode;
+      btnText.classList.toggle('primary', textMode);
+      canvas.style.cursor = textMode ? 'text' : 'crosshair';
+      if (textMode) toast('텍스트 모드 — 캔버스를 클릭하면 글자 입력');
+    });
+
+    // 캔버스 클릭 → 텍스트 입력 (텍스트 모드일 때만)
+    let textInputEl = null;
+    canvas.addEventListener('click', (e) => {
+      if (!textMode || role !== 'host') return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (textInputEl) { textInputEl.remove(); textInputEl = null; }
+      const rect = canvas.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width;
+      const py = (e.clientY - rect.top) / rect.height;
+      textInputEl = document.createElement('input');
+      textInputEl.type = 'text';
+      textInputEl.placeholder = '텍스트 입력 후 Enter';
+      textInputEl.maxLength = 60;
+      Object.assign(textInputEl.style, {
+        position: 'absolute',
+        left: (px * 100) + '%',
+        top: (py * 100) + '%',
+        transform: 'translate(-50%, -50%)',
+        background: 'rgba(255,255,255,0.95)',
+        border: '1px solid ' + currentColor,
+        padding: '4px 8px',
+        fontSize: (currentSize * 4 + 12) + 'px',
+        color: currentColor,
+        outline: 'none',
+        zIndex: 100,
+        userSelect: 'text',
+        WebkitUserSelect: 'text',
+        fontFamily: 'inherit',
+        minWidth: '120px'
+      });
+      document.getElementById('canvasArea').appendChild(textInputEl);
+      setTimeout(() => textInputEl.focus(), 50);
+      textInputEl.addEventListener('keydown', async (ke) => {
+        if (ke.key === 'Enter') {
+          const txt = textInputEl.value.trim();
+          if (!txt) { textInputEl.remove(); textInputEl = null; return; }
+          const item = {
+            session_date: today, type: 'note', content: txt,
+            pos_x: px, pos_y: py, rotation: 0,
+            client_id: clientId, nickname: nickname || null
+          };
+          const { data } = await supabase.from('diary_items').insert(item).select().single();
+          if (data) renderItem(data);
+          textInputEl.remove(); textInputEl = null;
+          textMode = false;
+          btnText.classList.remove('primary');
+          canvas.style.cursor = 'crosshair';
+        } else if (ke.key === 'Escape') {
+          textInputEl.remove(); textInputEl = null;
+        }
+      });
+      textInputEl.addEventListener('blur', () => {
+        setTimeout(() => { if (textInputEl) { textInputEl.remove(); textInputEl = null; } }, 150);
+      });
     });
 
     // 사진 업로드 (메인 영역, host 전용)
@@ -469,7 +528,19 @@
       el.className = 'item ' + item.type;
       el.style.left = (item.pos_x * 100) + '%'; el.style.top = (item.pos_y * 100) + '%';
       el.style.transform = `translate(-50%, -50%) rotate(${item.rotation || 0}deg)`;
-      if (item.type === 'photo') el.innerHTML = `<img src="${item.content}" />`;
+      if (item.type === 'photo') {
+        el.innerHTML = `<img src="${item.content}" />`;
+      } else if (item.type === 'note') {
+        // 캔버스 텍스트 (호스트가 직접 입력한 글자)
+        el.style.fontSize = '15px';
+        el.style.fontFamily = '"Hachi Maru Pop", "Zen Kaku Gothic New", sans-serif';
+        el.style.color = '#1a1a1a';
+        el.style.maxWidth = '60%';
+        el.style.lineHeight = '1.4';
+        el.style.padding = '2px 4px';
+        el.style.whiteSpace = 'pre-wrap';
+        el.textContent = item.content;
+      }
       itemsLayer.appendChild(el);
     }
 
