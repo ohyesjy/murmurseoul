@@ -24,9 +24,6 @@
     transition: 0.2s;
   }
   .tab.active { color: #0a0a0a; border-bottom: 2px solid #c8243a; font-weight: 500; }
-  .tab.active.tab-eroi { color: #c8243a; border-bottom-color: #c8243a; }
-  .tab.tab-eroi { color: #c8243a; opacity: 0.7; }
-  .tab.tab-eroi.active { opacity: 1; }
 
   .panel { display: none; }
   .panel.active { display: block; animation: fadeIn 0.3s ease; }
@@ -95,10 +92,16 @@
     .featured-pitch { font-size: 14px; }
     .tab { font-size: 11px; padding: 12px 4px; letter-spacing: 0.12em; }
     .back-link { right: 12px; bottom: 16px; font-size: 12px; padding: 6px 10px; }
-  }
+  } 50% { transform: scale(1.18); } }
 
-  .tab-eroi .heart { color: #c8243a; margin: 0 4px; font-size: 0.9em; vertical-align: -1px; animation: pulse 1.6s ease-in-out infinite; display: inline-block; }
-  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+
+  .tab-eroi { color: #0a0a0a; }
+  .tab-eroi .t-black { color: #0a0a0a; font-weight: 500; }
+  .tab-eroi .heart { color: #ff5a8e; margin: 0 4px; font-size: 0.95em; display: inline-block; animation: pulse 1.6s ease-in-out infinite; }
+  .tab-eroi .t-pink { color: #ff5a8e; font-weight: 500; }
+  .tab-eroi.active { border-bottom-color: #ff5a8e; }
+  .tab-eroi:not(.active) { opacity: 0.85; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
 </style>
 </head>
