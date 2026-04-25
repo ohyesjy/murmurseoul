@@ -12,7 +12,6 @@
   html, body { margin: 0; padding: 0; min-height: 100vh; background: #fff; color: #0a0a0a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; }
   .wrap { max-width: 760px; margin: 0 auto; padding: 36px 22px 80px; }
   h1 { font-family: "Special Elite", monospace; font-size: 30px; letter-spacing: 0.06em; margin: 0 0 4px; font-weight: 400; }
-  .subtitle { font-size: 13px; color: #666; margin-bottom: 24px; letter-spacing: 0.04em; }
 
   /* 탭 — 3개 */
   .tabs { display: flex; border-bottom: 1px solid #ddd; margin-bottom: 28px; }
@@ -103,6 +102,25 @@
   .tab-eroi:not(.active) { opacity: 0.85; }
   @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
+
+  .subtitle-block { margin-bottom: 28px; line-height: 1.7; }
+  .subtitle-main {
+    font-size: 14px; color: #1a1a1a; margin: 0 0 6px;
+    letter-spacing: 0.02em;
+  }
+  .subtitle-sub {
+    font-size: 13px; color: #888; margin: 0 0 10px;
+    letter-spacing: 0.02em; font-style: italic;
+  }
+  .subtitle-indent {
+    font-size: 12.5px; color: #666; margin: 2px 0 2px 8px;
+    letter-spacing: 0.02em; line-height: 1.65;
+  }
+  @media (max-width: 540px) {
+    .subtitle-main { font-size: 13px; }
+    .subtitle-sub, .subtitle-indent { font-size: 11.5px; }
+  }
+
 </style>
 </head>
 <body>
@@ -110,7 +128,12 @@
 
   <div class="wrap">
     <h1>webtoons + web novels</h1>
-    <p class="subtitle">韓国に住む女が選ぶ、いま読むべき作品。 / Curated picks from Seoul.</p>
+    <div class="subtitle-block">
+      <p class="subtitle-main">私も見てみよう作品や、韓国女性に人気な作品です。</p>
+      <p class="subtitle-sub">韓国語ですけど…</p>
+      <p class="subtitle-indent">└ 韓国でこれが流行りなんだ。。。</p>
+      <p class="subtitle-indent">└ 日本でも見れるようになったら、是非是非ご覧になってください。</p>
+    </div>
 
     <div class="tabs">
       <button class="tab active" data-tab="webtoon">WEBTOONS</button>
