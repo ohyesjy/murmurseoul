@@ -51,10 +51,12 @@
   .featured-cta { display: inline-block; background: #0a0a0a; color: #fff; padding: 11px 20px; font-family: "Special Elite", monospace; font-size: 12px; letter-spacing: 0.18em; border-radius: 4px; }
 
   .reviews-block { margin-top: 22px; padding-top: 18px; border-top: 1px solid #eee; }
-  .reviews-head { font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.18em; color: #c8243a; margin-bottom: 12px; }
-  .reviews-typing { font-family: "Zen Kaku Gothic New", sans-serif; font-size: 13px; line-height: 1.85; color: #1a1a1a; white-space: pre-line; min-height: 5em; }
-  .reviews-typing .cursor { display: inline-block; width: 0.5em; background: #1a1a1a; animation: blink 1s steps(2) infinite; margin-left: 1px; vertical-align: -2px; }
-  @keyframes blink { 50% { opacity: 0; } }
+  .reviews-head { font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.18em; color: #c8243a; margin-bottom: 14px; }
+  .reviews-typing { font-family: "Zen Kaku Gothic New", sans-serif; font-size: 13px; line-height: 1.7; color: #1a1a1a; min-height: auto; transition: opacity 0.5s ease; }
+  .reviews-typing .review-row { padding: 11px 0 11px 16px; border-left: 2px solid rgba(200, 36, 58, 0.32); margin-bottom: 12px; opacity: 0; animation: revFadeIn 0.55s ease forwards; }
+  .reviews-typing .review-row .t { display: block; font-size: 13.5px; line-height: 1.75; color: #1a1a1a; margin-bottom: 5px; letter-spacing: 0.01em; }
+  .reviews-typing .review-row .a { display: block; font-family: "Special Elite", monospace; font-size: 10px; color: #999; letter-spacing: 0.1em; text-align: right; }
+  @keyframes revFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
   /* エロイ — 와인톤 다크 */
   .mature-ribbon { display: inline-block; background: #1a1a1a; color: #fff; padding: 3px 8px; font-family: "Special Elite", monospace; font-size: 9px; letter-spacing: 0.2em; border-radius: 3px; margin-left: 8px; vertical-align: 2px; }
@@ -76,7 +78,9 @@
   .eroi-card .reviews-block { border-top: 1px solid #2a1018; }
   .eroi-card .reviews-head { color: #c8243a; }
   .eroi-card .reviews-typing { color: #e8d8d8; }
-  .eroi-card .reviews-typing .cursor { background: #c8243a; }
+  .eroi-card .reviews-typing .review-row { border-left-color: rgba(200, 36, 58, 0.55); }
+  .eroi-card .reviews-typing .review-row .t { color: #e8d8d8; }
+  .eroi-card .reviews-typing .review-row .a { color: #aa8888; }
 
   .coming-card { text-align: center; padding: 60px 24px; border: 1px dashed #c8243a; border-radius: 8px; color: #c8243a; }
   .coming-card .ico { font-size: 32px; opacity: 0.7; margin-bottom: 10px; }
@@ -85,12 +89,17 @@
 
   .back-link { position: fixed; bottom: 24px; right: 24px; font-family: "Special Elite", monospace; font-size: 13px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; opacity: 0.6; padding: 8px 12px; z-index: 50; background: rgba(255,255,255,0.85); border-radius: 4px; transition: opacity 200ms ease; }
   .back-link:hover { opacity: 1; }
+  .home-link { position: fixed; bottom: 80px; right: 24px; z-index: 51; width: 56px; height: 56px; cursor: pointer; padding: 0; border: 0; background: transparent; transition: transform 220ms ease; animation: starPulse 3.6s ease-in-out infinite; }
+  .home-link:hover { transform: scale(1.1); }
+  .home-link img { width: 100%; height: 100%; display: block; pointer-events: none; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.18)); }
+  @keyframes starPulse { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 18% { filter: drop-shadow(0 0 8px rgba(255,180,210,0.95)) drop-shadow(0 0 16px rgba(255,200,220,0.6)); } 35% { filter: drop-shadow(0 0 0 transparent); } }
 
   @media (max-width: 540px) {
     .featured-title { font-size: 19px; }
     .featured-pitch { font-size: 14px; }
     .tab { font-size: 11px; padding: 12px 4px; letter-spacing: 0.12em; }
     .back-link { right: 12px; bottom: 16px; font-size: 12px; padding: 6px 10px; }
+    .home-link { right: 12px; bottom: 60px; width: 46px; height: 46px; }
   } 50% { transform: scale(1.18); } }
 
 
@@ -140,6 +149,7 @@
 </style>
 </head>
 <body>
+  <a class="home-link" href="index.html" title="HOME"><img src="home-star.png" alt="home" /></a>
   <a class="back-link" href="index.html">← back</a>
 
   <div class="wrap">
@@ -300,14 +310,19 @@
           </div>
         </div>
       </a>
+
+      <!-- admin에서 추가한 작품들 -->
+      <div id="db-eroi-list"></div>
     </div>
 
     <!-- WEB NOVELS 탭 -->
     <div class="panel" id="panel-novel">
-      <div class="coming-card">
-        <div class="ico">✷</div>
-        <h2>WEB NOVELS</h2>
-        <p>近日公開 / coming soon — Seoul curators&apos; picks.</p>
+      <div id="db-novels-list">
+        <div class="coming-card" id="novelsComing">
+          <div class="ico">✷</div>
+          <h2>WEB NOVELS</h2>
+          <p>近日公開 / coming soon — Seoul curators&apos; picks.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -322,131 +337,68 @@
       });
     });
 
+    // 리뷰 — 일본 카드형 나열 / 별정직 공무원만 6개를 3개씩 회전
     const REVIEWS = {
-      'mom-reviews':
-        `"読みながら自分の家族を考えた。
-母娘の関係って、こんなに難しいんだよね…"
-— @reader_aki
-
-"兄ばっかり可愛がる母にイラっとして、
-最後にホロッと泣いた。設定が本当に上手い。"
-— @kana_2024
-
-"絵がきれいで、台詞がやわらかい。
-なのに、ずっとひりひりする。"
-— @himawari
-
-"母にされたこと、忘れられない人ほど
-ぐさぐさくる作品。"
-— @yume_t
-
-"韓国家族の生々しさがリアルすぎて、
-自分の話みたいで読み進められない。"
-— @sora_sea
-
-"セリフ一つ一つが詩。
-原作小説があったら絶対買う。"
-— @lit_lover`,
-
-      'eroi-reviews':
-        `"読み始めたら止まらない。一晩で全部読んだ…"
-— @midnight_seoul
-
-"画面の向こうの誰かに惹かれる気持ち、
-分かりすぎて怖い。"
-— @hana_jp
-
-"絵がうますぎる。
-表情ひとつで物語ってる。"
-— @reader_yumi
-
-"通知音で心臓が跳ねる感覚、
-リアルすぎて鳥肌。"
-— @app_lover
-
-"30代の私にいちばん刺さる作品。
-読んでて自分の夜を反省した。"
-— @seoul_30s
-
-"韓国語の勉強の動機になりました(本気)。
-続きが気になりすぎて。"
-— @kor_study`,
-
-      'badboy-reviews':
-        `"絵があざとい(褒め)。
-表紙でやられた。"
-— @sunday_seoul
-
-"悪そうなのに、私にだけ一途な男…
-これ韓国ロマンスの王道で大好物。"
-— @yume_2026
-
-"軽そうに見えて、ちゃんと重い。
-土曜が待ち遠しい。"
-— @reader_misa
-
-"キャンパスロマンス × バッドボーイ、
-最強の組み合わせ確定。"
-— @ramen_love
-
-"韓国の若者の恋ってこんな感じなのかな。
-きゅんきゅんが止まらない。"
-— @kpop_fan
-
-"1話目で完落ちしました。
-最新話まで一気読み案件。"
-— @binge_reader`,
-
-      'hunter-reviews':
-        `"作画がやばい。動きまで見える漫画って何?"
-— @action_jp
-
-"公務員 × 怪物ハンター、
-設定の発想力で勝ち。"
-— @reader_kazu
-
-"韓国版の現代ヒーロー、絶対日本でバズる。
-鬼滅・呪術好きは騙されたと思って読んで。"
-— @manga_yui
-
-"アクションシーンの躍動感がアニメ並み。
-映像化マジで期待。"
-— @anime_lover
-
-"9級公務員の悲哀 × ファンタジー
-…という発想がもう天才。"
-— @govt_jp
-
-"韓国アクション漫画の最先端、これは本物。
-日本に輸入されたら確実に話題になる。"
-— @reader_action`
+      'mom-reviews': [
+        { t: '"読みながら自分の家族を考えた。母娘の関係って、こんなに難しいんだよね…"', a: '@reader_aki' },
+        { t: '"兄ばっかり可愛がる母にイラっとして、最後にホロッと泣いた。設定が本当に上手い。"', a: '@kana_2024' },
+        { t: '"絵がきれいで、台詞がやわらかい。なのに、ずっとひりひりする。"', a: '@himawari' }
+      ],
+      'eroi-reviews': [
+        { t: '"読み始めたら止まらない。一晩で全部読んだ…"', a: '@midnight_seoul' },
+        { t: '"画面の向こうの誰かに惹かれる気持ち、分かりすぎて怖い。"', a: '@hana_jp' },
+        { t: '"30代の私にいちばん刺さる作品。読んでて自分の夜を反省した。"', a: '@seoul_30s' }
+      ],
+      'badboy-reviews': [
+        { t: '"絵があざとい(褒め)。表紙でやられた。"', a: '@sunday_seoul' },
+        { t: '"悪そうなのに、私にだけ一途な男…これ韓国ロマンスの王道で大好物。"', a: '@yume_2026' },
+        { t: '"キャンパスロマンス × バッドボーイ、最強の組み合わせ確定。"', a: '@ramen_love' }
+      ],
+      // 별정직 공무원만 6개 — 3개씩 교대로 표시
+      'hunter-reviews': [
+        { t: '"作画がやばい。動きまで見える漫画って何?"', a: '@action_jp' },
+        { t: '"公務員 × 怪物ハンター、設定の発想力で勝ち。"', a: '@reader_kazu' },
+        { t: '"韓国版の現代ヒーロー、絶対日本でバズる。鬼滅・呪術好きは騙されたと思って読んで。"', a: '@manga_yui' },
+        { t: '"アクションシーンの躍動感がアニメ並み。映像化マジで期待。"', a: '@anime_lover' },
+        { t: '"9級公務員の悲哀 × ファンタジー…という発想がもう天才。"', a: '@govt_jp' },
+        { t: '"韓国アクション漫画の最先端、これは本物。日本に輸入されたら確実に話題になる。"', a: '@reader_action' }
+      ]
     };
 
-    function typeInto(elId, text, startDelay=0) {
-      const el = document.getElementById(elId);
-      if (!el) return;
-      let i = 0;
-      function step() {
-        if (i < text.length) {
-          el.innerHTML = text.slice(0, i+1).replace(/\n/g, '<br/>') + '<span class="cursor">&nbsp;</span>';
-          i++;
-          const ch = text[i-1];
-          const delay = ch === '\n' ? 200 : (ch === '。' || ch === '"' ? 100 : 35);
-          setTimeout(step, delay);
-        } else {
-          el.innerHTML = text.replace(/\n/g, '<br/>') + '<span class="cursor">&nbsp;</span>';
-        }
-      }
-      setTimeout(step, startDelay);
+    function renderReviewSlice(el, slice) {
+      el.style.opacity = 0;
+      setTimeout(() => {
+        el.innerHTML = slice.map((r, i) =>
+          `<div class="review-row" style="animation-delay:${i*0.25}s">
+             <span class="t">${r.t}</span>
+             <span class="a">— ${r.a}</span>
+           </div>`
+        ).join('');
+        el.style.opacity = 1;
+      }, 350);
     }
 
+    function startReviewBlock(elId, items, rotate) {
+      const el = document.getElementById(elId);
+      if (!el || !items || !items.length) return;
+      let idx = 0;
+      renderReviewSlice(el, items.slice(0, 3));
+      if (!rotate || items.length <= 3) return;
+      setInterval(() => {
+        idx = (idx + 3) % items.length;
+        renderReviewSlice(el, items.slice(idx, idx + 3));
+      }, 7500);
+    }
+
+    // IntersectionObserver — 처음 화면에 보일 때 리뷰 시작
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const id = entry.target.id;
-          if (id && REVIEWS[id] && !entry.target.dataset.typed) {
-            entry.target.dataset.typed = '1';
-            typeInto(id, REVIEWS[id], 300);
+          if (id && REVIEWS[id] && !entry.target.dataset.started) {
+            entry.target.dataset.started = '1';
+            const rotate = id === 'hunter-reviews';
+            startReviewBlock(id, REVIEWS[id], rotate);
             observer.unobserve(entry.target);
           }
         }
@@ -457,6 +409,63 @@
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
+
+    // ============= Supabase webtoons_cms 동적 로드 =============
+    const SB_URL = 'https://zhaabmqdbgmisyurcslv.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoYWFibXFkYmdtaXN5dXJjc2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTEyMTcsImV4cCI6MjA5MjY2NzIxN30.pcN8mQHPKhws2mMxeScDb3bc9rPJnZlYMRM23T8ksVE';
+
+    function escHtml(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+    function renderCmsCard(it, isEroi) {
+      const cardCls = isEroi ? 'featured eroi-card' : 'featured';
+      const imgCls = isEroi ? 'featured-img-wrap eroi-img' : 'featured-img-wrap';
+      const points = (it.points || []).map(p => `<li>${p}</li>`).join('');
+      return `
+        <a class="${cardCls}" href="${it.url || '#'}" target="_blank" rel="noopener noreferrer" style="margin-top: 28px;">
+          <div class="${imgCls}">
+            ${it.thumbnail_b64 ? `<img class="featured-img" src="${it.thumbnail_b64}" alt="${escHtml(it.title)}" />` : ''}
+            ${it.age_rating ? `<span class="featured-tag">${escHtml(it.age_rating)}</span>` : ''}
+            ${it.badge ? `<span class="featured-spark">${escHtml(it.badge)}</span>` : ''}
+          </div>
+          <div class="featured-body">
+            <h2 class="featured-title">${escHtml(it.title)}</h2>
+            <div class="featured-title-en">${escHtml(it.title_en || '')}</div>
+            ${it.pitch ? `<p class="featured-pitch">${it.pitch}</p>` : ''}
+            ${it.description ? `<p class="featured-desc">${escHtml(it.description)}</p>` : ''}
+            ${points ? `<ul class="featured-points">${points}</ul>` : ''}
+            <span class="featured-cta">▸ NAVERで読む</span>
+          </div>
+        </a>
+      `;
+    }
+
+    async function loadCmsItems() {
+      try {
+        const r = await fetch(`${SB_URL}/rest/v1/webtoons_cms?is_published=eq.true&order=display_order.asc,created_at.desc&select=*`, {
+          headers: { apikey: SB_KEY }
+        });
+        if (!r.ok) { console.warn('cms fetch failed', r.status); return; }
+        const items = await r.json();
+        const byCat = { webtoons: [], eroi: [], novels: [] };
+        items.forEach(it => { if (byCat[it.category]) byCat[it.category].push(it); });
+
+        if (byCat.webtoons.length) {
+          const c = document.getElementById('db-webtoons-list');
+          if (c) c.innerHTML = byCat.webtoons.map(it => renderCmsCard(it, false)).join('');
+        }
+        if (byCat.eroi.length) {
+          const c = document.getElementById('db-eroi-list');
+          if (c) c.innerHTML = byCat.eroi.map(it => renderCmsCard(it, true)).join('');
+        }
+        if (byCat.novels.length) {
+          const c = document.getElementById('db-novels-list');
+          if (c) c.innerHTML = byCat.novels.map(it => renderCmsCard(it, false)).join('');
+        }
+      } catch (e) {
+        console.error('cms load error', e);
+      }
+    }
+    loadCmsItems();
   </script>
 </body>
 </html>
