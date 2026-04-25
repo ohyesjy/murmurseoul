@@ -189,36 +189,7 @@
   }
 
 
-  .cloud-btn { position: relative; }
-  .typing-box {
-    width: 100%;
-    max-width: 540px;
-    margin: 8px auto 0;
-    min-height: 180px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 0 12px;
-  }
-  .typing-line {
-    font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif;
-    font-size: clamp(12.5px, 1.92vw, 16px);
-    line-height: 1.85;
-    letter-spacing: 0.04em;
-    color: #1a1a1a;
-    white-space: pre-line;
-    text-align: left;
-    min-height: 1em;
-  }
-  .typing-line .cursor {
-    display: inline-block;
-    width: 0.5em;
-    background: #1a1a1a;
-    animation: blink 1s steps(2) infinite;
-    margin-left: 1px;
-    vertical-align: -2px;
-  }
-  @keyframes blink { 50% { opacity: 0; } }
+  .cloud-btn { position: relative; } }
 
 
   /* 회원전용 모달 */
@@ -273,6 +244,41 @@
   .modal-btn.primary { background: #0a0a0a; color: #fff; }
   .modal-btn.secondary { background: #fff; color: #0a0a0a; }
 
+
+  .cloud-btn { position: relative; }
+  .typing-overlay {
+    position: absolute;
+    top: 6%;
+    right: -6%;
+    text-align: left;
+    pointer-events: none;
+    z-index: 3;
+    max-width: 50%;
+  }
+  .typing-line {
+    font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif;
+    font-size: clamp(12px, 1.88vw, 15.5px);
+    line-height: 1.85;
+    letter-spacing: 0.04em;
+    color: #1a1a1a;
+    white-space: pre-line;
+    text-align: left;
+    min-height: 1em;
+  }
+  .typing-line .cursor {
+    display: inline-block;
+    width: 0.5em;
+    background: #1a1a1a;
+    animation: blink 1s steps(2) infinite;
+    margin-left: 1px;
+    vertical-align: -2px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (max-width: 540px) {
+    .typing-overlay { top: 4%; right: -10%; max-width: 60%; }
+    .typing-line { font-size: 10.5px; line-height: 1.7; }
+  }
+
 </style>
 </head>
 <body>
@@ -299,10 +305,6 @@
       </span>
 
     </button>
-
-    <div class="typing-box">
-      <div class="typing-line" id="typeText">&nbsp;</div>
-    </div>
 
     <div class="footer-row">
       <a href="https://www.instagram.com/murmur_josun/" target="_blank" rel="noopener noreferrer">@murmur_josun</a>
