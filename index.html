@@ -38,12 +38,10 @@
   }
 
   /* 타이핑 텍스트 — UFO 우측 옆, 애니메이션 영향 X */
-  .typing-overlay { position: absolute; top: 6%; right: -6%; text-align: left; pointer-events: none; z-index: 3; max-width: 50%; }
   .typing-line { font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; font-size: clamp(12px, 1.88vw, 15.5px); line-height: 1.85; letter-spacing: 0.04em; color: #1a1a1a; white-space: pre-line; text-align: left; min-height: 1em; }
   .typing-line .cursor { display: inline-block; width: 0.5em; background: #1a1a1a; animation: blink 1s steps(2) infinite; margin-left: 1px; vertical-align: -2px; }
   @keyframes blink { 50% { opacity: 0; } }
   @media (max-width:540px) {
-    .typing-overlay { top: 4%; right: -10%; max-width: 60%; }
     .typing-line { font-size: 10.5px; line-height: 1.7; }
   }
 
