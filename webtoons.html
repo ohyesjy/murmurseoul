@@ -56,6 +56,8 @@
   .reviews-typing .review-row { padding: 11px 0 11px 16px; border-left: 2px solid rgba(200, 36, 58, 0.32); margin-bottom: 12px; opacity: 0; animation: revFadeIn 0.55s ease forwards; }
   .reviews-typing .review-row .t { display: block; font-size: 13.5px; line-height: 1.75; color: #1a1a1a; margin-bottom: 5px; letter-spacing: 0.01em; }
   .reviews-typing .review-row .a { display: block; font-family: "Special Elite", monospace; font-size: 10px; color: #999; letter-spacing: 0.1em; text-align: right; }
+  .reviews-typing .caret { display: inline-block; width: 0.5em; background: currentColor; animation: caretBlink 0.9s steps(2) infinite; margin-left: 1px; vertical-align: -2px; opacity: 0.65; }
+  @keyframes caretBlink { 50% { opacity: 0; } }
   @keyframes revFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
   /* エロイ — 와인톤 다크 */
@@ -89,7 +91,7 @@
 
   .back-link { position: fixed; bottom: 42%; right: 18px; font-family: "Special Elite", monospace; font-size: 12px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; opacity: 0.55; padding: 6px 10px; z-index: 50; background: rgba(255,255,255,0.85); border-radius: 4px; transition: opacity 200ms ease; }
   .back-link:hover { opacity: 1; }
-  .home-link { position: fixed; bottom: calc(42% + 46px); right: 12px; z-index: 51; width: 60px; height: 60px; cursor: pointer; padding: 0; border: 0; background: transparent; transition: transform 220ms ease; animation: starPulse 3.6s ease-in-out infinite; }
+  .home-link { position: fixed; bottom: calc(42% + 50px); right: 8px; z-index: 51; width: 66px; height: 66px; cursor: pointer; padding: 0; border: 0; background: transparent; transition: transform 220ms ease; animation: starPulse 3.6s ease-in-out infinite; }
   .home-link:hover { transform: scale(1.1); }
   .home-link img { width: 100%; height: 100%; display: block; pointer-events: none; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.18)); }
   @keyframes starPulse { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 18% { filter: drop-shadow(0 0 8px rgba(255,180,210,0.95)) drop-shadow(0 0 16px rgba(255,200,220,0.6)); } 35% { filter: drop-shadow(0 0 0 transparent); } }
@@ -99,7 +101,7 @@
     .featured-pitch { font-size: 14px; }
     .tab { font-size: 11px; padding: 12px 4px; letter-spacing: 0.12em; }
     .back-link { right: 10px; bottom: 42%; font-size: 11px; padding: 5px 8px; }
-    .home-link { right: 6px; bottom: calc(42% + 40px); width: 50px; height: 50px; }
+    .home-link { right: 4px; bottom: calc(42% + 44px); width: 55px; height: 55px; }
   } 50% { transform: scale(1.18); } }
 
 
@@ -365,29 +367,53 @@
       ]
     };
 
-    function renderReviewSlice(el, slice) {
-      el.style.opacity = 0;
-      setTimeout(() => {
-        el.innerHTML = slice.map((r, i) =>
-          `<div class="review-row" style="animation-delay:${i*0.25}s">
-             <span class="t">${r.t}</span>
-             <span class="a">— ${r.a}</span>
-           </div>`
-        ).join('');
-        el.style.opacity = 1;
-      }, 350);
+    function escAttr(s) { return (s||'').replace(/"/g, '&quot;'); }
+
+    function typeIntoRow(span, text, charDelay, done) {
+      let i = 0;
+      span.innerHTML = '<span class="caret">&nbsp;</span>';
+      const caret = span.querySelector('.caret');
+      function step() {
+        if (i <= text.length) {
+          span.innerHTML = text.slice(0, i).replace(/</g,'&lt;') + '<span class="caret">&nbsp;</span>';
+          i++;
+          const ch = text[i-2] || '';
+          const delay = (ch === '。' || ch === '"' || ch === '、') ? 80 : charDelay;
+          setTimeout(step, delay);
+        } else if (done) {
+          done();
+        }
+      }
+      step();
     }
 
-    function startReviewBlock(elId, items, rotate) {
+    function renderReviewBlock(elId, items) {
       const el = document.getElementById(elId);
       if (!el || !items || !items.length) return;
+      // 빈 row 들 먼저 깔고
+      el.innerHTML = items.map((r, i) =>
+        `<div class="review-row" style="animation-delay:${i*0.18}s">
+           <span class="t" data-text="${escAttr(r.t)}"></span>
+           <span class="a">— ${r.a}</span>
+         </div>`
+      ).join('');
+      el.style.opacity = 1;
+      // 한 줄씩 순차적으로 타이핑
+      const spans = el.querySelectorAll('.review-row .t');
       let idx = 0;
-      renderReviewSlice(el, items.slice(0, 3));
-      if (!rotate || items.length <= 3) return;
-      setInterval(() => {
-        idx = (idx + 3) % items.length;
-        renderReviewSlice(el, items.slice(idx, idx + 3));
-      }, 7500);
+      function next() {
+        if (idx >= spans.length) return;
+        const sp = spans[idx];
+        const txt = sp.dataset.text || '';
+        typeIntoRow(sp, txt, 28, () => {
+          // 마지막 글자 후 caret 제거
+          const c = sp.querySelector('.caret');
+          if (c) c.remove();
+          idx++;
+          setTimeout(next, 350);
+        });
+      }
+      next();
     }
 
     // IntersectionObserver — 처음 화면에 보일 때 리뷰 시작
@@ -397,8 +423,7 @@
           const id = entry.target.id;
           if (id && REVIEWS[id] && !entry.target.dataset.started) {
             entry.target.dataset.started = '1';
-            const rotate = id === 'hunter-reviews';
-            startReviewBlock(id, REVIEWS[id], rotate);
+            renderReviewBlock(id, REVIEWS[id]);
             observer.unobserve(entry.target);
           }
         }
