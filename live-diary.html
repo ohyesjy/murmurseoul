@@ -3,163 +3,389 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
-<title>murmur josun · live diary</title>
+<title>murmur josun · 그림일기 LIVE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Hachi+Maru+Pop&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
-  html, body { margin: 0; padding: 0; height: 100%; background: #fafaf7; color: #0a0a0a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; overflow: hidden; }
-  .stage { position: fixed; inset: 0; display: flex; flex-direction: column; }
-  .header { flex-shrink: 0; padding: 12px 16px 10px; background: #fafaf7; border-bottom: 1px solid #e8e6e0; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
-  .header-left { display: flex; flex-direction: column; }
-  .title-line { font-family: "Special Elite", monospace; font-size: 13px; letter-spacing: 0.16em; }
-  .date-line { font-family: "Special Elite", monospace; font-size: 11px; color: #888; letter-spacing: 0.12em; margin-top: 2px; }
-  .live-dot { display: inline-block; width: 6px; height: 6px; background: #c8243a; border-radius: 50%; margin-right: 6px; vertical-align: 1px; animation: live-pulse 1.4s ease-in-out infinite; }
-  @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-  .header-right { display: flex; align-items: center; gap: 10px; }
-  .users-badge { font-family: "Special Elite", monospace; font-size: 10px; color: #555; background: #fff; padding: 4px 8px; border: 1px solid #ddd; border-radius: 999px; letter-spacing: 0.1em; }
-  .back-btn { font-family: "Special Elite", monospace; font-size: 11px; color: #1a1a1a; text-decoration: none; padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; opacity: 0.8; background: #fff; }
-  .back-btn:hover { opacity: 1; }
-  .canvas-wrap { flex: 1; position: relative; overflow: hidden; background: #fff; margin: 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px dashed #e0ddd0; }
+  * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; background: #f0ede4; color: #1a1a1a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; -webkit-user-select: none; user-select: none; }
+  .top-bar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(240,237,228,0.95); backdrop-filter: blur(8px);
+    padding: 8px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #d8d4c4;
+  }
+  .top-bar .title { font-family: "Special Elite", monospace; font-size: 12px; letter-spacing: 0.16em; }
+  .top-bar .live { color: #c8243a; }
+  .top-bar .live::before { content: "● "; animation: pulse 1.4s infinite; }
+  @keyframes pulse { 50% { opacity: 0.3; } }
+  .top-bar .right-side { display: flex; gap: 8px; align-items: center; }
+  .top-bar .badge { font-family: "Special Elite", monospace; font-size: 9px; padding: 3px 8px; background: #fff; border: 1px solid #ccc; border-radius: 999px; color: #555; letter-spacing: 0.1em; }
+  .top-bar a.back { font-family: "Special Elite", monospace; font-size: 11px; color: #1a1a1a; text-decoration: none; padding: 5px 9px; border: 1px solid #ccc; background: #fff; border-radius: 4px; }
+  .role-toggle { font-family: "Special Elite", monospace; font-size: 9px; padding: 3px 8px; border: 1px solid #1a1a1a; background: #fff; border-radius: 999px; cursor: pointer; letter-spacing: 0.1em; }
+  .role-toggle.host { background: #1a1a1a; color: #fff; }
+
+  /* 그림일기 본체 */
+  .diary {
+    max-width: 720px; margin: 12px auto; padding: 0;
+    background: #fff;
+    border: 1px solid #c8c4b4;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+
+  /* 헤더 — 년/월/일/요일/날씨 */
+  .diary-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1.4fr;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .diary-header > div {
+    padding: 10px 6px;
+    text-align: center;
+    font-family: "Hachi Maru Pop", "Zen Kaku Gothic New", sans-serif;
+    font-size: 13px;
+    border-right: 1px solid #1a1a1a;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px;
+  }
+  .diary-header > div:last-child { border-right: 0; }
+  .diary-header .label { font-size: 11px; color: #888; }
+  .diary-header .value { font-weight: 500; }
+  .weather-grid { display: flex; gap: 8px; justify-content: center; align-items: center; }
+  .weather-grid .w {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; opacity: 0.4;
+    border-radius: 50%; font-size: 16px;
+    transition: 0.2s;
+  }
+  .weather-grid .w.active { opacity: 1; background: #fff8b0; }
+  .weather-grid .w:hover { opacity: 0.85; }
+
+  /* 메인 캔버스 영역 */
+  .canvas-area {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #fff;
+    border-bottom: 1px solid #1a1a1a;
+  }
   #canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
-  #items-layer { position: absolute; inset: 0; pointer-events: none; }
-  .item { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer; }
-  .item.photo img { max-width: 140px; max-height: 140px; border: 4px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 2px; display: block; }
-  .item.note { background: #fffbe0; padding: 10px 12px; font-size: 13px; line-height: 1.4; border-radius: 2px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); max-width: 180px; word-break: break-word; }
-  .item .item-author { display: block; font-size: 9px; color: #888; margin-top: 4px; font-family: "Special Elite", monospace; letter-spacing: 0.08em; }
-  .toolbar { flex-shrink: 0; background: #fff; border-top: 1px solid #e8e6e0; padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
-  .colors { display: flex; gap: 6px; }
-  .color { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #ccc; cursor: pointer; transition: transform 0.15s ease; }
-  .color.active { transform: scale(1.18); box-shadow: 0 0 0 2px #1a1a1a; }
-  .sizes { display: flex; gap: 4px; align-items: center; }
-  .size { width: 32px; height: 26px; border: 1px solid #ddd; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .canvas-area #items-layer { position: absolute; inset: 0; pointer-events: none; }
+  .canvas-area .item { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; }
+  .canvas-area .item img {
+    max-width: 30%; max-height: 60%;
+    border: 4px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.18); border-radius: 1px;
+    display: block;
+  }
+  .canvas-locked-overlay {
+    position: absolute; inset: 0; background: rgba(255,255,255,0.01);
+    display: flex; align-items: flex-end; justify-content: center; padding: 10px;
+    z-index: 5;
+  }
+  .canvas-locked-overlay span {
+    font-family: "Special Elite", monospace; font-size: 10px; color: #999;
+    background: rgba(255,255,255,0.85); padding: 4px 10px; border-radius: 999px;
+    border: 1px solid #ddd; letter-spacing: 0.1em;
+  }
+
+  /* 제목 바 */
+  .title-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #1a1a1a;
+    font-family: "Hachi Maru Pop", "Zen Kaku Gothic New", sans-serif;
+    font-size: 14px;
+  }
+  .title-bar .label { color: #555; flex-shrink: 0; }
+  .title-bar input {
+    flex: 1;
+    border: 0; outline: 0; background: transparent;
+    font-family: inherit; font-size: 15px;
+    -webkit-user-select: text; user-select: text;
+    padding: 2px 0;
+  }
+  .title-bar input:disabled { color: #1a1a1a; }
+
+  /* 댓글 영역 (격자) */
+  .comments-area {
+    min-height: 280px;
+    background-image:
+      linear-gradient(to right, #d4d0c0 1px, transparent 1px),
+      linear-gradient(to bottom, #d4d0c0 1px, transparent 1px);
+    background-size: 36px 36px;
+    background-color: #fdfcf6;
+    padding: 16px 14px 18px;
+  }
+  .comments-head {
+    font-family: "Hachi Maru Pop", "Zen Kaku Gothic New", sans-serif;
+    font-size: 12px; color: #888;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+  .comments-list { display: flex; flex-direction: column; gap: 10px; }
+  .comment {
+    background: #fff; border: 1px solid #e6e2d2;
+    border-radius: 4px; padding: 10px 12px;
+    font-size: 13px; line-height: 1.55;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    word-break: break-word;
+  }
+  .comment .meta {
+    font-family: "Special Elite", monospace;
+    font-size: 9px; color: #888; letter-spacing: 0.08em;
+    margin-bottom: 4px;
+    display: flex; gap: 6px; align-items: center;
+  }
+  .comment .meta .name { color: #c8243a; }
+  .comment.photo img {
+    max-width: 100%; max-height: 240px;
+    border-radius: 3px; display: block; margin-top: 4px;
+  }
+  .comment.drawing canvas {
+    width: 100%; max-width: 280px; height: auto;
+    background: #fff; border: 1px solid #eee; border-radius: 3px;
+  }
+
+  /* 도구 바 (하단 고정) */
+  .toolbar {
+    position: sticky; bottom: 0; z-index: 60;
+    background: #fff;
+    border-top: 1px solid #ccc;
+    padding: 10px 12px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+  .toolbar .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .colors { display: flex; gap: 6px; flex: 1; }
+  .color { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #ccc; cursor: pointer; }
+  .color.active { box-shadow: 0 0 0 2px #1a1a1a; }
+  .sizes { display: flex; gap: 4px; }
+  .size { width: 28px; height: 24px; border: 1px solid #ddd; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .size.active { background: #1a1a1a; }
   .size .dot { background: #1a1a1a; border-radius: 50%; }
   .size.active .dot { background: #fff; }
-  .size .small { width: 4px; height: 4px; }
-  .size .mid { width: 7px; height: 7px; }
-  .size .big { width: 11px; height: 11px; }
-  .action-btns { display: flex; gap: 6px; }
-  .btn { font-family: "Special Elite", monospace; font-size: 10px; letter-spacing: 0.12em; padding: 7px 10px; border: 1px solid #ddd; background: #fff; border-radius: 4px; cursor: pointer; }
-  .btn:hover { background: #f5f5f5; }
+  .size .s1 { width: 4px; height: 4px; }
+  .size .s2 { width: 7px; height: 7px; }
+  .size .s3 { width: 11px; height: 11px; }
+  .btn {
+    font-family: "Special Elite", monospace;
+    font-size: 10px; letter-spacing: 0.1em;
+    padding: 6px 10px; border: 1px solid #ddd; background: #fff;
+    border-radius: 4px; cursor: pointer;
+  }
+  .btn:active { background: #f0f0f0; }
   .btn.primary { background: #0a0a0a; color: #fff; border-color: #0a0a0a; }
-  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+  .btn.danger { color: #c8243a; border-color: #c8243a; }
+
+  .tools-host { display: none; }
+  .tools-host.show { display: block; }
+  .tools-visitor { display: none; }
+  .tools-visitor.show { display: block; }
+  .comment-input { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; -webkit-user-select: text; user-select: text; font-family: inherit; }
+
+  /* 닉네임 모달 */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
   .modal-bg.hidden { display: none; }
-  .modal { background: #fff; border-radius: 8px; padding: 24px; max-width: 360px; width: 100%; text-align: center; }
+  .modal { background: #fff; border-radius: 8px; padding: 26px 22px; max-width: 360px; width: 100%; text-align: center; }
   .modal h2 { font-family: "Special Elite", monospace; font-size: 14px; letter-spacing: 0.16em; margin: 0 0 8px; }
-  .modal p { font-size: 12px; color: #666; margin: 0 0 16px; line-height: 1.6; }
-  .modal input, .modal textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-family: "Zen Kaku Gothic New", sans-serif; font-size: 13px; margin-bottom: 10px; -webkit-user-select: text; user-select: text; }
-  .modal textarea { resize: none; height: 80px; }
-  .modal-actions { display: flex; gap: 8px; }
-  .modal-actions .btn { flex: 1; padding: 10px; font-size: 11px; }
-  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.85); color: #fff; padding: 8px 16px; border-radius: 999px; font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.1em; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .modal p { font-size: 12px; color: #666; margin: 0 0 14px; line-height: 1.6; }
+  .modal input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; margin-bottom: 8px; -webkit-user-select: text; user-select: text; font-family: inherit; }
+  .role-choice { display: flex; gap: 8px; margin: 12px 0; }
+  .role-choice .btn { flex: 1; padding: 12px; font-size: 11px; }
+  .role-choice .btn.selected { background: #c8243a; color: #fff; border-color: #c8243a; }
+
+  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.85); color: #fff; padding: 8px 16px; border-radius: 999px; font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.1em; z-index: 300; opacity: 0; pointer-events: none; transition: 0.3s; }
   .toast.show { opacity: 1; }
-  @media (max-width: 540px) { .toolbar { gap: 4px; padding: 8px; } .color { width: 24px; height: 24px; } .btn { font-size: 9px; padding: 6px 8px; } .item.photo img { max-width: 100px; max-height: 100px; } }
+  .photo-input { display: none; }
+
+  @media (max-width: 540px) {
+    .diary { margin: 4px; }
+    .diary-header > div { font-size: 11px; padding: 8px 4px; gap: 3px; }
+    .weather-grid .w { width: 18px; height: 18px; font-size: 13px; }
+    .title-bar { padding: 8px 12px; font-size: 12px; }
+    .title-bar input { font-size: 13px; }
+    .comments-area { background-size: 28px 28px; padding: 12px 10px; }
+    .comments-list { gap: 8px; }
+    .btn { font-size: 9px; padding: 5px 8px; }
+    .top-bar .badge { font-size: 8px; padding: 2px 6px; }
+  }
 </style>
 </head>
 <body>
-  <div class="stage">
-    <div class="header">
-      <div class="header-left">
-        <div class="title-line"><span class="live-dot"></span>みんなの 화보</div>
-        <div class="date-line" id="dateLine">— LOADING —</div>
-      </div>
-      <div class="header-right">
-        <span class="users-badge" id="usersBadge">— ONLINE</span>
-        <a class="back-btn" href="index.html">← back</a>
+  <div class="top-bar">
+    <span class="title"><span class="live">LIVE</span> 그림일기</span>
+    <div class="right-side">
+      <span class="badge" id="usersBadge">— ONLINE</span>
+      <button class="role-toggle" id="roleToggle">VISITOR</button>
+      <a class="back" href="index.html">← back</a>
+    </div>
+  </div>
+
+  <div class="diary">
+    <div class="diary-header">
+      <div><span class="value" id="hYear">—</span><span class="label">年</span></div>
+      <div><span class="value" id="hMonth">—</span><span class="label">月</span></div>
+      <div><span class="value" id="hDay">—</span><span class="label">日</span></div>
+      <div><span class="value" id="hWeek">—</span><span class="label">曜日</span></div>
+      <div class="weather-grid" id="weatherGrid">
+        <span class="w" data-w="sunny" title="晴">☀️</span>
+        <span class="w" data-w="cloudy" title="曇">☁️</span>
+        <span class="w" data-w="rainy" title="雨">☂️</span>
+        <span class="w" data-w="snowy" title="雪">❄️</span>
       </div>
     </div>
-    <div class="canvas-wrap" id="canvasWrap">
+
+    <div class="canvas-area" id="canvasArea">
       <canvas id="canvas"></canvas>
       <div id="items-layer"></div>
+      <div class="canvas-locked-overlay" id="lockedOverlay">
+        <span>🔒 HOST 만 그림 그리기 가능 — 댓글로 참여해주세요</span>
+      </div>
     </div>
-    <div class="toolbar">
-      <div class="colors" id="colors">
-        <div class="color active" data-color="#1a1a1a" style="background:#1a1a1a"></div>
-        <div class="color" data-color="#c8243a" style="background:#c8243a"></div>
-        <div class="color" data-color="#ff5a8e" style="background:#ff5a8e"></div>
-        <div class="color" data-color="#3a78d8" style="background:#3a78d8"></div>
-        <div class="color" data-color="#f0b820" style="background:#f0b820"></div>
-        <div class="color" data-color="#3aa867" style="background:#3aa867"></div>
+
+    <div class="title-bar">
+      <span class="label">제목:</span>
+      <input id="titleInput" type="text" placeholder="今日の일기 タイトル..." maxlength="80" disabled />
+    </div>
+
+    <div class="comments-area">
+      <div class="comments-head">▾ 친구들의 코멘트</div>
+      <div class="comments-list" id="commentsList"></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="tools-host show" id="toolsHost">
+      <div class="row">
+        <div class="colors" id="colors">
+          <div class="color active" data-color="#1a1a1a" style="background:#1a1a1a"></div>
+          <div class="color" data-color="#c8243a" style="background:#c8243a"></div>
+          <div class="color" data-color="#ff5a8e" style="background:#ff5a8e"></div>
+          <div class="color" data-color="#3a78d8" style="background:#3a78d8"></div>
+          <div class="color" data-color="#f0b820" style="background:#f0b820"></div>
+          <div class="color" data-color="#3aa867" style="background:#3aa867"></div>
+        </div>
+        <div class="sizes" id="sizes">
+          <div class="size active" data-size="3"><span class="dot s1"></span></div>
+          <div class="size" data-size="6"><span class="dot s2"></span></div>
+          <div class="size" data-size="12"><span class="dot s3"></span></div>
+        </div>
+        <button class="btn" id="btnPhoto">📷</button>
+        <button class="btn danger" id="btnUndo">⤺</button>
       </div>
-      <div class="sizes" id="sizes">
-        <div class="size active" data-size="3"><span class="dot small"></span></div>
-        <div class="size" data-size="6"><span class="dot mid"></span></div>
-        <div class="size" data-size="12"><span class="dot big"></span></div>
-      </div>
-      <div class="action-btns">
-        <button class="btn" id="btnPhoto">📷 PHOTO</button>
-        <button class="btn" id="btnNote">📝 NOTE</button>
-        <button class="btn primary" id="btnUndo">⤺ UNDO</button>
+    </div>
+    <div class="tools-visitor" id="toolsVisitor">
+      <div class="row">
+        <input class="comment-input" id="commentInput" placeholder="質問やコメントを残す... / 댓글 / 質問" />
+        <button class="btn" id="btnComPhoto">📷</button>
+        <button class="btn primary" id="btnComSend">SEND</button>
       </div>
     </div>
   </div>
-  <input type="file" id="photoInput" accept="image/*" style="display:none" />
-  <div class="modal-bg" id="nicknameModal">
+
+  <input type="file" id="photoInput" accept="image/*" class="photo-input" />
+  <input type="file" id="comPhotoInput" accept="image/*" class="photo-input" />
+
+  <div class="modal-bg" id="enterModal">
     <div class="modal">
       <h2>WELCOME ✦</h2>
-      <p>みんなの화보ボードへようこそ。<br/>닉네임을 입력하고 들어와주세요 (선택)</p>
+      <p>그림일기 LIVE에 들어왔어요.<br/>닉네임을 입력하고 역할을 선택해주세요.</p>
       <input type="text" id="nicknameInput" placeholder="nickname / ニックネーム" maxlength="20" />
-      <div class="modal-actions">
-        <button class="btn primary" id="btnEnter">ENTER ▸</button>
+      <div class="role-choice">
+        <button class="btn selected" data-role="visitor" id="btnRoleVisitor">VISITOR</button>
+        <button class="btn" data-role="host" id="btnRoleHost">HOST ✦</button>
       </div>
+      <p style="font-size: 10px; color: #999; margin: 6px 0;">HOST = 그림 + 사진 + 제목 작성 / VISITOR = 댓글</p>
+      <button class="btn primary" id="btnEnter" style="width: 100%; padding: 10px;">ENTER ▸</button>
     </div>
   </div>
-  <div class="modal-bg hidden" id="noteModal">
-    <div class="modal">
-      <h2>LEAVE A NOTE 📝</h2>
-      <p>화보에 짧은 글을 남겨보세요</p>
-      <textarea id="noteInput" placeholder="今日の旅で感じたこと..."></textarea>
-      <div class="modal-actions">
-        <button class="btn" id="btnNoteCancel">CANCEL</button>
-        <button class="btn primary" id="btnNoteSubmit">POST ▸</button>
-      </div>
-    </div>
-  </div>
+
   <div class="toast" id="toast"></div>
+
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-    const SUPABASE_URL = 'https://zhaabmqdbgmisyurcslv.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoYWFibXFkYmdtaXN5dXJjc2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTEyMTcsImV4cCI6MjA5MjY2NzIxN30.pcN8mQHPKhws2mMxeScDb3bc9rPJnZlYMRM23T8ksVE';
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SB_URL = 'https://zhaabmqdbgmisyurcslv.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoYWFibXFkYmdtaXN5dXJjc2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTEyMTcsImV4cCI6MjA5MjY2NzIxN30.pcN8mQHPKhws2mMxeScDb3bc9rPJnZlYMRM23T8ksVE';
+    const supabase = createClient(SB_URL, SB_KEY);
+
+    // 클라이언트 상태
     let clientId = localStorage.getItem('mj_client_id');
     if (!clientId) { clientId = 'c_' + Math.random().toString(36).slice(2, 10); localStorage.setItem('mj_client_id', clientId); }
     let nickname = localStorage.getItem('mj_nickname') || '';
+    let role = localStorage.getItem('mj_role') || 'visitor';
+
     const today = new Date().toISOString().slice(0, 10);
-    const dateDisplay = today.replace(/-/g, '.');
-    const weekday = ['SUN','MON','TUE','WED','THU','FRI','SAT'][new Date().getDay()];
-    document.getElementById('dateLine').textContent = `${dateDisplay} (${weekday})`;
+    const todayDate = new Date();
+    const weekJp = ['日','月','火','水','木','金','土'][todayDate.getDay()];
+    document.getElementById('hYear').textContent = todayDate.getFullYear();
+    document.getElementById('hMonth').textContent = String(todayDate.getMonth() + 1).padStart(2, '0');
+    document.getElementById('hDay').textContent = String(todayDate.getDate()).padStart(2, '0');
+    document.getElementById('hWeek').textContent = weekJp;
+
+    // Toast
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    // 역할 UI 적용
+    function applyRole() {
+      const isHost = role === 'host';
+      document.getElementById('roleToggle').textContent = isHost ? 'HOST ✦' : 'VISITOR';
+      document.getElementById('roleToggle').classList.toggle('host', isHost);
+      document.getElementById('toolsHost').classList.toggle('show', isHost);
+      document.getElementById('toolsVisitor').classList.toggle('show', !isHost);
+      document.getElementById('lockedOverlay').style.display = isHost ? 'none' : 'flex';
+      document.getElementById('canvasArea').style.cursor = isHost ? 'crosshair' : 'default';
+      document.getElementById('canvas').style.pointerEvents = isHost ? 'auto' : 'none';
+      document.getElementById('titleInput').disabled = !isHost;
+      document.querySelectorAll('.weather-grid .w').forEach(w => {
+        w.style.cursor = isHost ? 'pointer' : 'default';
+      });
+    }
+    document.getElementById('roleToggle').addEventListener('click', () => {
+      role = role === 'host' ? 'visitor' : 'host';
+      localStorage.setItem('mj_role', role);
+      applyRole();
+      toast(role === 'host' ? 'HOST 모드 — 그림/제목 편집 가능' : 'VISITOR 모드 — 댓글로 참여');
+    });
+
+    // Canvas
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-    let dpr = window.devicePixelRatio || 1;
+    const dpr = window.devicePixelRatio || 1;
     function resizeCanvas() {
-      const wrap = document.getElementById('canvasWrap');
-      const rect = wrap.getBoundingClientRect();
+      const rect = document.getElementById('canvasArea').getBoundingClientRect();
       canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
       canvas.style.width = rect.width + 'px'; canvas.style.height = rect.height + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
       redraw();
     }
     window.addEventListener('resize', resizeCanvas);
+
     let allStrokes = [];
-    function drawStroke(stroke) {
-      const path = stroke.path; if (!path || path.length < 1) return;
-      ctx.strokeStyle = stroke.color; ctx.lineWidth = stroke.size;
+    function drawStroke(s) {
+      const p = s.path; if (!p || !p.length) return;
+      ctx.strokeStyle = s.color; ctx.lineWidth = s.size;
       ctx.beginPath();
       const w = canvas.width / dpr, h = canvas.height / dpr;
-      ctx.moveTo(path[0].x * w, path[0].y * h);
-      for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x * w, path[i].y * h);
+      ctx.moveTo(p[0].x * w, p[0].y * h);
+      for (let i = 1; i < p.length; i++) ctx.lineTo(p[i].x * w, p[i].y * h);
       ctx.stroke();
     }
     function redraw() { ctx.clearRect(0, 0, canvas.width, canvas.height); allStrokes.forEach(drawStroke); }
+
     let drawing = false, currentColor = '#1a1a1a', currentSize = 3, currentPath = [];
     function getPos(e) {
-      const rect = canvas.getBoundingClientRect();
+      const r = canvas.getBoundingClientRect();
       const t = e.touches ? e.touches[0] : e;
-      return { x: (t.clientX - rect.left) / rect.width, y: (t.clientY - rect.top) / rect.height };
+      return { x: (t.clientX - r.left) / r.width, y: (t.clientY - r.top) / r.height };
     }
-    function startDraw(e) { e.preventDefault(); drawing = true; currentPath = [getPos(e)]; }
+    canvas.addEventListener('mousedown', e => { if (role !== 'host') return; e.preventDefault(); drawing = true; currentPath = [getPos(e)]; });
+    canvas.addEventListener('touchstart', e => { if (role !== 'host') return; e.preventDefault(); drawing = true; currentPath = [getPos(e)]; }, { passive: false });
     function moveDraw(e) {
       if (!drawing) return;
       e.preventDefault();
@@ -170,22 +396,20 @@
       const last = currentPath[currentPath.length - 2];
       ctx.moveTo(last.x * w, last.y * h); ctx.lineTo(p.x * w, p.y * h); ctx.stroke();
     }
-    async function endDraw(e) {
-      if (!drawing) return;
-      drawing = false;
+    canvas.addEventListener('mousemove', moveDraw);
+    canvas.addEventListener('touchmove', moveDraw, { passive: false });
+    async function endDraw() {
+      if (!drawing) return; drawing = false;
       if (currentPath.length < 2) return;
       const stroke = { session_date: today, path: currentPath, color: currentColor, size: currentSize, client_id: clientId };
       const { data, error } = await supabase.from('diary_strokes').insert(stroke).select().single();
-      if (error) showToast('저장 실패'); else allStrokes.push(data);
+      if (data) allStrokes.push(data);
       currentPath = [];
     }
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('mousemove', moveDraw);
     canvas.addEventListener('mouseup', endDraw);
     canvas.addEventListener('mouseleave', endDraw);
-    canvas.addEventListener('touchstart', startDraw, { passive: false });
-    canvas.addEventListener('touchmove', moveDraw, { passive: false });
     canvas.addEventListener('touchend', endDraw);
+
     document.querySelectorAll('.color').forEach(el => el.addEventListener('click', () => {
       document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
       el.classList.add('active'); currentColor = el.dataset.color;
@@ -194,106 +418,224 @@
       document.querySelectorAll('.size').forEach(c => c.classList.remove('active'));
       el.classList.add('active'); currentSize = parseInt(el.dataset.size);
     }));
-    function showToast(msg) {
-      const t = document.getElementById('toast'); t.textContent = msg;
-      t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2400);
-    }
+
     document.getElementById('btnUndo').addEventListener('click', async () => {
-      const myStrokes = allStrokes.filter(s => s.client_id === clientId);
-      if (myStrokes.length === 0) return showToast('지울 내 그림이 없어요');
-      const last = myStrokes[myStrokes.length - 1];
+      const mine = allStrokes.filter(s => s.client_id === clientId);
+      if (!mine.length) return toast('내 그림이 없어요');
+      const last = mine[mine.length - 1];
       await supabase.from('diary_strokes').delete().eq('id', last.id);
       allStrokes = allStrokes.filter(s => s.id !== last.id);
       redraw();
     });
+
+    // 사진 업로드 (메인 영역, host 전용)
     const photoInput = document.getElementById('photoInput');
     document.getElementById('btnPhoto').addEventListener('click', () => photoInput.click());
     photoInput.addEventListener('change', async (e) => {
       const file = e.target.files[0]; if (!file) return;
-      const img = new Image();
-      const reader = new FileReader();
-      reader.onload = async (ev) => {
-        img.src = ev.target.result;
-        await img.decode();
-        const max = 600;
-        const ratio = Math.min(max / img.width, max / img.height, 1);
-        const c = document.createElement('canvas');
-        c.width = img.width * ratio; c.height = img.height * ratio;
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        const b64 = c.toDataURL('image/jpeg', 0.78);
-        const item = {
-          session_date: today, type: 'photo', content: b64,
-          pos_x: 0.3 + Math.random() * 0.4, pos_y: 0.3 + Math.random() * 0.4,
-          rotation: (Math.random() - 0.5) * 14, client_id: clientId, nickname: nickname || null
-        };
-        const { data, error } = await supabase.from('diary_items').insert(item).select().single();
-        if (error) showToast('업로드 실패');
-        else { renderItem(data); showToast('사진 업로드 완료 ✓'); }
-      };
-      reader.readAsDataURL(file); photoInput.value = '';
-    });
-    const noteModal = document.getElementById('noteModal');
-    document.getElementById('btnNote').addEventListener('click', () => { noteModal.classList.remove('hidden'); document.getElementById('noteInput').focus(); });
-    document.getElementById('btnNoteCancel').addEventListener('click', () => noteModal.classList.add('hidden'));
-    document.getElementById('btnNoteSubmit').addEventListener('click', async () => {
-      const txt = document.getElementById('noteInput').value.trim(); if (!txt) return;
+      const b64 = await fileToBase64Resized(file, 600);
       const item = {
-        session_date: today, type: 'note', content: txt,
+        session_date: today, type: 'photo', content: b64,
         pos_x: 0.3 + Math.random() * 0.4, pos_y: 0.3 + Math.random() * 0.4,
-        rotation: (Math.random() - 0.5) * 10, client_id: clientId, nickname: nickname || null
+        rotation: (Math.random() - 0.5) * 14, client_id: clientId, nickname: nickname || null
       };
       const { data, error } = await supabase.from('diary_items').insert(item).select().single();
-      if (error) showToast('등록 실패');
-      else { renderItem(data); document.getElementById('noteInput').value = ''; noteModal.classList.add('hidden'); showToast('노트 추가됨 ✓'); }
+      if (data) { renderItem(data); toast('사진 업로드 완료 ✓'); }
+      photoInput.value = '';
     });
+
+    function fileToBase64Resized(file, maxW) {
+      return new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = async (ev) => {
+          const img = new Image(); img.src = ev.target.result; await img.decode();
+          const ratio = Math.min(maxW / img.width, maxW / img.height, 1);
+          const c = document.createElement('canvas');
+          c.width = img.width * ratio; c.height = img.height * ratio;
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          resolve(c.toDataURL('image/jpeg', 0.78));
+        };
+        r.readAsDataURL(file);
+      });
+    }
+
+    // 아이템 렌더 (캔버스 위 사진)
     const itemsLayer = document.getElementById('items-layer');
     const renderedItems = new Set();
     function renderItem(item) {
       if (renderedItems.has(item.id)) return;
       renderedItems.add(item.id);
       const el = document.createElement('div');
-      el.className = 'item ' + item.type; el.dataset.id = item.id;
+      el.className = 'item ' + item.type;
       el.style.left = (item.pos_x * 100) + '%'; el.style.top = (item.pos_y * 100) + '%';
       el.style.transform = `translate(-50%, -50%) rotate(${item.rotation || 0}deg)`;
-      if (item.type === 'photo') {
-        el.innerHTML = `<img src="${item.content}" /><span class="item-author">— @${item.nickname || 'guest'}</span>`;
-      } else {
-        const safe = item.content.replace(/</g,'&lt;').replace(/\n/g,'<br/>');
-        el.innerHTML = `${safe}<span class="item-author">— @${item.nickname || 'guest'}</span>`;
-      }
+      if (item.type === 'photo') el.innerHTML = `<img src="${item.content}" />`;
       itemsLayer.appendChild(el);
     }
-    async function loadToday() {
-      const { data: strokes } = await supabase.from('diary_strokes').select('*').eq('session_date', today).order('created_at');
-      allStrokes = strokes || []; redraw();
-      const { data: items } = await supabase.from('diary_items').select('*').eq('session_date', today).order('created_at');
-      (items || []).forEach(renderItem);
+
+    // 제목 (diary_main)
+    const titleInput = document.getElementById('titleInput');
+    let titleSaveTimer;
+    titleInput.addEventListener('input', () => {
+      clearTimeout(titleSaveTimer);
+      titleSaveTimer = setTimeout(saveTitle, 600);
+    });
+    async function saveTitle() {
+      const v = titleInput.value;
+      await supabase.from('diary_main').upsert({ session_date: today, title: v, client_id: clientId, updated_at: new Date().toISOString() });
     }
+
+    // 날씨
+    document.querySelectorAll('.weather-grid .w').forEach(el => {
+      el.addEventListener('click', async () => {
+        if (role !== 'host') return;
+        document.querySelectorAll('.weather-grid .w').forEach(w => w.classList.remove('active'));
+        el.classList.add('active');
+        await supabase.from('diary_main').upsert({ session_date: today, weather: el.dataset.w, client_id: clientId, updated_at: new Date().toISOString() });
+      });
+    });
+
+    // 댓글 렌더
+    const commentsList = document.getElementById('commentsList');
+    const renderedComments = new Set();
+    function renderComment(c) {
+      if (renderedComments.has(c.id)) return;
+      renderedComments.add(c.id);
+      const el = document.createElement('div');
+      el.className = 'comment ' + c.type;
+      const time = new Date(c.created_at).toTimeString().slice(0, 5);
+      let body = '';
+      if (c.type === 'text') body = c.content.replace(/</g,'&lt;').replace(/\n/g,'<br/>');
+      else if (c.type === 'photo') body = `<img src="${c.content}" />`;
+      else if (c.type === 'drawing') body = `<canvas data-strokes='${c.content}' width="280" height="200"></canvas>`;
+      el.innerHTML = `<div class="meta"><span class="name">@${c.nickname || 'guest'}</span><span>${time}</span></div>${body}`;
+      commentsList.appendChild(el);
+      // 그림 댓글 그리기
+      if (c.type === 'drawing') {
+        const cv = el.querySelector('canvas');
+        const cctx = cv.getContext('2d');
+        const strokes = JSON.parse(c.content);
+        strokes.forEach(s => {
+          cctx.strokeStyle = s.color; cctx.lineWidth = s.size;
+          cctx.lineCap = 'round'; cctx.lineJoin = 'round';
+          cctx.beginPath();
+          if (!s.path || !s.path.length) return;
+          cctx.moveTo(s.path[0].x * cv.width, s.path[0].y * cv.height);
+          for (let i = 1; i < s.path.length; i++) cctx.lineTo(s.path[i].x * cv.width, s.path[i].y * cv.height);
+          cctx.stroke();
+        });
+      }
+      el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
+    // 댓글 보내기
+    const commentInput = document.getElementById('commentInput');
+    document.getElementById('btnComSend').addEventListener('click', sendTextComment);
+    commentInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendTextComment(); });
+    async function sendTextComment() {
+      const v = commentInput.value.trim(); if (!v) return;
+      const c = { session_date: today, type: 'text', content: v, client_id: clientId, nickname: nickname || null };
+      const { data, error } = await supabase.from('diary_comments').insert(c).select().single();
+      if (data) { renderComment(data); commentInput.value = ''; }
+      else toast('댓글 실패');
+    }
+
+    // 댓글 사진
+    const comPhotoInput = document.getElementById('comPhotoInput');
+    document.getElementById('btnComPhoto').addEventListener('click', () => comPhotoInput.click());
+    comPhotoInput.addEventListener('change', async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      const b64 = await fileToBase64Resized(f, 800);
+      const c = { session_date: today, type: 'photo', content: b64, client_id: clientId, nickname: nickname || null };
+      const { data, error } = await supabase.from('diary_comments').insert(c).select().single();
+      if (data) { renderComment(data); toast('사진 댓글 ✓'); }
+      comPhotoInput.value = '';
+    });
+
+    // 초기 로드
+    async function loadAll() {
+      const [{ data: strokes }, { data: items }, { data: main }, { data: comments }] = await Promise.all([
+        supabase.from('diary_strokes').select('*').eq('session_date', today).order('created_at'),
+        supabase.from('diary_items').select('*').eq('session_date', today).order('created_at'),
+        supabase.from('diary_main').select('*').eq('session_date', today).maybeSingle(),
+        supabase.from('diary_comments').select('*').eq('session_date', today).order('created_at')
+      ]);
+      allStrokes = strokes || []; redraw();
+      (items || []).forEach(renderItem);
+      if (main) {
+        titleInput.value = main.title || '';
+        if (main.weather) {
+          const w = document.querySelector(`.weather-grid .w[data-w="${main.weather}"]`);
+          if (w) w.classList.add('active');
+        }
+      }
+      (comments || []).forEach(renderComment);
+    }
+
+    // 실시간
     function subscribeRealtime() {
-      supabase.channel('strokes-' + today)
+      supabase.channel('live-' + today)
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'diary_strokes', filter: `session_date=eq.${today}` },
-          (payload) => { const s = payload.new; if (s.client_id === clientId) return; allStrokes.push(s); drawStroke(s); })
+          (p) => { if (p.new.client_id === clientId) return; allStrokes.push(p.new); drawStroke(p.new); })
         .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'diary_strokes' },
-          (payload) => { allStrokes = allStrokes.filter(s => s.id !== payload.old.id); redraw(); })
+          (p) => { allStrokes = allStrokes.filter(s => s.id !== p.old.id); redraw(); })
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'diary_items', filter: `session_date=eq.${today}` },
-          (payload) => renderItem(payload.new))
+          (p) => renderItem(p.new))
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'diary_comments', filter: `session_date=eq.${today}` },
+          (p) => { if (p.new.client_id !== clientId) renderComment(p.new); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'diary_main', filter: `session_date=eq.${today}` },
+          (p) => {
+            if (p.new && p.new.client_id !== clientId) {
+              if (p.new.title !== titleInput.value) titleInput.value = p.new.title || '';
+              if (p.new.weather) {
+                document.querySelectorAll('.weather-grid .w').forEach(w => w.classList.remove('active'));
+                const w = document.querySelector(`.weather-grid .w[data-w="${p.new.weather}"]`);
+                if (w) w.classList.add('active');
+              }
+            }
+          })
         .subscribe();
-      const presence = supabase.channel('presence-' + today, { config: { presence: { key: clientId } } });
+
+      const presence = supabase.channel('pres-' + today, { config: { presence: { key: clientId } } });
       presence.on('presence', { event: 'sync' }, () => {
-        const state = presence.presenceState();
-        const count = Object.keys(state).length;
-        document.getElementById('usersBadge').textContent = `● ${count} ONLINE`;
-      }).subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') await presence.track({ nickname: nickname || 'guest', joinedAt: new Date().toISOString() });
+        const c = Object.keys(presence.presenceState()).length;
+        document.getElementById('usersBadge').textContent = `● ${c} ONLINE`;
+      }).subscribe(async (s) => {
+        if (s === 'SUBSCRIBED') await presence.track({ nickname: nickname || 'guest', role });
       });
     }
+
+    // 모달 (닉네임 + 역할)
+    let chosenRole = role;
+    document.getElementById('btnRoleVisitor').addEventListener('click', () => {
+      chosenRole = 'visitor';
+      document.getElementById('btnRoleVisitor').classList.add('selected');
+      document.getElementById('btnRoleHost').classList.remove('selected');
+    });
+    document.getElementById('btnRoleHost').addEventListener('click', () => {
+      chosenRole = 'host';
+      document.getElementById('btnRoleHost').classList.add('selected');
+      document.getElementById('btnRoleVisitor').classList.remove('selected');
+    });
+
     document.getElementById('btnEnter').addEventListener('click', () => {
       const v = document.getElementById('nicknameInput').value.trim();
       if (v) { nickname = v; localStorage.setItem('mj_nickname', v); }
-      document.getElementById('nicknameModal').classList.add('hidden');
-      resizeCanvas(); loadToday(); subscribeRealtime();
+      role = chosenRole;
+      localStorage.setItem('mj_role', role);
+      document.getElementById('enterModal').classList.add('hidden');
+      applyRole();
+      resizeCanvas();
+      loadAll();
+      subscribeRealtime();
     });
+
     if (nickname) document.getElementById('nicknameInput').value = nickname;
+    if (role === 'host') {
+      document.getElementById('btnRoleHost').classList.add('selected');
+      document.getElementById('btnRoleVisitor').classList.remove('selected');
+      chosenRole = 'host';
+    }
   </script>
 </body>
 </html>
