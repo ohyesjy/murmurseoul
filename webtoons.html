@@ -6,7 +6,7 @@
 <title>murmur josun · webtoons</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; }
   html, body { margin: 0; padding: 0; min-height: 100vh; background: #fff; color: #0a0a0a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; }
@@ -50,12 +50,43 @@
   .featured-points li b { background: linear-gradient(transparent 60%, #ffe27a 60%); padding: 0 2px; font-weight: 500; }
   .featured-cta { display: inline-block; background: #0a0a0a; color: #fff; padding: 11px 20px; font-family: "Special Elite", monospace; font-size: 12px; letter-spacing: 0.18em; border-radius: 4px; }
 
-  .reviews-block { margin-top: 22px; padding-top: 18px; border-top: 1px solid #eee; }
-  .reviews-head { font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.18em; color: #c8243a; margin-bottom: 14px; }
-  .reviews-typing { font-family: "Zen Kaku Gothic New", sans-serif; font-size: 13px; line-height: 1.7; color: #1a1a1a; min-height: auto; transition: opacity 0.5s ease; }
-  .reviews-typing .review-row { padding: 11px 0 11px 16px; border-left: 2px solid rgba(200, 36, 58, 0.32); margin-bottom: 12px; opacity: 0; animation: revFadeIn 0.55s ease forwards; }
-  .reviews-typing .review-row .t { display: block; font-size: 13.5px; line-height: 1.75; color: #1a1a1a; margin-bottom: 5px; letter-spacing: 0.01em; }
-  .reviews-typing .review-row .a { display: block; font-family: "Special Elite", monospace; font-size: 10px; color: #999; letter-spacing: 0.1em; text-align: right; }
+  /* 리뷰 — 일본 도서 / 文芸誌 스타일 */
+  .reviews-block { margin-top: 28px; padding-top: 22px; border-top: 1px double #d4c8b0; }
+  .reviews-head { font-family: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: 12px; letter-spacing: 0.32em; color: #8a3a3a; margin-bottom: 22px; text-align: center; font-weight: 500; }
+  .reviews-head::before, .reviews-head::after { content: "—"; opacity: 0.5; margin: 0 10px; }
+  .reviews-typing { font-family: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", serif; color: #1a1a1a; transition: opacity 0.5s ease; }
+  .reviews-typing .review-row {
+    position: relative;
+    padding: 18px 8px 18px 56px;
+    margin-bottom: 0;
+    border-bottom: 1px dotted #d4c8b0;
+    opacity: 0; animation: revFadeIn 0.55s ease forwards;
+  }
+  .reviews-typing .review-row:last-child { border-bottom: 0; }
+  .reviews-typing .review-row::before {
+    content: attr(data-num);
+    position: absolute; left: 12px; top: 22px;
+    font-family: "Shippori Mincho", serif;
+    font-size: 18px; color: #c8243a; font-weight: 500;
+    letter-spacing: 0;
+    opacity: 0.85;
+  }
+  .reviews-typing .review-row .t {
+    display: block;
+    font-family: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", serif;
+    font-size: 14.5px; line-height: 2.0; color: #1a1a1a;
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+    text-indent: 0;
+  }
+  .reviews-typing .review-row .a {
+    display: block;
+    font-family: "Shippori Mincho", "Special Elite", serif;
+    font-size: 11px; color: #888;
+    letter-spacing: 0.15em;
+    text-align: right;
+    font-style: italic;
+  }
   .reviews-typing .caret { display: inline-block; width: 0.5em; background: currentColor; animation: caretBlink 0.9s steps(2) infinite; margin-left: 1px; vertical-align: -2px; opacity: 0.65; }
   @keyframes caretBlink { 50% { opacity: 0; } }
   @keyframes revFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -77,12 +108,13 @@
   .eroi-card .featured-points li b { background: linear-gradient(transparent 60%, rgba(200,36,58,0.45) 60%); color: #fff; }
   .eroi-card .featured-cta { background: #c8243a; color: #fff; }
   .adult-warning { font-size: 11px; color: rgba(240,232,232,0.6); margin: 14px 0 0; letter-spacing: 0.05em; }
-  .eroi-card .reviews-block { border-top: 1px solid #2a1018; }
-  .eroi-card .reviews-head { color: #c8243a; }
+  .eroi-card .reviews-block { border-top: 1px double #5a3848; }
+  .eroi-card .reviews-head { color: #e8a8b8; }
   .eroi-card .reviews-typing { color: #e8d8d8; }
-  .eroi-card .reviews-typing .review-row { border-left-color: rgba(200, 36, 58, 0.55); }
-  .eroi-card .reviews-typing .review-row .t { color: #e8d8d8; }
-  .eroi-card .reviews-typing .review-row .a { color: #aa8888; }
+  .eroi-card .reviews-typing .review-row { border-bottom: 1px dotted #5a3848; }
+  .eroi-card .reviews-typing .review-row::before { color: #e88aa0; opacity: 0.9; }
+  .eroi-card .reviews-typing .review-row .t { color: #f0e0e0; }
+  .eroi-card .reviews-typing .review-row .a { color: #c8a8a8; }
 
   .coming-card { text-align: center; padding: 60px 24px; border: 1px dashed #c8243a; border-radius: 8px; color: #c8243a; }
   .coming-card .ico { font-size: 32px; opacity: 0.7; margin-bottom: 10px; }
@@ -356,7 +388,7 @@
         { t: '"悪そうなのに、私にだけ一途な男…これ韓国ロマンスの王道で大好物。"', a: '@yume_2026' },
         { t: '"キャンパスロマンス × バッドボーイ、最強の組み合わせ確定。"', a: '@ramen_love' }
       ],
-      // 별정직 공무원만 6개 — 3개씩 교대로 표시
+      // 별정직 공무원 6개
       'hunter-reviews': [
         { t: '"作画がやばい。動きまで見える漫画って何?"', a: '@action_jp' },
         { t: '"公務員 × 怪物ハンター、設定の発想力で勝ち。"', a: '@reader_kazu' },
@@ -364,6 +396,12 @@
         { t: '"アクションシーンの躍動感がアニメ並み。映像化マジで期待。"', a: '@anime_lover' },
         { t: '"9級公務員の悲哀 × ファンタジー…という発想がもう天才。"', a: '@govt_jp' },
         { t: '"韓国アクション漫画の最先端、これは本物。日本に輸入されたら確実に話題になる。"', a: '@reader_action' }
+      ],
+      // 만취남녀 (CMS에서 동적으로 추가될 카드용)
+      'manchwi-reviews': [
+        { t: '"29歳のリアル。お酒で繋がる関係って、こんなに切なくなるんだ…"', a: '@adult_seoul' },
+        { t: '"ジフンがダメ男だけど目が離せない。お酒シーンの描写がうますぎ。"', a: '@kdrama_yuna' },
+        { t: '"6年付き合った彼女と、新しい誘惑。自分の20代終わりを思い出して苦しくなる。"', a: '@reader_30s' }
       ]
     };
 
@@ -387,14 +425,15 @@
       step();
     }
 
+    const KANJI_NUM = ['一','二','三','四','五','六','七','八','九','十'];
     function renderReviewBlock(elId, items) {
       const el = document.getElementById(elId);
       if (!el || !items || !items.length) return;
-      // 빈 row 들 먼저 깔고
+      // 빈 row 들 먼저 깔고 — 일본 도서 스타일 (한자 번호 + 명조체)
       el.innerHTML = items.map((r, i) =>
-        `<div class="review-row" style="animation-delay:${i*0.18}s">
+        `<div class="review-row" data-num="${KANJI_NUM[i] || (i+1)}" style="animation-delay:${i*0.18}s">
            <span class="t" data-text="${escAttr(r.t)}"></span>
-           <span class="a">— ${r.a}</span>
+           <span class="a">${r.a}</span>
          </div>`
       ).join('');
       el.style.opacity = 1;
@@ -441,10 +480,23 @@
 
     function escHtml(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
+    // CMS 카드와 매칭되는 리뷰 키 찾기 (제목 keyword 매핑)
+    function findReviewKeyForCms(title) {
+      const t = title || '';
+      if (t.includes('만취') || t.includes('酔っぱらい') || t.includes('マンチィ')) return 'manchwi-reviews';
+      return null;
+    }
+
     function renderCmsCard(it, isEroi) {
       const cardCls = isEroi ? 'featured eroi-card' : 'featured';
       const imgCls = isEroi ? 'featured-img-wrap eroi-img' : 'featured-img-wrap';
       const points = (it.points || []).map(p => `<li>${p}</li>`).join('');
+      const reviewKey = findReviewKeyForCms(it.title);
+      const reviewBlock = reviewKey ? `
+        <div class="reviews-block">
+          <div class="reviews-head">★ POPULAR REVIEWS</div>
+          <div class="reviews-typing" id="${reviewKey}">&nbsp;</div>
+        </div>` : '';
       return `
         <a class="${cardCls}" href="${it.url || '#'}" target="_blank" rel="noopener noreferrer" style="margin-top: 28px;">
           <div class="${imgCls}">
@@ -459,6 +511,7 @@
             ${it.description ? `<p class="featured-desc">${escHtml(it.description)}</p>` : ''}
             ${points ? `<ul class="featured-points">${points}</ul>` : ''}
             <span class="featured-cta">▸ NAVERで読む</span>
+            ${reviewBlock}
           </div>
         </a>
       `;
@@ -486,6 +539,12 @@
           const c = document.getElementById('db-novels-list');
           if (c) c.innerHTML = byCat.novels.map(it => renderCmsCard(it, false)).join('');
         }
+        // 새로 추가된 .reviews-typing 요소들도 observer에 등록
+        document.querySelectorAll('.reviews-typing').forEach(el => {
+          if (el.id && REVIEWS[el.id] && !el.dataset.started) {
+            observer.observe(el);
+          }
+        });
       } catch (e) {
         console.error('cms load error', e);
       }
