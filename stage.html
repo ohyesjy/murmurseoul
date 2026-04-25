@@ -19,26 +19,10 @@
   .row-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 64px; font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.15em; opacity: 0.6; }
   .row-meta a { color: #0a0a0a; text-decoration: none; }
 
-  .back-link {
-    position: fixed;
-    top: 50%;
-    right: 24px;
-    transform: translateY(-50%);
-    font-family: "Special Elite", monospace;
-    font-size: 13px;
-    color: #1a1a1a;
-    text-decoration: none;
-    letter-spacing: 0.1em;
-    opacity: 0.6;
-    padding: 8px 12px;
-    z-index: 50;
-    background: rgba(255,255,255,0.85);
-    border-radius: 4px;
-    transition: opacity 200ms ease;
-  }
+  .back-link { position: fixed; bottom: 24px; right: 24px; font-family: "Special Elite", monospace; font-size: 13px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; opacity: 0.6; padding: 8px 12px; z-index: 50; background: rgba(255,255,255,0.85); border-radius: 4px; transition: opacity 200ms ease; }
   .back-link:hover { opacity: 1; }
   @media (max-width: 540px) {
-    .back-link { right: 12px; font-size: 12px; padding: 6px 10px; }
+    .back-link { right: 12px; bottom: 16px; font-size: 12px; padding: 6px 10px; }
   }
 </style>
 </head>
