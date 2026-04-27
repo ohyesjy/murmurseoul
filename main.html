@@ -17,34 +17,32 @@
     padding: 30px 14px 60px;
   }
 
-  /* ─── 영수증 프레임 ─── */
+  /* ─── 카드 프레임 (영수증 배경 제거 → 깨끗한 흰색 카드) ─── */
   .receipt-frame {
     position: relative;
     width: 700px;
     max-width: 96vw;
-    aspect-ratio: 687 / 895;
     margin: 0 auto;
-    background-image: url('bundang-receipt.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    background-position: center top;
+    background: transparent;
+    padding: 4px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
-  /* ─── 1) 헤더 (위 점선 위쪽) ─── */
+  /* ─── 1) 헤더 ─── */
   .zone-header {
-    position: absolute;
-    top: 1.4%;
-    left: 7%;
-    right: 7%;
-    height: 5.5%;
+    position: static;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    padding: 10px 4px 14px;
+    border-bottom: 1.5px dashed #1a1a1a;
     font-family: "Special Elite", "Zen Kaku Gothic New", monospace;
     color: #000;
     font-weight: 700;
     letter-spacing: 0.15em;
-    font-size: clamp(11px, 1.6vw, 14px);
+    font-size: clamp(12px, 1.7vw, 15px);
   }
   .zone-header .map-links {
     display: flex;
@@ -65,20 +63,14 @@
     font-size: 0.78em;
   }
 
-  /* ─── 2) 메인 (위 점선 ~ 첫 아래 점선) ─── */
+  /* ─── 2) 메인 ─── */
   .zone-main {
-    position: absolute;
-    top: 8.5%;
-    left: 7%;
-    right: 7%;
-    height: 60%;
+    position: static;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-    padding-top: 2%;
-    overflow: hidden;
+    gap: 14px;
+    padding: 8px 4%;
   }
 
   /* 영상 옆 팁 노트 (오른쪽 여백) */
@@ -263,18 +255,16 @@
     letter-spacing: 0.05em;
   }
 
-  /* ─── 3) 리뷰 (점선 사이 — y 75~84%) ─── */
+  /* ─── 3) 리뷰 ─── */
   .zone-reviews {
-    position: absolute;
-    top: 75.5%;
-    left: 7%;
-    right: 7%;
-    height: 8.5%;
+    position: static;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 4%;
-    overflow: hidden;
+    padding: 22px 4%;
+    min-height: 90px;
+    border-top: 1px dashed rgba(0,0,0,0.5);
+    border-bottom: 1px dashed rgba(0,0,0,0.5);
   }
   .review-rotate {
     width: 100%;
@@ -310,24 +300,19 @@
   }
   @keyframes caretBlink { 50% { opacity: 0; } }
 
-  /* ─── 4) 하단 ASCII 아트 (바코드 자리 — y 88~96%) ─── */
+  /* ─── 4) 하단 ASCII 아트 ─── */
   .zone-ascii {
-    position: absolute;
-    top: 88%;
-    left: 7%;
-    right: 7%;
-    height: 9%;
+    position: static;
     display: flex;
-    align-items: flex-end;
     justify-content: center;
-    padding-bottom: 1%;
+    padding: 12px 0 4px;
   }
   .zone-ascii img {
-    height: 100%;
-    width: auto;
-    max-width: 80%;
+    width: 200px;
+    max-width: 50%;
+    height: auto;
     object-fit: contain;
-    opacity: 0.85;
+    opacity: 0.7;
     mix-blend-mode: multiply;
   }
 
@@ -461,8 +446,12 @@
   .back-link { bottom: 42%; }
   .all-link  { bottom: calc(42% - 110px); }
 
-  /* ─── 두 번째 영수증 (유담) — IG embed용 ─── */
-  .receipt-frame + .receipt-frame { margin-top: 60px; }
+  /* ─── 카드 사이 구분 ─── */
+  .receipt-frame + .receipt-frame {
+    margin-top: 50px;
+    padding-top: 18px;
+    border-top: 2px dotted #1a1a1a;
+  }
 
   .ig-wrap {
     width: 100%;
