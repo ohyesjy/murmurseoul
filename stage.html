@@ -21,19 +21,17 @@
 
   .back-link { position: fixed; bottom: 42%; right: 18px; font-family: "Special Elite", monospace; font-size: 12px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; opacity: 0.55; padding: 6px 10px; z-index: 50; background: rgba(255,255,255,0.85); border-radius: 4px; transition: opacity 200ms ease; }
   .back-link:hover { opacity: 1; }
-  .home-link { position: fixed; bottom: calc(42% + 50px); right: 8px; z-index: 51; width: 66px; height: 66px; cursor: pointer; padding: 0; border: 0; background: transparent; transition: transform 220ms ease; animation: starPulse 3.6s ease-in-out infinite; }
-  .home-link:hover { transform: scale(1.1); }
-  .home-link img { width: 100%; height: 100%; display: block; pointer-events: none; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.18)); }
-  @keyframes starPulse { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 18% { filter: drop-shadow(0 0 8px rgba(255,180,210,0.95)) drop-shadow(0 0 16px rgba(255,200,220,0.6)); } 35% { filter: drop-shadow(0 0 0 transparent); } }
+  .home-link { position: fixed; bottom: calc(42% + 36px); right: 18px; font-family: "Special Elite", monospace; font-size: 12px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; opacity: 0.55; padding: 6px 10px; z-index: 51; background: rgba(255,255,255,0.85); border-radius: 4px; transition: opacity 200ms ease; }
+  .home-link:hover { opacity: 1; }
   @media (max-width: 540px) {
     .back-link { right: 10px; bottom: 42%; font-size: 11px; padding: 5px 8px; }
-    .home-link { right: 4px; bottom: calc(42% + 44px); width: 55px; height: 55px; }
+    .home-link { right: 10px; bottom: calc(42% + 32px); font-size: 11px; padding: 5px 8px; }
   }
 </style>
 </head>
 <body>
   <div class="wrap" style="display:flex; flex-direction:column; align-items:center;">
-    <a class="home-link" href="index.html" title="HOME"><img src="home-star.png" alt="home" /></a>
+    <a class="home-link" href="index.html">⌂ home</a>
     <a class="back-link" href="index.html">← back</a>
     <span class="tag">SEOUL — BUNDANG / STAGE</span>
     <h1>murmur stage<span style="opacity:0.5">.</span></h1>
