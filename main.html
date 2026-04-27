@@ -3,338 +3,359 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>murmur josun</title>
+<title>murmur josun · 분당 / bundang</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=New+Tegomin&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=New+Tegomin&family=Shippori+Mincho:wght@500;600&family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --paper: #ffffff;       /* 배경 화이트로만 변경 */
-    --ink: #1a1a1a;
-    --red: #c8243a;
-  }
-  html, body {
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif;
-  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
   body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    box-sizing: border-box;
-    gap: 24px;
+    background: #f3eee2;
+    color: #1a1a1a;
+    font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif;
+    padding: 30px 14px 60px;
   }
 
-  /* 최하단 GIF */
-  .bottom-gif {
-    display: block;
-    width: min(432px, 92vw);
-    height: auto;
-    margin: 0 auto;
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
-  }
-
-  /* 외곽 보드 프레임 */
-  .board {
+  /* ─── 영수증 프레임 ─── */
+  .receipt-frame {
     position: relative;
-    width: min(432px, 92vw);
+    width: 700px;
+    max-width: 96vw;
+    aspect-ratio: 687 / 895;
     margin: 0 auto;
-    background: var(--paper);
-    border: 1.2px solid var(--red);
-    padding: 18px 18px 14px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    background-image: url('bundang-receipt.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center top;
   }
 
-  /* 상단 빨간 띠 + 화이트 역상 텍스트 */
-  .top-strip {
-    display: block;
-    background: var(--red);
-    color: #ffffff;
-    padding: 4px 10px;
-    font-family: "Zen Kaku Gothic New", sans-serif;
-    font-weight: 500;
-    letter-spacing: 0.4em;
-    font-size: 11px;
-    text-align: right;
+  /* ─── 1) 헤더 (위 점선 위쪽) ─── */
+  .zone-header {
+    position: absolute;
+    top: 1.4%;
+    left: 7%;
+    right: 7%;
+    height: 5.5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Special Elite", "Zen Kaku Gothic New", monospace;
+    color: #000;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    font-size: clamp(11px, 1.6vw, 14px);
   }
-  .top-strip .map-link {
-    color: #ffffff;
+  .zone-header .map-link {
+    color: #000;
     text-decoration: underline;
     text-underline-offset: 2px;
-    margin-left: 6px;
-    cursor: pointer;
-    letter-spacing: 0.15em;
+    font-size: 0.85em;
+    letter-spacing: 0.08em;
+    margin-left: 8px;
   }
-  .top-strip .map-link:hover { opacity: 0.85; }
 
-  /* 본문 — 좌측 세로 일본어 / 가운데 일러스트 / 우측 세로 영문 */
-  .content {
+  /* ─── 2) 메인 (위 점선 ~ 첫 아래 점선) ─── */
+  .zone-main {
+    position: absolute;
+    top: 8.5%;
+    left: 7%;
+    right: 7%;
+    height: 60%;
     display: grid;
-    grid-template-columns: 36px 1fr 56px;
-    gap: 10px;
-    min-height: 0;
-  }
-
-  .left {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    grid-template-columns: 1fr 1.15fr;
     gap: 14px;
-  }
-  .author {
-    font-family: "Zen Kaku Gothic New", sans-serif;
-    font-size: 9px;
-    writing-mode: vertical-rl;
-    color: var(--ink);
-    letter-spacing: 0.15em;
-  }
-  .title-jp {
-    font-family: "New Tegomin", "Hachi Maru Pop", serif;
-    font-weight: 400;
-    writing-mode: vertical-rl;
-    font-size: clamp(22px, 3vw, 31px);
-    line-height: 1.05;
-    margin: 0;
-    letter-spacing: 0.04em;
-    color: var(--ink);
+    align-items: start;
   }
 
-  .center {
-    position: relative;
+  /* 좌측 — 일본어 메뉴 + 매장정보 + 운영시간 */
+  .menu-col {
+    padding-top: 4%;
+    color: #1a1a1a;
+  }
+  .menu-col .menu-head {
+    font-family: "Special Elite", monospace;
+    font-size: clamp(10px, 1.2vw, 12px);
+    letter-spacing: 0.32em;
+    color: #c8243a;
+    margin-bottom: 10px;
+  }
+  .menu-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 14px;
+    font-family: "Shippori Mincho", "Zen Kaku Gothic New", serif;
+    font-size: clamp(11px, 1.4vw, 13.5px);
+    line-height: 1.95;
+  }
+  .menu-col li {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 8px;
+    justify-content: space-between;
+    border-bottom: 1px dotted rgba(0,0,0,0.15);
+    padding: 1px 0;
   }
-  .portrait-area {
-    width: 78%;
-    aspect-ratio: 1 / 1.05;
-    border: 0;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* 사용자가 그림일기 일러스트를 채울 자리 */
-  }
-  .name-tag {
-    font-family: "Special Elite", "Courier New", "Zen Kaku Gothic New", "Apple SD Gothic Neo", monospace;
-    font-size: 16px;
-    color: var(--ink);
-    margin-top: 14px;
-    letter-spacing: 0.04em;
+  .menu-col li .nm { letter-spacing: 0.02em; }
+  .menu-col li .pr { font-family: "Special Elite", monospace; font-size: 0.92em; opacity: 0.8; }
+  .menu-col .hours {
+    font-family: "Shippori Mincho", serif;
+    font-size: clamp(11px, 1.3vw, 13px);
+    margin-top: 6px;
+    padding: 6px 10px;
+    border-top: 1px dashed rgba(0,0,0,0.3);
+    border-bottom: 1px dashed rgba(0,0,0,0.3);
     text-align: center;
-    line-height: 1.4;
-    font-weight: 500;
-  }
-  .name-tag .ja {
-    display: block;
-    font-family: "Zen Kaku Gothic New", sans-serif;
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.1em;
-    margin-top: 3px;
-    color: var(--ink);
-    opacity: 0.85;
-  }
-  .quote {
-    font-family: "Special Elite", "Courier New", "Zen Kaku Gothic New", "Apple SD Gothic Neo", monospace;
-    font-size: 10px;
-    line-height: 1.6;
-    color: var(--ink);
-    text-align: left;
-    margin: 8px 0 4px;
-    max-width: 90%;
-  }
-  .caption {
-    font-family: "Special Elite", "Courier New", monospace;
-    font-size: 11px;
-    color: var(--ink);
-    text-align: center;
-    margin: 8px 0 0;
     letter-spacing: 0.05em;
   }
 
-  .right {
-    position: relative;
+  /* 우측 — 매장이름 + 바지락 영상 */
+  .video-col {
+    padding-top: 2%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 4px;
+    align-items: stretch;
+    gap: 10px;
   }
-  .title-en {
-    font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    font-size: clamp(12px, 1.44vw, 14px);
-    line-height: 1.4;
-    letter-spacing: 0.18em;
-    margin: 0;
-    font-weight: 400;
-    color: var(--ink);
-  }
-  .part {
-    font-family: "Special Elite", "Courier New", monospace;
-    text-align: center;
-    line-height: 1;
-    margin-top: auto;
-  }
-  .part .label {
-    display: block;
-    font-size: 10px;
-    letter-spacing: 0.4em;
-    margin-bottom: 2px;
-    color: var(--ink);
-  }
-  .part .num {
-    display: block;
-    font-size: clamp(26px, 3.6vw, 38px);
-    font-weight: 400;
-    color: var(--ink);
-  }
-
-  /* 하단 — 세로쓰기 3단: 리뷰 2개 + 다른 리뷰 버튼 */
-  .bottom-jp {
-    border-top: 1px solid var(--red);
-    padding-top: 12px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    direction: rtl;
-    align-items: start;
-  }
-  .bottom-jp .review {
-    writing-mode: vertical-rl;
-    font-family: "Zen Kaku Gothic New", sans-serif;
-    font-size: 10px;
-    line-height: 1.85;
-    letter-spacing: 0.06em;
-    color: var(--ink);
-    margin: 0;
-    height: 160px;
-    direction: ltr;
-    overflow: hidden;
-  }
-  .more-review {
-    writing-mode: vertical-rl;
-    display: block;
-    font-family: "Zen Kaku Gothic New", sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    color: var(--ink);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    height: 160px;
-    direction: ltr;
-    transition: opacity 200ms ease;
-  }
-  .more-review:hover { opacity: 0.6; }
-
-  /* 모바일 */
-  @media (max-width: 540px) {
-    .board {
-      width: 92vw;
-      padding: 14px;
-    }
-    .content { grid-template-columns: 28px 1fr 48px; }
-    .title-jp { font-size: 22px; }
-    .quote { font-size: 9px; }
-    .bottom-jp .review, .more-review { font-size: 9px; height: 130px; }
-  }
-
-  /* 중앙 가게 카드 (네이버 링크) */
   .shop-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: var(--ink);
-    width: 100%;
-    cursor: pointer;
-    transition: opacity 200ms ease;
-  }
-  .shop-link:hover { opacity: 0.85; }
-  .shop-video {
     display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .video-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    background: #f0eadc;
+  }
+  .video-wrap video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    background: #f5f5f5;
+    display: block;
+  }
+  .restaurant-name {
+    font-family: "New Tegomin", "Hachi Maru Pop", serif;
+    font-size: clamp(13px, 1.85vw, 17px);
+    text-align: center;
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+    color: #1a1a1a;
+    line-height: 1.3;
+  }
+  .restaurant-name .ja {
+    display: block;
+    font-family: "Zen Kaku Gothic New", sans-serif;
+    font-size: 0.66em;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+    color: #444;
+    font-weight: 400;
   }
 
+  /* ─── 3) 리뷰 (점선 사이) ─── */
+  .zone-reviews {
+    position: absolute;
+    top: 71%;
+    left: 7%;
+    right: 7%;
+    height: 12%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4%;
+    overflow: hidden;
+  }
+  .review-rotate {
+    width: 100%;
+    text-align: center;
+    font-family: "Shippori Mincho", "Zen Kaku Gothic New", serif;
+    color: #1a1a1a;
+    transition: opacity 0.5s ease;
+  }
+  .review-rotate .rt {
+    display: block;
+    font-size: clamp(11px, 1.5vw, 14px);
+    line-height: 1.7;
+    margin-bottom: 4px;
+    min-height: 2.4em;
+    letter-spacing: 0.02em;
+  }
+  .review-rotate .ra {
+    display: block;
+    font-family: "Special Elite", monospace;
+    font-size: 10px;
+    color: #888;
+    letter-spacing: 0.15em;
+  }
+  .review-rotate .caret {
+    display: inline-block;
+    width: 0.45em;
+    background: currentColor;
+    animation: caretBlink 0.9s steps(2) infinite;
+    margin-left: 1px;
+    vertical-align: -2px;
+    opacity: 0.7;
+  }
+  @keyframes caretBlink { 50% { opacity: 0; } }
 
-  .back-link { position: fixed; bottom: 42%; right: 18px; font-family: "Special Elite", monospace; font-size: 12px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; opacity: 0.55; padding: 6px 10px; z-index: 50; background: rgba(255,255,255,0.85); border-radius: 4px; transition: opacity 200ms ease; }
-  .back-link:hover { opacity: 1; }
-  .home-link { position: fixed; bottom: calc(42% + 50px); right: 8px; z-index: 51; width: 66px; height: 66px; cursor: pointer; padding: 0; border: 0; background: transparent; transition: transform 220ms ease; animation: starPulse 3.6s ease-in-out infinite; }
-  .home-link:hover { transform: scale(1.1); }
-  .home-link img { width: 100%; height: 100%; display: block; pointer-events: none; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.18)); }
-  @keyframes starPulse { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 18% { filter: drop-shadow(0 0 8px rgba(255,180,210,0.95)) drop-shadow(0 0 16px rgba(255,200,220,0.6)); } 35% { filter: drop-shadow(0 0 0 transparent); } }
-  @media (max-width: 540px) {
-    .back-link { right: 10px; bottom: 42%; font-size: 11px; padding: 5px 8px; }
-    .home-link { right: 4px; bottom: calc(42% + 44px); width: 55px; height: 55px; }
+  /* ─── 4) 하단 ASCII 아트 (바코드 자리) ─── */
+  .zone-ascii {
+    position: absolute;
+    top: 85%;
+    left: 7%;
+    right: 7%;
+    height: 9%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .zone-ascii img {
+    height: 100%;
+    width: auto;
+    max-width: 80%;
+    object-fit: contain;
+    opacity: 0.85;
+    mix-blend-mode: multiply;
+  }
+
+  /* ─── 홈/뒤로 — 텍스트 동일 스타일 ─── */
+  .back-link, .home-link {
+    position: fixed;
+    right: 18px;
+    font-family: "Special Elite", monospace;
+    font-size: 12px;
+    color: #1a1a1a;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    opacity: 0.55;
+    padding: 6px 10px;
+    z-index: 50;
+    background: rgba(255,255,255,0.85);
+    border-radius: 4px;
+    transition: opacity 200ms ease;
+  }
+  .back-link { bottom: 42%; }
+  .home-link { bottom: calc(42% + 36px); }
+  .back-link:hover, .home-link:hover { opacity: 1; }
+
+  /* ─── 모바일 ─── */
+  @media (max-width: 600px) {
+    body { padding: 16px 8px 40px; }
+    .receipt-frame { width: 100%; max-width: none; }
+    .zone-header { font-size: 10px; }
+    .menu-col .menu-head { font-size: 9px; }
+    .menu-col ul { font-size: 10.5px; line-height: 1.7; }
+    .menu-col .hours { font-size: 10px; padding: 4px 6px; }
+    .restaurant-name { font-size: 12px; }
+    .review-rotate .rt { font-size: 10.5px; }
+    .review-rotate .ra { font-size: 9px; }
+    .back-link, .home-link { right: 8px; font-size: 11px; padding: 5px 8px; }
+    .home-link { bottom: calc(42% + 32px); }
   }
 </style>
 </head>
 <body>
-  <a class="home-link" href="index.html" title="HOME"><img src="home-star.png" alt="home" /></a>
+  <a class="home-link" href="index.html">⌂ home</a>
   <a class="back-link" href="index.html">← back</a>
-  <div class="board">
-    <div class="top-strip">분당 / bundang <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=37.3926442%2C127.011839&query_place_id=%EC%A0%84%EB%9D%BC%EB%8F%84%ED%8C%A5%EB%B0%94%EC%A7%80%EB%9D%BD%EC%B9%BC%EA%B5%AD%EC%88%98" target="_blank" rel="noopener noreferrer">[google map]</a></div>
 
-    <div class="content">
-      <aside class="left">
-        <span class="author">murmur</span>
-        <h1 class="title-jp">お楽しみはこれからだ</h1>
-      </aside>
-
-      <section class="center">
-        <a class="shop-link" href="https://naver.me/xnhy8pL6" target="_blank" rel="noopener noreferrer">
-          <div class="portrait-area">
-            <video class="shop-video" src="bajirak.mp4" autoplay muted loop playsinline preload="auto" webkit-playsinline></video>
-          </div>
-          <div class="name-tag">전라도팥바지락칼국수<span class="ja">[ チョルラド パッ バジラク カルグクス ]</span></div>
-          <p class="quote">
-            ウィワンにある<br/>
-            あさりカルグクスの名店。<br/>
-            <br/>
-            バジラクカルグクス ₩12,000<br/>
-            パッカルグクス &nbsp;&nbsp;&nbsp;₩12,000<br/>
-            バジラクタン &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;₩18,000<br/>
-            バジラクチヂミ &nbsp;&nbsp;&nbsp;₩18,000<br/>
-            <br/>
-            毎日 10:00 – 21:00
-          </p>
-        </a>
-      </section>
-
-      <aside class="right">
-        <h2 class="title-en">70歳になってもここに来るよ</h2>
-        <div class="part">
-          <span class="label">PART</span>
-          <span class="num">1</span>
-        </div>
-      </aside>
+  <div class="receipt-frame">
+    <!-- 1. 헤더 — 위 점선 위쪽 -->
+    <div class="zone-header">
+      <span>분당 / bundang</span>
+      <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=37.3926442%2C127.011839&query_place_id=%EC%A0%84%EB%9D%BC%EB%8F%84%ED%8C%A5%EB%B0%94%EC%A7%80%EB%9D%BD%EC%B9%BC%EA%B5%AD%EC%88%98" target="_blank" rel="noopener noreferrer">[google map]</a>
     </div>
 
-    <div class="bottom-jp">
-      <p class="review">あさりたっぷり。スープが澄んで旨みが濃い。絶品の一杯。</p>
-      <p class="review">雨の日に思い出す味。あさりの出汁が冷えた体を温めてくれる。</p>
-      <a class="more-review" href="https://m.place.naver.com/restaurant/36878749/review/visitor" target="_blank" rel="noopener noreferrer">他のレビューを見る ▼</a>
+    <!-- 2. 메인 — 메뉴 + 영상 + 매장이름 -->
+    <div class="zone-main">
+      <!-- 좌측: 일본어 메뉴 + 운영시간 -->
+      <div class="menu-col">
+        <div class="menu-head">★ MENU</div>
+        <ul>
+          <li><span class="nm">バジラクカルグクス</span><span class="pr">₩12,000</span></li>
+          <li><span class="nm">パッカルグクス</span><span class="pr">₩12,000</span></li>
+          <li><span class="nm">バジラクタン</span><span class="pr">₩18,000</span></li>
+          <li><span class="nm">バジラクチヂミ</span><span class="pr">₩18,000</span></li>
+        </ul>
+        <div class="hours">毎日 10:00 — 21:00</div>
+      </div>
+
+      <!-- 우측: 매장이름 + 바지락 영상 -->
+      <div class="video-col">
+        <a class="shop-link" href="https://naver.me/xnhy8pL6" target="_blank" rel="noopener noreferrer">
+          <div class="video-wrap">
+            <video src="bajirak.mp4" autoplay muted loop playsinline preload="auto" webkit-playsinline></video>
+          </div>
+          <div class="restaurant-name">
+            전라도팥바지락칼국수
+            <span class="ja">[ チョルラドパッ バジラクカルグクス ]</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- 3. 리뷰 — 점선 사이, 1개씩 회전 + 타이핑 -->
+    <div class="zone-reviews">
+      <div class="review-rotate" id="reviewRotate">&nbsp;</div>
+    </div>
+
+    <!-- 4. 하단 — 바코드 자리에 주먹밥+오차 ASCII -->
+    <div class="zone-ascii">
+      <img src="onigiri-tea.png" alt="onigiri & tea" />
     </div>
   </div>
 
+  <script>
+    // 리뷰 데이터
+    const REVIEWS = [
+      { t: '"あさりたっぷり。スープが澄んで旨みが濃い。絶品の一杯。"', a: '@kana_tokyo' },
+      { t: '"雨の日に思い出す味。あさりの出汁が冷えた体を温めてくれる。"', a: '@reader_yumi' },
+      { t: '"70歳になってもここに来るよ。ウィワン分당の名店。"', a: '@seoul_local' }
+    ];
+
+    const rotateEl = document.getElementById('reviewRotate');
+    let curIdx = 0;
+    let typingTimer = null;
+
+    function escAttr(s) { return (s||'').replace(/"/g, '&quot;'); }
+
+    function typeText(span, text, cb) {
+      let i = 0;
+      function step() {
+        if (i <= text.length) {
+          span.innerHTML = text.slice(0, i).replace(/</g,'&lt;') + '<span class="caret">&nbsp;</span>';
+          i++;
+          const ch = text[i-2] || '';
+          const delay = (ch === '。' || ch === '"' || ch === '、') ? 80 : 32;
+          typingTimer = setTimeout(step, delay);
+        } else if (cb) cb();
+      }
+      step();
+    }
+
+    function renderOne(r, onComplete) {
+      rotateEl.style.opacity = 0;
+      setTimeout(() => {
+        rotateEl.innerHTML = `<span class="rt"></span><span class="ra">— ${r.a}</span>`;
+        rotateEl.style.opacity = 1;
+        const rt = rotateEl.querySelector('.rt');
+        typeText(rt, r.t, () => {
+          // caret 제거
+          const c = rt.querySelector('.caret');
+          if (c) c.remove();
+          // 4초 후 다음 리뷰
+          setTimeout(onComplete, 4200);
+        });
+      }, 600);
+    }
+
+    function loop() {
+      renderOne(REVIEWS[curIdx], () => {
+        curIdx = (curIdx + 1) % REVIEWS.length;
+        loop();
+      });
+    }
+    loop();
+  </script>
 </body>
 </html>
