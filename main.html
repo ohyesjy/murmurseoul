@@ -277,15 +277,24 @@
 
   /* ─── 모바일 ─── */
   @media (max-width: 600px) {
-    body { padding: 16px 8px 40px; }
+    body { padding: 14px 6px 30px; }
     .receipt-frame { width: 100%; max-width: none; }
-    .zone-header { font-size: 10px; }
-    .menu-col .menu-head { font-size: 9px; }
-    .menu-col ul { font-size: 10.5px; line-height: 1.7; }
-    .menu-col .hours { font-size: 10px; padding: 4px 6px; }
-    .restaurant-name { font-size: 12px; }
+    .zone-header { font-size: 9.5px; letter-spacing: 0.1em; }
+    .zone-main { gap: 3px; padding-top: 1%; }
+    .video-col { width: auto; }
+    .video-wrap { height: 130px; width: auto; aspect-ratio: 480 / 854; }
+    .restaurant-name { font-size: 10.5px; margin-top: 2px; line-height: 1.18; }
+    .restaurant-name .ja { font-size: 0.62em; margin-top: 1px; }
+    .menu-col { margin-top: 3px; width: 92%; }
+    .menu-col .menu-head { font-size: 8px; letter-spacing: 0.22em; margin-bottom: 2px; }
+    .menu-col ul { font-size: 9.2px; line-height: 1.42; margin: 0 0 3px; }
+    .menu-col li { padding: 0 1px; }
+    .menu-col li .pr { font-size: 8.6px; }
+    .menu-col .hours { font-size: 8.6px; padding: 2px 4px; margin-top: 2px; }
     .review-rotate .rt { font-size: 10.5px; line-height: 1.5; letter-spacing: 0; }
     .review-rotate .ra { font-size: 9px; }
+    .ig-source { font-size: 9px; margin: 4px 0 2px; }
+    .ig-wrap { max-width: 280px; }
     .back-link, .home-link { right: 8px; font-size: 11px; padding: 5px 8px; }
     .home-link { bottom: calc(42% + 32px); }
   }
