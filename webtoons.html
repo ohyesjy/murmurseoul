@@ -402,6 +402,12 @@
         { t: '"29歳のリアル。お酒で繋がる関係って、こんなに切なくなるんだ…"', a: '@adult_seoul' },
         { t: '"ジフンがダメ男だけど目が離せない。お酒シーンの描写がうますぎ。"', a: '@kdrama_yuna' },
         { t: '"6年付き合った彼女と、新しい誘惑。自分の20代終わりを思い出して苦しくなる。"', a: '@reader_30s' }
+      ],
+      // 사내연애 사절!
+      'sanae-reviews': [
+        { t: '"初恋が同僚になるって、こんなに気まずくて切ないんだ。30代の私にしみる。"', a: '@office_jp' },
+        { t: '"남수作画の細やかさが本当に好き。『바른연애 길잡이』ファンは絶対ハマる。"', a: '@reader_yumi' },
+        { t: '"OL生活のリアルとロマンスの絶妙なバランス。木曜が待ち遠しい。"', a: '@thursday_seoul' }
       ]
     };
 
@@ -484,6 +490,7 @@
     function findReviewKeyForCms(title) {
       const t = title || '';
       if (t.includes('만취') || t.includes('酔っぱらい') || t.includes('マンチィ')) return 'manchwi-reviews';
+      if (t.includes('사내연애') || t.includes('社内恋愛')) return 'sanae-reviews';
       return null;
     }
 
