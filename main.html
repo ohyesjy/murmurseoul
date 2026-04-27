@@ -181,17 +181,17 @@
   }
   .review-rotate .rt {
     display: block;
-    font-size: clamp(14px, 2.1vw, 18px);
-    line-height: 1.7;
-    margin-bottom: 6px;
+    font-size: clamp(12px, 1.8vw, 16px);
+    line-height: 1.6;
+    margin-bottom: 5px;
     min-height: 2.4em;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     font-weight: 500;
   }
   .review-rotate .ra {
     display: block;
     font-family: "Special Elite", monospace;
-    font-size: clamp(11px, 1.3vw, 13px);
+    font-size: clamp(10px, 1.2vw, 12px);
     color: #888;
     letter-spacing: 0.15em;
   }
@@ -247,6 +247,34 @@
   .home-link { bottom: calc(42% + 36px); }
   .back-link:hover, .home-link:hover { opacity: 1; }
 
+  /* ─── 두 번째 영수증 (유담) — IG embed용 ─── */
+  .receipt-frame + .receipt-frame { margin-top: 60px; }
+
+  .ig-wrap {
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .ig-wrap iframe { width: 100% !important; max-width: 380px !important; border: 0 !important; min-width: 0 !important; }
+  .ig-source {
+    text-align: center;
+    margin: 8px 0 4px;
+    font-family: "Special Elite", monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: #888;
+  }
+  .ig-source a {
+    color: #c8243a;
+    text-decoration: none;
+    border-bottom: 1px dotted #c8243a;
+  }
+
   /* ─── 모바일 ─── */
   @media (max-width: 600px) {
     body { padding: 16px 8px 40px; }
@@ -256,8 +284,8 @@
     .menu-col ul { font-size: 10.5px; line-height: 1.7; }
     .menu-col .hours { font-size: 10px; padding: 4px 6px; }
     .restaurant-name { font-size: 12px; }
-    .review-rotate .rt { font-size: 13px; line-height: 1.55; }
-    .review-rotate .ra { font-size: 10.5px; }
+    .review-rotate .rt { font-size: 10.5px; line-height: 1.5; letter-spacing: 0; }
+    .review-rotate .ra { font-size: 9px; }
     .back-link, .home-link { right: 8px; font-size: 11px; padding: 5px 8px; }
     .home-link { bottom: calc(42% + 32px); }
   }
@@ -313,16 +341,68 @@
     </div>
   </div>
 
+  <!-- ╔═════════════ 두 번째 영수증 — 유담 솥뚜껑닭볶음탕 ═════════════╗ -->
+  <div class="receipt-frame">
+    <!-- 1. 헤더 -->
+    <div class="zone-header">
+      <span>정자 / jeongja</span>
+      <a class="map-link" href="https://naver.me/GFCnQhlX" target="_blank" rel="noopener noreferrer">[naver map]</a>
+    </div>
+
+    <!-- 2. 메인 — 인스타 영상 + 매장정보 + 메뉴 -->
+    <div class="zone-main">
+      <!-- IG 영상 임베드 -->
+      <div class="ig-wrap">
+        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DWlR9l3kdfS/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; margin: 0; max-width:380px; min-width:280px; padding:0; width:99.375%;">
+          <a href="https://www.instagram.com/reel/DWlR9l3kdfS/" target="_blank" rel="noopener noreferrer">View on Instagram</a>
+        </blockquote>
+      </div>
+      <div class="ig-source">
+        via <a href="https://www.instagram.com/yoonmood__bundang/" target="_blank" rel="noopener noreferrer">@yoonmood__bundang</a>
+      </div>
+
+      <div class="restaurant-name">
+        유담 솥뚜껑닭볶음탕
+        <span class="ja">[ ユダム ソットゥッコン タッポックムタン ]</span>
+      </div>
+
+      <!-- 메뉴 -->
+      <div class="menu-col">
+        <div class="menu-head">★ MENU</div>
+        <ul>
+          <li><span class="nm">ソットゥッコン タッポックムタン (一羽 / 2-3名)</span><span class="pr">₩34,000</span></li>
+          <li><span class="nm">ソットゥッコン タッポックムタン (一羽半 / 3-4名)</span><span class="pr">₩49,000</span></li>
+          <li><span class="nm">ナプチャクマンドゥ (大邱風 餃子)</span><span class="pr">₩5,000</span></li>
+        </ul>
+        <div class="hours">月曜定休 / 営業時間は店舗確認</div>
+      </div>
+    </div>
+
+    <!-- 3. 리뷰 -->
+    <div class="zone-reviews">
+      <div class="review-rotate" id="reviewRotate2">&nbsp;</div>
+    </div>
+
+    <!-- 4. 하단 ASCII -->
+    <div class="zone-ascii">
+      <img src="onigiri-tea.png" alt="onigiri & tea" />
+    </div>
+  </div>
+
+  <!-- 인스타그램 embed 스크립트 -->
+  <script async src="//www.instagram.com/embed.js"></script>
+
   <script>
-    // 리뷰 데이터
-    const REVIEWS = [
+    // 리뷰 데이터 — 영수증별
+    const REVIEWS_BAJIRAK = [
       { t: '"あさりたっぷり。スープが澄んで旨みが濃い。絶品の一杯。"', a: '@kana_tokyo' },
       { t: '"雨の日に思い出す味。あさりの出汁が冷えた体を温めてくれる。"', a: '@reader_yumi' }
     ];
-
-    const rotateEl = document.getElementById('reviewRotate');
-    let curIdx = 0;
-    let typingTimer = null;
+    const REVIEWS_YUDAM = [
+      { t: '"鍋蓋で90分炊いた鶏が骨からほろっと外れる。出汁の旨みが沁みる。"', a: '@bundang_eats' },
+      { t: '"ヤンニョムが絶品。ご飯が無限に進む正統派タッポックムタン。"', a: '@reader_jp' },
+      { t: '"雨の日の분당、これ食べに来て本当に正解。"', a: '@local_jeongja' }
+    ];
 
     function escAttr(s) { return (s||'').replace(/"/g, '&quot;'); }
 
@@ -334,35 +414,39 @@
           i++;
           const ch = text[i-2] || '';
           const delay = (ch === '。' || ch === '"' || ch === '、') ? 80 : 32;
-          typingTimer = setTimeout(step, delay);
+          setTimeout(step, delay);
         } else if (cb) cb();
       }
       step();
     }
 
-    function renderOne(r, onComplete) {
-      rotateEl.style.opacity = 0;
-      setTimeout(() => {
-        rotateEl.innerHTML = `<span class="rt"></span><span class="ra">— ${r.a}</span>`;
-        rotateEl.style.opacity = 1;
-        const rt = rotateEl.querySelector('.rt');
-        typeText(rt, r.t, () => {
-          // caret 제거
-          const c = rt.querySelector('.caret');
-          if (c) c.remove();
-          // 4초 후 다음 리뷰
-          setTimeout(onComplete, 4200);
+    function startRotation(rotateEl, reviews) {
+      if (!rotateEl || !reviews.length) return;
+      let idx = 0;
+      function renderOne(r, onComplete) {
+        rotateEl.style.opacity = 0;
+        setTimeout(() => {
+          rotateEl.innerHTML = `<span class="rt"></span><span class="ra">— ${r.a}</span>`;
+          rotateEl.style.opacity = 1;
+          const rt = rotateEl.querySelector('.rt');
+          typeText(rt, r.t, () => {
+            const c = rt.querySelector('.caret');
+            if (c) c.remove();
+            setTimeout(onComplete, 4200);
+          });
+        }, 600);
+      }
+      function loop() {
+        renderOne(reviews[idx], () => {
+          idx = (idx + 1) % reviews.length;
+          loop();
         });
-      }, 600);
+      }
+      loop();
     }
 
-    function loop() {
-      renderOne(REVIEWS[curIdx], () => {
-        curIdx = (curIdx + 1) % REVIEWS.length;
-        loop();
-      });
-    }
-    loop();
+    startRotation(document.getElementById('reviewRotate'), REVIEWS_BAJIRAK);
+    startRotation(document.getElementById('reviewRotate2'), REVIEWS_YUDAM);
   </script>
 </body>
 </html>
