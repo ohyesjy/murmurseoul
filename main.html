@@ -71,6 +71,36 @@
     overflow: hidden;
   }
 
+  /* 영상 옆 팁 노트 (오른쪽 여백) */
+  .tip-note {
+    position: absolute;
+    top: 18%;
+    right: 4%;
+    width: 19%;
+    max-width: 130px;
+    font-family: "Shippori Mincho", "Hachi Maru Pop", serif;
+    font-size: clamp(9px, 1.15vw, 11.5px);
+    line-height: 1.65;
+    color: #4a4a4a;
+    text-align: center;
+    letter-spacing: 0.04em;
+    transform: rotate(-1.5deg);
+    z-index: 2;
+    pointer-events: none;
+  }
+  .tip-note p {
+    margin: 0 0 8px;
+    padding: 6px 4px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 4px;
+  }
+  .tip-note .star {
+    color: #c8243a;
+    font-size: 0.85em;
+    display: inline-block;
+    margin-right: 2px;
+  }
+
   /* 바지락 영상 — 중앙, 9:16 portrait */
   .video-col {
     width: clamp(150px, 34%, 200px);
@@ -92,7 +122,7 @@
     background: #f0eadc;
     border-radius: 2px;
   }
-  .video-wrap video {
+  .video-wrap video, .video-wrap img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -295,6 +325,8 @@
     .review-rotate .ra { font-size: 9px; }
     .ig-source { font-size: 9px; margin: 4px 0 2px; }
     .ig-wrap { max-width: 280px; }
+    .tip-note { font-size: 8.5px; line-height: 1.4; width: 25%; max-width: 95px; top: 12%; right: 1%; }
+    .tip-note p { padding: 3px 2px; margin-bottom: 4px; }
     .back-link, .home-link { right: 8px; font-size: 11px; padding: 5px 8px; }
     .home-link { bottom: calc(42% + 32px); }
   }
@@ -309,6 +341,12 @@
     <div class="zone-header">
       <span>분당 / bundang</span>
       <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=37.3926442%2C127.011839&query_place_id=%EC%A0%84%EB%9D%BC%EB%8F%84%ED%8C%A5%EB%B0%94%EC%A7%80%EB%9D%BD%EC%B9%BC%EA%B5%AD%EC%88%98" target="_blank" rel="noopener noreferrer">[google map]</a>
+    </div>
+
+    <!-- 영상 옆 팁 -->
+    <div class="tip-note">
+      <p><span class="star">★</span>韓国人の友達と<br/>同行がベスト</p>
+      <p><span class="star">⚠</span>公共交通機関だと<br/>ちょっと不便</p>
     </div>
 
     <!-- 2. 메인 — 바지락 영상 (중앙) + 매장이름 + 메뉴 -->
@@ -355,35 +393,31 @@
     <!-- 1. 헤더 -->
     <div class="zone-header">
       <span>정자 / jeongja</span>
-      <a class="map-link" href="https://naver.me/GFCnQhlX" target="_blank" rel="noopener noreferrer">[naver map]</a>
+      <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=37.3712013%2C127.114978&query=%EC%9C%A0%EB%8B%B4+%EC%86%A5%EB%9A%9C%EA%BB%91%EB%8B%AD%EB%B3%B6%EC%9D%8C%ED%83%95+%EB%B6%84%EB%8B%B9%EC%A0%95%EC%9E%90%EB%B3%B8%EC%A0%90" target="_blank" rel="noopener noreferrer">[google map]</a>
     </div>
 
-    <!-- 2. 메인 — 인스타 영상 + 매장정보 + 메뉴 -->
+    <!-- 2. 메인 — 사진 + 매장이름 + 메뉴 -->
     <div class="zone-main">
-      <!-- IG 영상 임베드 -->
-      <div class="ig-wrap">
-        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DWlR9l3kdfS/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; margin: 0; max-width:380px; min-width:280px; padding:0; width:99.375%;">
-          <a href="https://www.instagram.com/reel/DWlR9l3kdfS/" target="_blank" rel="noopener noreferrer">View on Instagram</a>
-        </blockquote>
-      </div>
-      <div class="ig-source">
-        via <a href="https://www.instagram.com/yoonmood__bundang/" target="_blank" rel="noopener noreferrer">@yoonmood__bundang</a>
-      </div>
-
-      <div class="restaurant-name">
-        유담 솥뚜껑닭볶음탕
-        <span class="ja">[ ユダム ソットゥッコン タッポックムタン ]</span>
+      <div class="video-col">
+        <a class="shop-link" href="https://naver.me/GFCnQhlX" target="_blank" rel="noopener noreferrer">
+          <div class="video-wrap" style="aspect-ratio: 1/1;">
+            <img src="yudam-photo.jpg" alt="유담 솥뚜껑닭볶음탕" />
+          </div>
+          <div class="restaurant-name">
+            유담 솥뚜껑닭볶음탕
+            <span class="ja">[ ユダム ソットゥッコン タッポックムタン ]</span>
+          </div>
+        </a>
       </div>
 
-      <!-- 메뉴 -->
       <div class="menu-col">
         <div class="menu-head">★ MENU</div>
         <ul>
-          <li><span class="nm">ソットゥッコン タッポックムタン (一羽 / 2-3名)</span><span class="pr">₩34,000</span></li>
-          <li><span class="nm">ソットゥッコン タッポックムタン (一羽半 / 3-4名)</span><span class="pr">₩49,000</span></li>
-          <li><span class="nm">ナプチャクマンドゥ (大邱風 餃子)</span><span class="pr">₩5,000</span></li>
+          <li><span class="nm">ソットゥッコン タッポックムタン (1羽 / 2-3名)</span><span class="pr">₩34,000</span></li>
+          <li><span class="nm">ソットゥッコン タッポックムタン (1羽半 / 3-4名)</span><span class="pr">₩49,000</span></li>
+          <li><span class="nm">ナプチャクマンドゥ (大邱風餃子)</span><span class="pr">₩5,000</span></li>
         </ul>
-        <div class="hours">月曜定休 / 営業時間は店舗確認</div>
+        <div class="hours">月曜定休</div>
       </div>
     </div>
 
@@ -398,8 +432,48 @@
     </div>
   </div>
 
-  <!-- 인스타그램 embed 스크립트 -->
-  <script async src="//www.instagram.com/embed.js"></script>
+  <!-- ╔═════════════ 세 번째 영수증 — 서우네 장작구이 ═════════════╗ -->
+  <div class="receipt-frame">
+    <div class="zone-header">
+      <span>정자 / jeongja</span>
+      <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=%EC%84%9C%EC%9A%B0%EB%84%A4+%EC%9E%A5%EC%9E%91%EA%B5%AC%EC%9D%B4+%EC%84%B1%EB%82%A8%EC%8B%9C+%EB%B6%84%EB%8B%B9%EA%B5%AC+%EC%A0%95%EC%9E%90%EB%8F%99" target="_blank" rel="noopener noreferrer">[google map]</a>
+    </div>
+
+    <div class="zone-main">
+      <div class="video-col">
+        <a class="shop-link" href="https://naver.me/xEX2qI11" target="_blank" rel="noopener noreferrer">
+          <div class="video-wrap" style="aspect-ratio: 1/1;">
+            <img src="seowoone-photo.jpg" alt="서우네 장작구이" />
+          </div>
+          <div class="restaurant-name">
+            서우네 장작구이
+            <span class="ja">[ ソウネ 薪焼き / Jangjak-gui ]</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="menu-col">
+        <div class="menu-head">★ MENU</div>
+        <ul>
+          <li><span class="nm">누룽지한방通鶏 (薬膳)</span><span class="pr">₩22,000</span></li>
+          <li><span class="nm">ヤンニョム通鶏</span><span class="pr">₩27,000</span></li>
+          <li><span class="nm">半半通鶏 (양념+原味)</span><span class="pr">₩27,000</span></li>
+          <li><span class="nm">マヌル チョンヤン クリーム通鶏</span><span class="pr">₩28,000</span></li>
+          <li><span class="nm">チーズ通鶏</span><span class="pr">₩27,000</span></li>
+          <li><span class="nm">ジャガイモチヂミ</span><span class="pr">₩15,000</span></li>
+        </ul>
+        <div class="hours">참나무 장작 90分焼き / オーク炭火直火</div>
+      </div>
+    </div>
+
+    <div class="zone-reviews">
+      <div class="review-rotate" id="reviewRotate3">&nbsp;</div>
+    </div>
+
+    <div class="zone-ascii">
+      <img src="onigiri-tea.png" alt="onigiri & tea" />
+    </div>
+  </div>
 
   <script>
     // 리뷰 데이터 — 영수증별
@@ -408,9 +482,14 @@
       { t: '"雨の日に思い出す味。あさりの出汁が冷えた体を温めてくれる。"', a: '@reader_yumi' }
     ];
     const REVIEWS_YUDAM = [
-      { t: '"鍋蓋で90分炊いた鶏が骨からほろっと外れる。出汁の旨みが沁みる。"', a: '@bundang_eats' },
+      { t: '"鍋蓋でじっくり煮込んだ鶏。骨からほろっと外れる柔らかさ。"', a: '@bundang_eats' },
       { t: '"ヤンニョムが絶品。ご飯が無限に進む正統派タッポックムタン。"', a: '@reader_jp' },
       { t: '"雨の日の분당、これ食べに来て本当に正解。"', a: '@local_jeongja' }
+    ];
+    const REVIEWS_SEOWOONE = [
+      { t: '"参奈무 장작で90分じっくり焼いた通鶏。皮はパリッ、中はジューシー。"', a: '@chicken_seoul' },
+      { t: '"마늘청양크림 — 韓国でしか出会えない一皿。やみつきになる。"', a: '@reader_garlic' },
+      { t: '"정자に来たら必ず立ち寄る。雰囲気もいい、家族向け。"', a: '@jeongja_local' }
     ];
 
     function escAttr(s) { return (s||'').replace(/"/g, '&quot;'); }
@@ -456,6 +535,7 @@
 
     startRotation(document.getElementById('reviewRotate'), REVIEWS_BAJIRAK);
     startRotation(document.getElementById('reviewRotate2'), REVIEWS_YUDAM);
+    startRotation(document.getElementById('reviewRotate3'), REVIEWS_SEOWOONE);
   </script>
 </body>
 </html>
