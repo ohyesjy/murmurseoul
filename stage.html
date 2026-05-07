@@ -27,6 +27,24 @@
     .back-link { right: 10px; bottom: 42%; font-size: 11px; padding: 5px 8px; }
     .home-link { right: 10px; bottom: calc(42% + 32px); font-size: 11px; padding: 5px 8px; }
   }
+
+  /* ─── u e (위로 스크롤) 버튼 ─── */
+  .ue-btn {
+    position: fixed; right: 18px; bottom: 22px;
+    z-index: 200;
+    font-family: "Special Elite", monospace;
+    font-size: 12px; letter-spacing: 0.18em;
+    color: #1a1a1a; background: rgba(255,255,255,0.9);
+    padding: 9px 13px; border: 1px solid #1a1a1a;
+    border-radius: 4px; cursor: pointer; text-decoration: none;
+    opacity: 0.65; transition: 0.2s;
+    line-height: 1; user-select: none;
+  }
+  .ue-btn:hover { opacity: 1; background: #1a1a1a; color: #fff; }
+  .ue-btn .arrow { font-size: 10px; margin-right: 4px; opacity: 0.7; }
+  @media (max-width: 540px) {
+    .ue-btn { right: 10px; bottom: 14px; font-size: 11px; padding: 7px 10px; }
+  }
 </style>
 </head>
 <body>
@@ -48,5 +66,6 @@
       <a href="https://www.instagram.com/murmur_josun/" target="_blank" rel="noopener noreferrer">@murmur_josun</a>
     </div>
   </div>
+  <button class="ue-btn" type="button" aria-label="scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="arrow">▲</span>u e</button>
 </body>
 </html>
