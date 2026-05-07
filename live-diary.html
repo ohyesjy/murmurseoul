@@ -322,6 +322,7 @@
       <div class="row">
         <input class="comment-input" id="commentInput" placeholder="質問やコメントを残す... / 댓글 / 質問" />
         <button class="btn" id="btnComPhoto">📷</button>
+        <button class="btn" id="btnMapShare" title="지도 공유 (HOST 전용)">📍</button>
         <button class="btn primary" id="btnComSend">SEND</button>
       </div>
     </div>
@@ -692,7 +693,25 @@
       el.className = 'comment ' + c.type + ' ' + (c.client_id === clientId ? 'own' : 'other');
       const time = new Date(c.created_at).toTimeString().slice(0, 5);
       let body = '';
-      if (c.type === 'text') body = c.content.replace(/</g,'&lt;').replace(/\n/g,'<br/>');
+      if (c.type === 'text' && c.content.startsWith('[map]')) {
+        // 지도 카드
+        const raw = c.content.slice(5); // remove [map]
+        const sep = raw.indexOf('||');
+        const label = sep > -1 ? raw.slice(0, sep) : raw;
+        const url = sep > -1 ? raw.slice(sep + 2) : raw;
+        const safeLabel = label.replace(/</g,'&lt;');
+        const safeUrl = url.replace(/"/g,'&quot;');
+        const isNaver = /naver\.(me|com)/i.test(url);
+        const provider = isNaver ? '네이버지도' : '구글지도';
+        const provColor = isNaver ? '#03c75a' : '#4285f4';
+        body = `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="display:flex; gap:10px; align-items:center; padding:10px 12px; background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.08); border-radius:8px; text-decoration:none; color:inherit;">
+          <span style="font-size:22px; line-height:1;">📍</span>
+          <div style="flex:1; min-width:0;">
+            <div style="font-weight:600; font-size:13px; color:#1a1a1a; word-break:break-word;">${safeLabel}</div>
+            <div style="font-size:10px; color:${provColor}; margin-top:2px; letter-spacing:0.04em;">${provider} 열기 →</div>
+          </div>
+        </a>`;
+      } else if (c.type === 'text') body = c.content.replace(/</g,'&lt;').replace(/\n/g,'<br/>');
       else if (c.type === 'photo') body = `<img src="${c.content}" />`;
       else if (c.type === 'drawing') body = `<canvas data-strokes='${c.content}' width="280" height="200"></canvas>`;
       el.innerHTML = `<div class="meta"><span class="name">@${c.nickname || 'guest'}</span><span>${time}</span></div>${body}`;
@@ -747,6 +766,33 @@
     const commentInput = document.getElementById('commentInput');
     document.getElementById('btnComSend').addEventListener('click', sendTextComment);
     commentInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendTextComment(); });
+
+    // 지도 공유 (HOST 전용)
+    document.getElementById('btnMapShare').addEventListener('click', async () => {
+      if (role !== 'host') return toast('HOST 만 지도 공유 가능');
+      const input = prompt('장소 이름 또는 지도 URL\n(예: 안다즈 강남, https://naver.me/abc)');
+      if (!input) return;
+      const trimmed = input.trim();
+      let url, label;
+      if (/^https?:\/\//i.test(trimmed)) {
+        url = trimmed;
+        try { label = decodeURIComponent(trimmed.replace(/^https?:\/\//, '').split(/[?#]/)[0]); }
+        catch { label = trimmed; }
+      } else {
+        label = trimmed;
+        url = 'https://map.naver.com/p/search/' + encodeURIComponent(trimmed);
+      }
+      const c = {
+        session_date: today,
+        type: 'text',
+        content: '[map]' + label + '||' + url,
+        client_id: clientId,
+        nickname: nickname || null
+      };
+      const { data, error } = await supabase.from('diary_comments').insert(c).select().single();
+      if (data) renderComment(data);
+      else toast('지도 공유 실패: ' + (error?.message || ''));
+    });
     async function sendTextComment() {
       const v = commentInput.value.trim(); if (!v) return;
       const c = { session_date: today, type: 'text', content: v, client_id: clientId, nickname: nickname || null };
