@@ -6,317 +6,278 @@
 <title>murmur josun · 분당 / bundang</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=New+Tegomin&family=Shippori+Mincho:wght@500;600&family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=New+Tegomin&family=Shippori+Mincho:wght@500;600&family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); }
   html, body { margin: 0; padding: 0; min-height: 100vh; }
   body {
-    background: #ffffff;
+    background: #f6f1ea;
     color: #1a1a1a;
     font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif;
-    padding: 30px 14px 60px;
+    padding: 22px 14px 80px;
   }
 
-  /* ─── 카드 프레임 (영수증 배경 제거 → 깨끗한 흰색 카드) ─── */
-  .receipt-frame {
-    position: relative;
-    width: 700px;
-    max-width: 96vw;
-    margin: 0 auto;
-    background: transparent;
-    padding: 4px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  /* ─── 1) 헤더 ─── */
-  .zone-header {
-    position: static;
+  /* ─── 페이지 헤드 ─── */
+  .page-head {
+    max-width: 480px;
+    margin: 0 auto 18px;
+    padding: 4px 4px 12px;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    padding: 10px 4px 14px;
-    border-bottom: 1.5px dashed #1a1a1a;
-    font-family: "Special Elite", "Zen Kaku Gothic New", monospace;
-    color: #000;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    font-size: clamp(12px, 1.7vw, 15px);
-  }
-  .zone-header .map-links {
-    display: flex;
-    flex-direction: column;
     align-items: flex-end;
-    gap: 2px;
+    border-bottom: 2px solid #1a1a1a;
   }
-  .zone-header .map-link {
-    color: #000;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    font-size: 0.85em;
-    letter-spacing: 0.08em;
-    line-height: 1.2;
+  .page-head .kana {
+    font-family: "New Tegomin", "Hachi Maru Pop", serif;
+    font-size: 40px;
+    color: #ec5829;
+    line-height: 0.9;
+    letter-spacing: 0.02em;
   }
-  .zone-header .map-link.naver {
-    color: #03c75a;
-    font-size: 0.78em;
+  .page-head .korean {
+    font-family: "Special Elite", monospace;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    color: #1a1a1a;
+    margin-top: 6px;
   }
-
-  /* ─── 2) 메인 ─── */
-  .zone-main {
-    position: static;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    padding: 8px 4%;
-  }
-
-  /* 영상 옆 팁 노트 (오른쪽 여백) */
-  .tip-note {
-    position: absolute;
-    top: 18%;
-    right: 4%;
-    width: 19%;
-    max-width: 130px;
-    font-family: "Shippori Mincho", "Hachi Maru Pop", serif;
-    font-size: clamp(9px, 1.15vw, 11.5px);
-    line-height: 1.65;
-    color: #4a4a4a;
-    text-align: center;
-    letter-spacing: 0.04em;
-    transform: rotate(-1.5deg);
-    z-index: 2;
-    pointer-events: none;
-  }
-  .tip-note p {
-    margin: 0 0 8px;
-    padding: 6px 4px;
-    background: rgba(255,255,255,0.6);
-    border-radius: 4px;
-  }
-  .tip-note .star {
-    color: #c8243a;
-    font-size: 0.85em;
-    display: inline-block;
-    margin-right: 2px;
+  .page-head .meta-tag {
+    font-family: "Special Elite", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    color: #888;
+    text-align: right;
+    line-height: 1.45;
   }
 
-  /* 바지락 영상 — 중앙, 9:16 portrait */
-  .video-col {
-    width: clamp(220px, 50%, 320px);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .shop-link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-  }
-  .video-wrap {
-    width: 100%;
-    aspect-ratio: 480 / 854;
+  /* ─── 포스터 카드 (공통) ─── */
+  .poster {
+    max-width: 480px;
+    margin: 0 auto 28px;
+    background: #ec5829;
+    border: 2.5px solid #1a1a1a;
+    border-radius: 22px;
+    padding: 18px 16px 20px;
+    box-shadow: 5px 5px 0 #1a1a1a;
+    color: #fff8ee;
     overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.15);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    background: #f0eadc;
-    border-radius: 2px;
+    position: relative;
   }
-  .video-wrap video, .video-wrap img {
-    width: 100%;
-    height: 100%;
+  .poster a.cover { text-decoration: none; color: inherit; display: block; }
+
+  .hero-frame {
+    background: #cee1f0;
+    border: 2px solid #1a1a1a;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 4 / 5;
+  }
+  .hero-frame video,
+  .hero-frame img {
+    width: 100%; height: 100%;
     object-fit: cover;
     display: block;
   }
-
-  /* 사진 위에 오버레이되는 매장 정보 텍스트 */
-  .video-wrap { position: relative; }
-  .hero-overlay {
+  .hero-corner-tag {
     position: absolute;
-    inset: 0;
-    padding: 18px 20px;
-    display: flex;
-    flex-direction: column;
-    pointer-events: none;
-    color: #fff;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.55), 0 0 2px rgba(0,0,0,0.4);
-  }
-  .hero-overlay .top-tag {
-    font-family: "Special Elite", monospace;
-    font-size: clamp(9px, 1.1vw, 11px);
-    letter-spacing: 0.32em;
-    background: rgba(255,255,255,0.92);
+    top: 10px; left: 10px;
+    background: #fff8ee;
     color: #1a1a1a;
-    text-shadow: none;
-    align-self: flex-start;
-    padding: 3px 9px;
-    border-radius: 2px;
-  }
-  .hero-overlay .big-title {
-    font-family: "New Tegomin", "Hachi Maru Pop", serif;
-    font-size: clamp(38px, 8.5vw, 72px);
-    line-height: 0.92;
-    letter-spacing: 0.02em;
-    margin-top: auto;
-    font-weight: 400;
-  }
-  .hero-overlay .sub-title {
-    font-family: "Hachi Maru Pop", "Shippori Mincho", serif;
-    font-size: clamp(13px, 2.2vw, 20px);
-    margin-top: 4px;
-    letter-spacing: 0.04em;
-  }
-  .hero-overlay .corner {
-    position: absolute;
-    bottom: 14px;
-    right: 16px;
     font-family: "Special Elite", monospace;
-    font-size: clamp(8px, 1vw, 10px);
-    letter-spacing: 0.18em;
-    opacity: 0.92;
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1.5px solid #1a1a1a;
+    z-index: 2;
   }
-  .hero-overlay .badge-rec {
+  .hero-stamp {
     position: absolute;
-    top: 14px;
-    right: 16px;
-    text-align: right;
+    top: 10px; right: 10px;
+    background: #ffea2c;
+    color: #1a1a1a;
     font-family: "Hachi Maru Pop", serif;
-    font-size: clamp(11px, 1.5vw, 15px);
-    color: #ffeb3b;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.7);
-    line-height: 1.4;
-    letter-spacing: 0.1em;
-  }
-  /* 노란 형광펜 스타일 (매거진 느낌) */
-  .hero-overlay .yellow {
-    color: #ffea2c;
-    -webkit-text-stroke: 0.5px rgba(0,0,0,0.5);
-  }
-  .restaurant-name {
-    font-family: "New Tegomin", "Hachi Maru Pop", serif;
-    font-size: clamp(13px, 1.8vw, 16px);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    padding: 5px 9px;
+    border-radius: 50px;
+    border: 1.5px solid #1a1a1a;
+    transform: rotate(8deg);
+    line-height: 1;
+    z-index: 2;
     text-align: center;
-    margin-top: 6px;
-    letter-spacing: 0.04em;
-    color: #1a1a1a;
-    line-height: 1.3;
-  }
-  .restaurant-name .ja {
-    display: block;
-    font-family: "Zen Kaku Gothic New", sans-serif;
-    font-size: 0.7em;
-    letter-spacing: 0.08em;
-    margin-top: 3px;
-    color: #444;
-    font-weight: 400;
   }
 
-  /* 메뉴 — 영상 아래 */
-  .menu-col {
-    width: 88%;
-    max-width: 460px;
-    margin-top: 6px;
-    color: #1a1a1a;
+  .poster-title {
+    font-family: "Hachi Maru Pop", "New Tegomin", serif;
+    font-size: 56px;
+    line-height: 0.92;
+    margin: 14px 4px 4px;
+    color: #fff8ee;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-shadow: 2px 2px 0 #1a1a1a;
   }
-  .menu-col .menu-head {
+  .poster-subtitle {
+    font-family: "Zen Kaku Gothic New", sans-serif;
+    font-size: 13.5px;
+    margin: 0 4px;
+    color: #fff8ee;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .poster-romaja {
     font-family: "Special Elite", monospace;
-    font-size: clamp(9px, 1.1vw, 11px);
-    letter-spacing: 0.32em;
-    color: #c8243a;
-    margin-bottom: 6px;
-    text-align: center;
+    font-size: 9.5px;
+    margin: 2px 4px 14px;
+    color: rgba(255,248,238,0.75);
+    letter-spacing: 0.16em;
   }
-  .menu-col ul {
+
+  /* 정보 박스 (가독성 — 흰 패널) */
+  .poster-info-box {
+    background: #fff8ee;
+    color: #1a1a1a;
+    border: 2px solid #1a1a1a;
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .poster-menu {
     list-style: none;
     padding: 0;
-    margin: 0 0 8px;
-    font-family: "Shippori Mincho", "Zen Kaku Gothic New", serif;
-    font-size: clamp(10.5px, 1.3vw, 12.5px);
+    margin: 0 0 9px;
+    font-family: "Zen Kaku Gothic New", sans-serif;
+    font-size: 12px;
     line-height: 1.7;
   }
-  .menu-col li {
+  .poster-menu li {
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px dotted rgba(0,0,0,0.15);
-    padding: 1px 4px;
+    gap: 8px;
+    border-bottom: 1px dotted rgba(0,0,0,0.2);
+    padding: 1.5px 2px;
   }
-  .menu-col li .nm { letter-spacing: 0.02em; }
-  .menu-col li .pr { font-family: "Special Elite", monospace; font-size: 0.92em; opacity: 0.8; }
-  .menu-col .hours {
-    font-family: "Shippori Mincho", serif;
-    font-size: clamp(10.5px, 1.2vw, 12px);
-    margin-top: 5px;
-    padding: 4px 10px;
-    border-top: 1px dashed rgba(0,0,0,0.3);
-    border-bottom: 1px dashed rgba(0,0,0,0.3);
-    text-align: center;
-    letter-spacing: 0.05em;
-  }
-
-  /* ─── 3) 리뷰 ─── */
-  .zone-reviews {
-    position: static;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 22px 4%;
-    min-height: 90px;
-    border-top: 1px dashed rgba(0,0,0,0.5);
-    border-bottom: 1px dashed rgba(0,0,0,0.5);
-  }
-  .review-rotate {
-    width: 100%;
-    text-align: center;
-    font-family: "Shippori Mincho", "Zen Kaku Gothic New", serif;
-    color: #1a1a1a;
-    transition: opacity 0.5s ease;
-  }
-  .review-rotate .rt {
-    display: block;
-    font-size: clamp(12px, 1.8vw, 16px);
-    line-height: 1.6;
-    margin-bottom: 5px;
-    min-height: 2.4em;
-    letter-spacing: 0.01em;
-    font-weight: 500;
-  }
-  .review-rotate .ra {
-    display: block;
+  .poster-menu li:last-child { border-bottom: 0; }
+  .poster-menu .nm { letter-spacing: 0.01em; }
+  .poster-menu .pr {
     font-family: "Special Elite", monospace;
-    font-size: clamp(10px, 1.2vw, 12px);
-    color: #888;
-    letter-spacing: 0.15em;
+    font-size: 11px;
+    opacity: 0.78;
+    flex-shrink: 0;
   }
-  .review-rotate .caret {
-    display: inline-block;
-    width: 0.45em;
-    background: currentColor;
-    animation: caretBlink 0.9s steps(2) infinite;
-    margin-left: 1px;
-    vertical-align: -2px;
-    opacity: 0.7;
+  .poster-meta {
+    border-top: 1.5px dashed rgba(0,0,0,0.3);
+    padding-top: 8px;
+    font-family: "Zen Kaku Gothic New", sans-serif;
+    font-size: 11px;
+    line-height: 1.55;
   }
-  @keyframes caretBlink { 50% { opacity: 0; } }
-
-  /* ─── 4) 하단 ASCII 아트 ─── */
-  .zone-ascii {
-    position: static;
+  .poster-meta .row { display: flex; gap: 8px; margin-bottom: 4px; }
+  .poster-meta .row .label {
+    font-family: "Special Elite", monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: #ec5829;
+    min-width: 50px;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+  .poster-meta .row .val { flex: 1; }
+  .poster-meta .map-links {
     display: flex;
-    justify-content: center;
-    padding: 12px 0 4px;
+    gap: 12px;
+    margin-top: 6px;
   }
-  .zone-ascii img {
-    width: 200px;
-    max-width: 50%;
-    height: auto;
-    object-fit: contain;
-    opacity: 0.7;
-    mix-blend-mode: multiply;
+  .poster-meta .map-links a {
+    font-family: "Special Elite", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    color: #1a1a1a;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .poster-meta .map-links a.naver { color: #03c75a; }
+
+  .poster-quote {
+    background: #ffea2c;
+    color: #1a1a1a;
+    border: 2px solid #1a1a1a;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    font-family: "Shippori Mincho", serif;
+    font-size: 12px;
+    line-height: 1.55;
+    transform: rotate(-1deg);
+    transition: opacity 0.5s ease;
+    min-height: 3.4em;
+  }
+  .poster-quote .cite {
+    display: block;
+    margin-top: 5px;
+    font-family: "Special Elite", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.15em;
+    color: #555;
+    text-align: right;
   }
 
-  /* ─── 모아보기 모달 ─── */
+  /* ─── 메인 vs 서브 사이즈 차이 ─── */
+  .poster.main .poster-title { font-size: 64px; }
+  .poster.main .hero-frame { aspect-ratio: 3 / 4; }
+  .poster.sub .poster-title { font-size: 42px; }
+  .poster.sub { padding: 16px 14px 18px; }
+
+  /* ─── 우측 고정 버튼 ─── */
+  .back-link, .home-link, .all-link {
+    position: fixed;
+    right: 10px;
+    width: 60px;
+    background: transparent;
+    border: 0;
+    z-index: 50;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 220ms ease;
+  }
+  .back-link img, .home-link img, .all-link img {
+    width: 56px; height: 56px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,0.2));
+    pointer-events: none;
+  }
+  .back-link .btn-label, .home-link .btn-label, .all-link .btn-label {
+    font-family: "Special Elite", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    color: #1a1a1a;
+    margin-top: 2px;
+  }
+  .back-link:hover, .home-link:hover, .all-link:hover { transform: scale(1.08); }
+  .home-link { bottom: calc(42% + 76px); }
+  .back-link { bottom: 42%; }
+  .all-link  { bottom: calc(42% - 100px); }
+
+  /* u e */
+  .ue-btn {
+    position: fixed; right: 18px; bottom: calc(42% - 180px);
+    z-index: 100;
+    font-family: "Special Elite", monospace;
+    font-size: 12px; letter-spacing: 0.1em;
+    color: #1a1a1a; background: rgba(255,248,238,0.9);
+    padding: 6px 10px; border: 1.5px solid #1a1a1a;
+    border-radius: 4px; cursor: pointer;
+    opacity: 0.65; line-height: 1; user-select: none;
+  }
+  .ue-btn:hover { opacity: 1; }
+  .ue-btn .arrow { font-size: 10px; margin-right: 3px; opacity: 0.7; }
+
+  /* 모달 */
   .collection-modal-bg {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.65);
@@ -330,72 +291,73 @@
   .collection-modal-bg.show { display: flex; }
   .collection-modal {
     width: 100%;
-    max-width: 580px;
-    background: #f5efe2;
-    border-radius: 6px;
+    max-width: 480px;
+    background: #fff8ee;
+    border-radius: 16px;
+    border: 2.5px solid #1a1a1a;
     padding: 24px 22px;
     position: relative;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    box-shadow: 5px 5px 0 #1a1a1a;
   }
   .collection-modal h2 {
     text-align: center;
-    font-family: "Special Elite", monospace;
-    font-size: 14px;
-    letter-spacing: 0.32em;
-    color: #c8243a;
-    margin: 0 0 6px;
-    font-weight: 500;
+    font-family: "Hachi Maru Pop", serif;
+    font-size: 22px;
+    color: #ec5829;
+    margin: 0 0 4px;
+    font-weight: 400;
   }
-  .collection-modal h2::before, .collection-modal h2::after { content: "—"; opacity: 0.5; margin: 0 10px; }
   .collection-modal .sub {
     text-align: center;
-    font-size: 11px;
+    font-size: 10px;
     color: #888;
-    margin-bottom: 22px;
-    font-family: "Zen Kaku Gothic New", sans-serif;
-    letter-spacing: 0.08em;
+    margin-bottom: 18px;
+    font-family: "Special Elite", monospace;
+    letter-spacing: 0.18em;
   }
   .collection-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
   }
   .collection-item {
     background: #fff;
-    border: 1px solid #e0ddd0;
-    border-radius: 5px;
+    border: 2px solid #1a1a1a;
+    border-radius: 10px;
     overflow: hidden;
     text-decoration: none;
     color: inherit;
-    transition: transform 0.18s, box-shadow 0.18s;
     cursor: pointer;
+    transition: transform 0.18s;
   }
-  .collection-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  .collection-item:hover { transform: translateY(-2px); }
+  .collection-item img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    display: block;
+    border-bottom: 2px solid #1a1a1a;
   }
-  .collection-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
   .collection-item .info {
-    padding: 8px 10px 10px;
-    font-family: "Shippori Mincho", serif;
+    padding: 8px 8px 10px;
     text-align: center;
+    font-family: "Shippori Mincho", serif;
   }
   .collection-item .info .name {
     display: block;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 600;
     color: #1a1a1a;
     margin-bottom: 2px;
     line-height: 1.3;
   }
-  .collection-item .info .area {
+  .collection-item .info .area, .collection-item .info .added {
     display: block;
     font-family: "Special Elite", monospace;
-    font-size: 9px;
+    font-size: 8.5px;
     color: #888;
     letter-spacing: 0.1em;
   }
-  .collection-item .info .added { font-family: "Special Elite", monospace; font-size: 9px; letter-spacing: 0.1em; color: #888; margin-top: 3px; display: block; }
   .collection-modal-close {
     position: absolute;
     top: 10px; right: 12px;
@@ -408,122 +370,19 @@
     border-radius: 50%;
     line-height: 1;
   }
-  .collection-modal-close:hover { background: rgba(0,0,0,0.15); color: #000; }
 
-  /* ─── 홈(토마토) / 뒤로(식빵) / 모아보기(눈알) — 이미지 버튼 + 라벨 ─── */
-  .back-link, .home-link, .all-link {
-    position: fixed;
-    right: 10px;
-    width: 64px;
-    padding: 0;
-    background: transparent;
-    border: 0;
-    z-index: 50;
-    cursor: pointer;
-    transition: transform 220ms ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-  }
-  .back-link img, .home-link img, .all-link img {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    display: block;
-    filter: drop-shadow(0 3px 8px rgba(0,0,0,0.2));
-    pointer-events: none;
-  }
-  .back-link .btn-label, .home-link .btn-label, .all-link .btn-label {
-    font-family: "Special Elite", monospace;
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    color: #1a1a1a;
-    margin-top: 2px;
-    text-transform: lowercase;
-  }
-  .back-link:hover, .home-link:hover, .all-link:hover { transform: scale(1.1); }
-  .home-link { bottom: calc(42% + 80px); }
-  .back-link { bottom: 42%; }
-  .all-link  { bottom: calc(42% - 110px); }
-
-  /* ─── 카드 사이 구분 ─── */
-  .receipt-frame + .receipt-frame {
-    margin-top: 50px;
-    padding-top: 18px;
-    border-top: 2px dotted #1a1a1a;
-  }
-
-  .ig-wrap {
-    width: 100%;
-    max-width: 380px;
-    margin: 0 auto;
-    background: #fff;
-    border: 1px solid rgba(0,0,0,0.15);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .ig-wrap iframe { width: 100% !important; max-width: 380px !important; border: 0 !important; min-width: 0 !important; }
-  .ig-source {
-    text-align: center;
-    margin: 8px 0 4px;
-    font-family: "Special Elite", monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    color: #888;
-  }
-  .ig-source a {
-    color: #c8243a;
-    text-decoration: none;
-    border-bottom: 1px dotted #c8243a;
-  }
-
-  /* ─── 모바일 ─── */
-  @media (max-width: 600px) {
-    body { padding: 14px 6px 30px; }
-    .receipt-frame { width: 100%; max-width: none; }
-    .zone-header { font-size: 9.5px; letter-spacing: 0.1em; }
-    .zone-main { gap: 3px; padding-top: 1%; }
-    .video-col { width: auto; }
-    .video-wrap { height: 130px; width: auto; aspect-ratio: 480 / 854; }
-    .restaurant-name { font-size: 10.5px; margin-top: 2px; line-height: 1.18; }
-    .restaurant-name .ja { font-size: 0.62em; margin-top: 1px; }
-    .menu-col { margin-top: 3px; width: 92%; }
-    .menu-col .menu-head { font-size: 8px; letter-spacing: 0.22em; margin-bottom: 2px; }
-    .menu-col ul { font-size: 9.2px; line-height: 1.42; margin: 0 0 3px; }
-    .menu-col li { padding: 0 1px; }
-    .menu-col li .pr { font-size: 8.6px; }
-    .menu-col .hours { font-size: 8.6px; padding: 2px 4px; margin-top: 2px; }
-    .review-rotate .rt { font-size: 10.5px; line-height: 1.5; letter-spacing: 0; }
-    .review-rotate .ra { font-size: 9px; }
-    .ig-source { font-size: 9px; margin: 4px 0 2px; }
-    .ig-wrap { max-width: 280px; }
-    .tip-note { font-size: 8.5px; line-height: 1.4; width: 25%; max-width: 95px; top: 12%; right: 1%; }
-    .tip-note p { padding: 3px 2px; margin-bottom: 4px; }
-    .back-link, .home-link, .all-link { right: 4px; width: 52px; }
-    .back-link img, .home-link img, .all-link img { width: 48px; height: 48px; }
-    .back-link .btn-label, .home-link .btn-label, .all-link .btn-label { font-size: 9px; }
-    .home-link { bottom: calc(42% + 64px); }
-    .all-link  { bottom: calc(42% - 90px); }
-  }
-
-  /* ─── u e (위로 스크롤) 버튼 — all 아래에 배치, 테두리 없음 ─── */
-  .ue-btn {
-    position: fixed; right: 18px; bottom: calc(42% - 200px);
-    z-index: 100;
-    font-family: "Special Elite", monospace;
-    font-size: 12px; letter-spacing: 0.1em;
-    color: #1a1a1a; background: rgba(255,255,255,0.85);
-    padding: 6px 10px; border: 0;
-    border-radius: 4px; cursor: pointer; text-decoration: none;
-    opacity: 0.55; transition: opacity 200ms ease;
-    line-height: 1; user-select: none;
-  }
-  .ue-btn:hover { opacity: 1; }
-  .ue-btn .arrow { font-size: 10px; margin-right: 3px; opacity: 0.7; }
+  /* 모바일 */
   @media (max-width: 540px) {
-    .ue-btn { right: 4px; bottom: calc(42% - 170px); font-size: 11px; padding: 5px 8px; }
+    body { padding: 16px 8px 60px; }
+    .page-head .kana { font-size: 34px; }
+    .poster { padding: 14px 12px 16px; border-radius: 18px; box-shadow: 4px 4px 0 #1a1a1a; }
+    .poster.main .poster-title { font-size: 50px; }
+    .poster.sub .poster-title { font-size: 34px; }
+    .back-link, .home-link, .all-link { right: 4px; width: 50px; }
+    .back-link img, .home-link img, .all-link img { width: 46px; height: 46px; }
+    .home-link { bottom: calc(42% + 60px); }
+    .all-link  { bottom: calc(42% - 84px); }
+    .ue-btn { right: 4px; bottom: calc(42% - 150px); font-size: 11px; padding: 5px 8px; }
   }
 </style>
 </head>
@@ -541,273 +400,183 @@
     <span class="btn-label">all</span>
   </a>
 
-  <div class="receipt-frame" id="bajirak">
-    <!-- 1. 헤더 — 위 점선 위쪽 -->
-    <div class="zone-header">
-      <span>분당 / bundang</span>
-      <div class="map-links">
-        <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=37.3926442%2C127.011839&query_place_id=%EC%A0%84%EB%9D%BC%EB%8F%84%ED%8C%A5%EB%B0%94%EC%A7%80%EB%9D%BD%EC%B9%BC%EA%B5%AD%EC%88%98" target="_blank" rel="noopener noreferrer">[google map]</a>
-        <a class="map-link naver" href="https://naver.me/xnhy8pL6" target="_blank" rel="noopener noreferrer">[naverで見る]</a>
+  <header class="page-head">
+    <div>
+      <div class="kana">ブンダン</div>
+      <div class="korean">분당 · BUNDANG</div>
+    </div>
+    <div class="meta-tag">3 SPOTS<br/>MURMUR JOSUN</div>
+  </header>
+
+  <!-- ── 메인 포스터: 전라도팥바지락칼국수 ── -->
+  <article class="poster main" id="bajirak">
+    <a class="cover" href="https://naver.me/xnhy8pL6" target="_blank" rel="noopener noreferrer">
+      <div class="hero-frame">
+        <video src="bajirak.mp4" autoplay muted loop playsinline preload="auto" webkit-playsinline></video>
+        <div class="hero-corner-tag">BUNDANG / 분당</div>
+        <div class="hero-stamp">推薦</div>
+      </div>
+      <h2 class="poster-title">あさり</h2>
+      <p class="poster-subtitle">전라도팥바지락칼국수</p>
+      <p class="poster-romaja">Cheolla-do Bajirak Kalguksu</p>
+    </a>
+    <div class="poster-info-box">
+      <ul class="poster-menu">
+        <li><span class="nm">バジラクカルグクス</span><span class="pr">₩12,000</span></li>
+        <li><span class="nm">パッカルグクス</span><span class="pr">₩12,000</span></li>
+        <li><span class="nm">バジラクタン</span><span class="pr">₩18,000</span></li>
+        <li><span class="nm">バジラクチヂミ</span><span class="pr">₩18,000</span></li>
+      </ul>
+      <div class="poster-meta">
+        <div class="row"><span class="label">HOURS</span><span class="val">毎日 10:00 — 21:00</span></div>
+        <div class="row"><span class="label">TIPS</span><span class="val">★ 韓国人の友達と同行がベスト / ⚠ 公共交通機関だと不便</span></div>
+        <div class="map-links">
+          <a href="https://www.google.com/maps/search/?api=1&query=37.3926442%2C127.011839&query_place_id=%EC%A0%84%EB%9D%BC%EB%8F%84%ED%8C%A5%EB%B0%94%EC%A7%80%EB%9D%BD%EC%B9%BC%EA%B5%AD%EC%88%98" target="_blank" rel="noopener noreferrer">[google map]</a>
+          <a href="https://naver.me/xnhy8pL6" target="_blank" rel="noopener noreferrer" class="naver">[naverで見る]</a>
+        </div>
       </div>
     </div>
+    <div class="poster-quote" id="reviewRotate">&nbsp;</div>
+  </article>
 
-    <!-- 영상 옆 팁 -->
-    <div class="tip-note">
-      <p><span class="star">★</span>韓国人の友達と<br/>同行がベスト</p>
-      <p><span class="star">⚠</span>公共交通機関だと<br/>ちょっと不便</p>
-    </div>
-
-    <!-- 2. 메인 — 바지락 영상 (중앙) + 매장이름 + 메뉴 -->
-    <div class="zone-main">
-      <!-- 영상 (중앙, 9:16 portrait) -->
-      <div class="video-col">
-        <a class="shop-link" href="https://naver.me/xnhy8pL6" target="_blank" rel="noopener noreferrer">
-          <div class="video-wrap">
-            <video src="bajirak.mp4" autoplay muted loop playsinline preload="auto" webkit-playsinline></video>
-            <div class="hero-overlay">
-              <div class="top-tag">BUNDANG / 분당</div>
-              <div class="badge-rec">推薦<br/>推薦<br/>推薦</div>
-              <div class="big-title yellow">あさり</div>
-              <div class="sub-title">— 참바지락 칼국수 —</div>
-              <div class="corner">@CHEOLLADO・PAT</div>
-            </div>
-          </div>
-          <div class="restaurant-name">
-            전라도팥바지락칼국수
-            <span class="ja">[ チョルラドパッ バジラクカルグクス ]</span>
-          </div>
-        </a>
+  <!-- ── 서브 포스터 1: 유담 솥뚜껑닭볶음탕 ── -->
+  <article class="poster sub" id="yudam">
+    <a class="cover" href="https://naver.me/GFCnQhlX" target="_blank" rel="noopener noreferrer">
+      <div class="hero-frame" style="aspect-ratio: 1/1;">
+        <img src="yudam-photo.jpg" alt="유담 솥뚜껑닭볶음탕" />
+        <div class="hero-corner-tag">JEONGJA / 정자</div>
+        <div class="hero-stamp">じっくり<br/>煮込み</div>
       </div>
-
-      <!-- 일본어 메뉴 + 운영시간 -->
-      <div class="menu-col">
-        <div class="menu-head">★ MENU</div>
-        <ul>
-          <li><span class="nm">バジラクカルグクス</span><span class="pr">₩12,000</span></li>
-          <li><span class="nm">パッカルグクス</span><span class="pr">₩12,000</span></li>
-          <li><span class="nm">バジラクタン</span><span class="pr">₩18,000</span></li>
-          <li><span class="nm">バジラクチヂミ</span><span class="pr">₩18,000</span></li>
-        </ul>
-        <div class="hours">毎日 10:00 — 21:00</div>
+      <h2 class="poster-title">鍋蓋</h2>
+      <p class="poster-subtitle">유담 솥뚜껑닭볶음탕</p>
+      <p class="poster-romaja">Yudam Sottukkeong Dakbokkeumtang</p>
+    </a>
+    <div class="poster-info-box">
+      <ul class="poster-menu">
+        <li><span class="nm">ソットゥッコン タッポックムタン (1羽 / 2-3名)</span><span class="pr">₩34,000</span></li>
+        <li><span class="nm">ソットゥッコン タッポックムタン (1羽半 / 3-4名)</span><span class="pr">₩49,000</span></li>
+        <li><span class="nm">ナプチャクマンドゥ (大邱風餃子)</span><span class="pr">₩5,000</span></li>
+      </ul>
+      <div class="poster-meta">
+        <div class="row"><span class="label">CLOSED</span><span class="val">月曜定休</span></div>
+        <div class="map-links">
+          <a href="https://www.google.com/maps/search/?api=1&query=37.3712013%2C127.114978&query=%EC%9C%A0%EB%8B%B4+%EC%86%A5%EB%9A%9C%EA%BB%91%EB%8B%AD%EB%B3%B6%EC%9D%8C%ED%83%95+%EB%B6%84%EB%8B%B9%EC%A0%95%EC%9E%90%EB%B3%B8%EC%A0%90" target="_blank" rel="noopener noreferrer">[google map]</a>
+          <a href="https://naver.me/GFCnQhlX" target="_blank" rel="noopener noreferrer" class="naver">[naverで見る]</a>
+        </div>
       </div>
     </div>
+    <div class="poster-quote" id="reviewRotate2">&nbsp;</div>
+  </article>
 
-    <!-- 3. 리뷰 — 점선 사이, 1개씩 회전 + 타이핑 -->
-    <div class="zone-reviews">
-      <div class="review-rotate" id="reviewRotate">&nbsp;</div>
-    </div>
-
-    <!-- 4. 하단 — 바코드 자리에 주먹밥+오차 ASCII -->
-    <div class="zone-ascii">
-      <img src="onigiri-tea.png" alt="onigiri & tea" />
-    </div>
-  </div>
-
-  <!-- ╔═════════════ 두 번째 영수증 — 유담 솥뚜껑닭볶음탕 ═════════════╗ -->
-  <div class="receipt-frame" id="yudam">
-    <!-- 1. 헤더 -->
-    <div class="zone-header">
-      <span>정자 / jeongja</span>
-      <div class="map-links">
-        <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=37.3712013%2C127.114978&query=%EC%9C%A0%EB%8B%B4+%EC%86%A5%EB%9A%9C%EA%BB%91%EB%8B%AD%EB%B3%B6%EC%9D%8C%ED%83%95+%EB%B6%84%EB%8B%B9%EC%A0%95%EC%9E%90%EB%B3%B8%EC%A0%90" target="_blank" rel="noopener noreferrer">[google map]</a>
-        <a class="map-link naver" href="https://naver.me/GFCnQhlX" target="_blank" rel="noopener noreferrer">[naverで見る]</a>
+  <!-- ── 서브 포스터 2: 서우네 장작구이 ── -->
+  <article class="poster sub" id="seowoone">
+    <a class="cover" href="https://naver.me/xEX2qI11" target="_blank" rel="noopener noreferrer">
+      <div class="hero-frame" style="aspect-ratio: 480/704;">
+        <video src="seowoone-bg.mp4" autoplay muted loop playsinline preload="auto" webkit-playsinline></video>
+        <div class="hero-corner-tag">JEONGJA / 정자</div>
+        <div class="hero-stamp">90分<br/>薪焼き</div>
+      </div>
+      <h2 class="poster-title">장작</h2>
+      <p class="poster-subtitle">서우네 장작구이</p>
+      <p class="poster-romaja">Seo-une Jangjak-gui</p>
+    </a>
+    <div class="poster-info-box">
+      <ul class="poster-menu">
+        <li><span class="nm">누룽지한방通鶏 (薬膳)</span><span class="pr">₩22,000</span></li>
+        <li><span class="nm">ヤンニョム通鶏</span><span class="pr">₩27,000</span></li>
+        <li><span class="nm">半半通鶏 (양념+原味)</span><span class="pr">₩27,000</span></li>
+        <li><span class="nm">マヌル チョンヤン クリーム通鶏</span><span class="pr">₩28,000</span></li>
+        <li><span class="nm">チーズ通鶏</span><span class="pr">₩27,000</span></li>
+        <li><span class="nm">ジャガイモチヂミ</span><span class="pr">₩15,000</span></li>
+      </ul>
+      <div class="poster-meta">
+        <div class="row"><span class="label">STYLE</span><span class="val">참나무 장작 90分焼き / オーク炭火直火</span></div>
+        <div class="map-links">
+          <a href="https://www.google.com/maps/search/?api=1&query=%EC%84%9C%EC%9A%B0%EB%84%A4+%EC%9E%A5%EC%9E%91%EA%B5%AC%EC%9D%B4+%EC%84%B1%EB%82%A8%EC%8B%9C+%EB%B6%84%EB%8B%B9%EA%B5%AC+%EC%A0%95%EC%9E%90%EB%8F%99" target="_blank" rel="noopener noreferrer">[google map]</a>
+          <a href="https://naver.me/xEX2qI11" target="_blank" rel="noopener noreferrer" class="naver">[naverで見る]</a>
+        </div>
       </div>
     </div>
-
-    <!-- 2. 메인 — 사진 + 매장이름 + 메뉴 -->
-    <div class="zone-main">
-      <div class="video-col">
-        <a class="shop-link" href="https://naver.me/GFCnQhlX" target="_blank" rel="noopener noreferrer">
-          <div class="video-wrap" style="aspect-ratio: 1/1;">
-            <img src="yudam-photo.jpg" alt="유담 솥뚜껑닭볶음탕" />
-            <div class="hero-overlay">
-              <div class="top-tag">JEONGJA / 정자</div>
-              <div class="badge-rec yellow">じっくり<br/>煮込み</div>
-              <div class="big-title">鍋蓋</div>
-              <div class="sub-title">솥뚜껑닭볶음탕</div>
-              <div class="corner">@YUDAM・유담</div>
-            </div>
-          </div>
-          <div class="restaurant-name">
-            유담 솥뚜껑닭볶음탕
-            <span class="ja">[ ユダム ソットゥッコン タッポックムタン ]</span>
-          </div>
-        </a>
-      </div>
-
-      <div class="menu-col">
-        <div class="menu-head">★ MENU</div>
-        <ul>
-          <li><span class="nm">ソットゥッコン タッポックムタン (1羽 / 2-3名)</span><span class="pr">₩34,000</span></li>
-          <li><span class="nm">ソットゥッコン タッポックムタン (1羽半 / 3-4名)</span><span class="pr">₩49,000</span></li>
-          <li><span class="nm">ナプチャクマンドゥ (大邱風餃子)</span><span class="pr">₩5,000</span></li>
-        </ul>
-        <div class="hours">月曜定休</div>
-      </div>
-    </div>
-
-    <!-- 3. 리뷰 -->
-    <div class="zone-reviews">
-      <div class="review-rotate" id="reviewRotate2">&nbsp;</div>
-    </div>
-
-    <!-- 4. 하단 ASCII -->
-    <div class="zone-ascii">
-      <img src="onigiri-tea.png" alt="onigiri & tea" />
-    </div>
-  </div>
-
-  <!-- ╔═════════════ 세 번째 영수증 — 서우네 장작구이 ═════════════╗ -->
-  <div class="receipt-frame" id="seowoone">
-    <div class="zone-header">
-      <span>정자 / jeongja</span>
-      <div class="map-links">
-        <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=%EC%84%9C%EC%9A%B0%EB%84%A4+%EC%9E%A5%EC%9E%91%EA%B5%AC%EC%9D%B4+%EC%84%B1%EB%82%A8%EC%8B%9C+%EB%B6%84%EB%8B%B9%EA%B5%AC+%EC%A0%95%EC%9E%90%EB%8F%99" target="_blank" rel="noopener noreferrer">[google map]</a>
-        <a class="map-link naver" href="https://naver.me/xEX2qI11" target="_blank" rel="noopener noreferrer">[naverで見る]</a>
-      </div>
-    </div>
-
-    <div class="zone-main">
-      <div class="video-col">
-        <a class="shop-link" href="https://naver.me/xEX2qI11" target="_blank" rel="noopener noreferrer">
-          <div class="video-wrap" style="aspect-ratio: 480/704;">
-            <video src="seowoone-bg.mp4" autoplay muted loop playsinline preload="auto" webkit-playsinline></video>
-            <div class="hero-overlay">
-              <div class="top-tag">JEONGJA / 정자</div>
-              <div class="badge-rec yellow">90分<br/>薪焼き</div>
-              <div class="big-title">장작</div>
-              <div class="sub-title">참나무 장작구이</div>
-              <div class="corner">@SEOWOONE・서우네</div>
-            </div>
-          </div>
-          <div class="restaurant-name">
-            서우네 장작구이
-            <span class="ja">[ ソウネ 薪焼き / Jangjak-gui ]</span>
-          </div>
-        </a>
-      </div>
-
-      <div class="menu-col">
-        <div class="menu-head">★ MENU</div>
-        <ul>
-          <li><span class="nm">누룽지한방通鶏 (薬膳)</span><span class="pr">₩22,000</span></li>
-          <li><span class="nm">ヤンニョム通鶏</span><span class="pr">₩27,000</span></li>
-          <li><span class="nm">半半通鶏 (양념+原味)</span><span class="pr">₩27,000</span></li>
-          <li><span class="nm">マヌル チョンヤン クリーム通鶏</span><span class="pr">₩28,000</span></li>
-          <li><span class="nm">チーズ通鶏</span><span class="pr">₩27,000</span></li>
-          <li><span class="nm">ジャガイモチヂミ</span><span class="pr">₩15,000</span></li>
-        </ul>
-        <div class="hours">참나무 장작 90分焼き / オーク炭火直火</div>
-      </div>
-    </div>
-
-    <div class="zone-reviews">
-      <div class="review-rotate" id="reviewRotate3">&nbsp;</div>
-    </div>
-
-    <div class="zone-ascii">
-      <img src="onigiri-tea.png" alt="onigiri & tea" />
-    </div>
-  </div>
+    <div class="poster-quote" id="reviewRotate3">&nbsp;</div>
+  </article>
 
   <!-- 모아보기 모달 -->
   <div class="collection-modal-bg" id="allModalBg">
     <div class="collection-modal">
       <button class="collection-modal-close" aria-label="close">×</button>
       <h2>BUNDANG SPOTS</h2>
-      <div class="sub">分당の店をまとめて見る — 最新順 (latest first)</div>
+      <div class="sub">— ALL · LATEST FIRST —</div>
       <div class="collection-grid">
         <a class="collection-item" href="#bajirak" data-added="2026-04-23">
           <img src="bajirak-thumb.jpg" alt="전라도팥바지락칼국수" />
           <div class="info">
             <span class="name">전라도팥바지락칼국수</span>
-            <span class="area">BUNDANG / 분당</span>
-            <span class="added">UPDATED 2026-04-23</span>
+            <span class="area">BUNDANG</span>
+            <span class="added">2026-04-23</span>
           </div>
         </a>
         <a class="collection-item" href="#yudam" data-added="2026-04-27">
           <img src="yudam-photo.jpg" alt="유담" />
           <div class="info">
             <span class="name">유담 솥뚜껑닭볶음탕</span>
-            <span class="area">JEONGJA / 정자</span>
-            <span class="added">UPDATED 2026-04-27</span>
+            <span class="area">JEONGJA</span>
+            <span class="added">2026-04-27</span>
           </div>
         </a>
         <a class="collection-item" href="#seowoone" data-added="2026-04-27">
           <img src="seowoone-photo.jpg" alt="서우네" />
           <div class="info">
             <span class="name">서우네 장작구이</span>
-            <span class="area">JEONGJA / 정자</span>
-            <span class="added">UPDATED 2026-04-27</span>
+            <span class="area">JEONGJA</span>
+            <span class="added">2026-04-27</span>
           </div>
         </a>
       </div>
     </div>
   </div>
 
+  <button class="ue-btn" type="button" aria-label="scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="arrow">▲</span>u e</button>
+
   <script>
-    // 리뷰 데이터 — 영수증별
+    // 페이지 진입 시 자동 스크롤 방지
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+    // 리뷰 회전 (단순화)
     const REVIEWS_BAJIRAK = [
-      { t: '"あさりたっぷり。スープが澄んで旨みが濃い。絶品の一杯。"', a: '@kana_tokyo' },
-      { t: '"雨の日に思い出す味。あさりの出汁が冷えた体を温めてくれる。"', a: '@reader_yumi' }
+      { t: 'あさりたっぷり。スープが澄んで旨みが濃い。絶品の一杯。', a: '@kana_tokyo' },
+      { t: '雨の日に思い出す味。あさりの出汁が冷えた体を温めてくれる。', a: '@reader_yumi' }
     ];
     const REVIEWS_YUDAM = [
-      { t: '"鍋蓋でじっくり煮込んだ鶏。骨からほろっと外れる柔らかさ。"', a: '@bundang_eats' },
-      { t: '"ヤンニョムが絶品。ご飯が無限に進む正統派タッポックムタン。"', a: '@reader_jp' },
-      { t: '"雨の日の분당、これ食べに来て本当に正解。"', a: '@local_jeongja' }
+      { t: '鍋蓋でじっくり煮込んだ鶏。骨からほろっと外れる柔らかさ。', a: '@bundang_eats' },
+      { t: 'ヤンニョムが絶品。ご飯が無限に進む正統派タッポックムタン。', a: '@reader_jp' },
+      { t: '雨の日の분당、これ食べに来て本当に正解。', a: '@local_jeongja' }
     ];
     const REVIEWS_SEOWOONE = [
-      { t: '"参奈무 장작で90分じっくり焼いた通鶏。皮はパリッ、中はジューシー。"', a: '@chicken_seoul' },
-      { t: '"마늘청양크림 — 韓国でしか出会えない一皿。やみつきになる。"', a: '@reader_garlic' },
-      { t: '"정자に来たら必ず立ち寄る。雰囲気もいい、家族向け。"', a: '@jeongja_local' }
+      { t: '참나무 장작で90分じっくり焼いた通鶏。皮はパリッ、中はジューシー。', a: '@chicken_seoul' },
+      { t: '마늘청양크림 — 韓国でしか出会えない一皿。やみつきになる。', a: '@reader_garlic' },
+      { t: '정자に来たら必ず立ち寄る。雰囲気もいい、家族向け。', a: '@jeongja_local' }
     ];
-
-    function escAttr(s) { return (s||'').replace(/"/g, '&quot;'); }
-
-    function typeText(span, text, cb) {
+    function rotate(elId, list) {
+      const el = document.getElementById(elId);
+      if (!el || !list.length) return;
       let i = 0;
-      function step() {
-        if (i <= text.length) {
-          span.innerHTML = text.slice(0, i).replace(/</g,'&lt;') + '<span class="caret">&nbsp;</span>';
-          i++;
-          const ch = text[i-2] || '';
-          const delay = (ch === '。' || ch === '"' || ch === '、') ? 80 : 32;
-          setTimeout(step, delay);
-        } else if (cb) cb();
-      }
-      step();
-    }
-
-    function startRotation(rotateEl, reviews) {
-      if (!rotateEl || !reviews.length) return;
-      let idx = 0;
-      function renderOne(r, onComplete) {
-        rotateEl.style.opacity = 0;
+      function show() {
+        el.style.opacity = 0;
         setTimeout(() => {
-          rotateEl.innerHTML = `<span class="rt"></span><span class="ra">— ${r.a}</span>`;
-          rotateEl.style.opacity = 1;
-          const rt = rotateEl.querySelector('.rt');
-          typeText(rt, r.t, () => {
-            const c = rt.querySelector('.caret');
-            if (c) c.remove();
-            setTimeout(onComplete, 4200);
-          });
-        }, 600);
+          const r = list[i];
+          el.innerHTML = '"' + r.t + '"<span class="cite">— ' + r.a + '</span>';
+          el.style.opacity = 1;
+          i = (i + 1) % list.length;
+          setTimeout(show, 7000);
+        }, 500);
       }
-      function loop() {
-        renderOne(reviews[idx], () => {
-          idx = (idx + 1) % reviews.length;
-          loop();
-        });
-      }
-      loop();
+      show();
     }
+    rotate('reviewRotate', REVIEWS_BAJIRAK);
+    rotate('reviewRotate2', REVIEWS_YUDAM);
+    rotate('reviewRotate3', REVIEWS_SEOWOONE);
 
-    startRotation(document.getElementById('reviewRotate'), REVIEWS_BAJIRAK);
-    startRotation(document.getElementById('reviewRotate2'), REVIEWS_YUDAM);
-    startRotation(document.getElementById('reviewRotate3'), REVIEWS_SEOWOONE);
-
-    // ─── 모아보기 모달 ───
+    // 모아보기 모달
     const allBtn = document.getElementById('allBtn');
     const allModalBg = document.getElementById('allModalBg');
     function sortCollectionByLatest() {
@@ -820,9 +589,7 @@
     function openAll() { sortCollectionByLatest(); allModalBg.classList.add('show'); }
     function closeAll() { allModalBg.classList.remove('show'); }
     allBtn.addEventListener('click', openAll);
-    allModalBg.addEventListener('click', (e) => {
-      if (e.target === allModalBg) closeAll();
-    });
+    allModalBg.addEventListener('click', (e) => { if (e.target === allModalBg) closeAll(); });
     document.querySelectorAll('.collection-item').forEach(el => {
       el.addEventListener('click', (e) => {
         e.preventDefault();
@@ -836,6 +603,5 @@
     });
     document.querySelector('.collection-modal-close')?.addEventListener('click', closeAll);
   </script>
-  <button class="ue-btn" type="button" aria-label="scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="arrow">▲</span>u e</button>
 </body>
 </html>
