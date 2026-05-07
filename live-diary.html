@@ -142,10 +142,24 @@
   }
   .comment {
     background: #fff; border: 1px solid #e6e2d2;
-    border-radius: 4px; padding: 10px 12px;
+    border-radius: 12px; padding: 9px 12px;
     font-size: 13px; line-height: 1.55;
     box-shadow: 0 1px 4px rgba(0,0,0,0.04);
     word-break: break-word;
+    max-width: 78%;
+    position: relative;
+  }
+  /* 단톡방 스타일 — 내 댓글 우측 노랑, 남 댓글 좌측 흰 */
+  .comment.own {
+    align-self: flex-end;
+    background: #fee500;
+    border-color: rgba(0,0,0,0.06);
+    border-bottom-right-radius: 4px;
+  }
+  .comment.own .meta { justify-content: flex-end; }
+  .comment.other {
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
   }
   .comment .meta {
     font-family: "Special Elite", monospace;
@@ -195,7 +209,7 @@
 
   .tools-host { display: none; }
   .tools-host.show { display: block; }
-  .tools-visitor { display: none; }
+  .tools-visitor { display: block; }  /* 댓글 입력은 host도 visitor도 항상 표시 */
   .tools-visitor.show { display: block; }
   .comment-input { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; -webkit-user-select: text; user-select: text; font-family: inherit; }
 
@@ -675,7 +689,7 @@
       if (renderedComments.has(c.id)) return;
       renderedComments.add(c.id);
       const el = document.createElement('div');
-      el.className = 'comment ' + c.type;
+      el.className = 'comment ' + c.type + ' ' + (c.client_id === clientId ? 'own' : 'other');
       const time = new Date(c.created_at).toTimeString().slice(0, 5);
       let body = '';
       if (c.type === 'text') body = c.content.replace(/</g,'&lt;').replace(/\n/g,'<br/>');
