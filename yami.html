@@ -6,18 +6,18 @@
 <title>murmur josun · yami</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=Inter:wght@400;500;600;700&family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); }
   html, body { margin: 0; padding: 0; min-height: 100vh; }
   body {
-    background: #ece6dc;
+    background: #ffffff;
     color: #1a1a1a;
     font-family: "Inter", "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif;
-    padding: 22px 12px 80px;
+    padding: 22px 12px 100px;
   }
 
-  /* ─── 헤더 ─── */
+  /* 헤더 */
   .page-head {
     max-width: 480px;
     margin: 24px auto 14px;
@@ -29,7 +29,6 @@
     font-size: 26px;
     font-weight: 700;
     color: #1f5b8e;
-    letter-spacing: 0.01em;
     line-height: 1.15;
   }
   .page-subtitle {
@@ -41,19 +40,18 @@
     margin-top: 4px;
   }
 
-  /* ─── 폴더 영역 ─── */
+  /* 폴더 영역 */
   .folders {
     max-width: 460px;
     margin: 0 auto;
-    padding: 26px 0 60px;
+    padding: 22px 0 50px;
     position: relative;
   }
   .folder {
     display: block;
     text-decoration: none;
     color: inherit;
-    width: 56%;
-    margin-bottom: 60px;
+    margin-bottom: 44px;
     transition: transform 0.2s ease;
   }
   .folder svg {
@@ -62,40 +60,45 @@
     display: block;
     filter: drop-shadow(0 6px 14px rgba(40,100,160,0.18));
   }
+  .folder .folder-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+  }
   .folder .label {
     font-family: "Inter", "Zen Kaku Gothic New", sans-serif;
     font-size: 14px;
     font-weight: 500;
-    margin-top: 14px;
+    margin-top: 12px;
     display: flex;
     align-items: center;
     gap: 9px;
     color: #1a1a1a;
   }
   .folder .label .dot {
-    width: 11px;
-    height: 11px;
+    width: 11px; height: 11px;
     border-radius: 50%;
     display: inline-block;
     flex-shrink: 0;
   }
-  .folder.no-label { margin-bottom: 50px; }
+  .folder.no-label { margin-bottom: 36px; }
 
-  /* 폴더 흩뿌림 */
-  .folder-1 { margin-left: 6%;  transform: rotate(-2deg); }
-  .folder-2 { margin-left: 38%; transform: rotate(1.5deg);  width: 50%; }
-  .folder-3 { margin-left: 12%; transform: rotate(-1deg);   width: 50%; }
-  .folder-4 { margin-left: 40%; transform: rotate(2deg);    width: 52%; }
+  /* 위치/회전 — 이미지 폴더는 작게, 빈 폴더는 크게 */
+  .folder-1 { margin-left: 10%; transform: rotate(-3deg);   width: 38%; }   /* 분당 하트 */
+  .folder-2 { margin-left: 52%; transform: rotate(2deg);    width: 34%; }   /* 서울 회오리 */
+  .folder-3 { margin-left: 10%; transform: rotate(-1deg);   width: 52%; }
+  .folder-4 { margin-left: 38%; transform: rotate(2deg);    width: 50%; }
   .folder-5 { margin-left: 4%;  transform: rotate(-1.5deg); width: 46%; }
 
-  .folder-1:hover { transform: rotate(-2deg) scale(1.03); }
-  .folder-2:hover { transform: rotate(1.5deg) scale(1.03); }
+  .folder-1:hover { transform: rotate(-3deg) scale(1.05); }
+  .folder-2:hover { transform: rotate(2deg) scale(1.05); }
   .folder-3:hover { transform: rotate(-1deg) scale(1.03); }
   .folder-4:hover { transform: rotate(2deg) scale(1.03); }
   .folder-5:hover { transform: rotate(-1.5deg) scale(1.03); }
 
-  /* ─── 우측 고정 버튼 (home/back/u e) ─── */
-  .back-link, .home-link {
+  /* 우측 고정 버튼 */
+  .back-link, .home-link, .all-link {
     position: fixed;
     right: 10px;
     width: 60px;
@@ -109,26 +112,27 @@
     text-decoration: none;
     transition: transform 220ms ease;
   }
-  .back-link img, .home-link img {
+  .back-link img, .home-link img, .all-link img {
     width: 56px; height: 56px;
     object-fit: contain;
     display: block;
     filter: drop-shadow(0 3px 8px rgba(0,0,0,0.2));
     pointer-events: none;
   }
-  .back-link .btn-label, .home-link .btn-label {
+  .back-link .btn-label, .home-link .btn-label, .all-link .btn-label {
     font-family: "Special Elite", monospace;
     font-size: 9.5px;
     letter-spacing: 0.18em;
     color: #1a1a1a;
     margin-top: 2px;
   }
-  .back-link:hover, .home-link:hover { transform: scale(1.08); }
-  .home-link { bottom: calc(50% + 36px); }
-  .back-link { bottom: calc(50% - 40px); }
+  .back-link:hover, .home-link:hover, .all-link:hover { transform: scale(1.08); }
+  .home-link { bottom: calc(50% + 76px); }
+  .back-link { bottom: 50%; }
+  .all-link  { bottom: calc(50% - 80px); }
 
   .ue-btn {
-    position: fixed; right: 18px; bottom: calc(50% - 116px);
+    position: fixed; right: 18px; bottom: calc(50% - 156px);
     z-index: 100;
     font-family: "Special Elite", monospace;
     font-size: 12px; letter-spacing: 0.1em;
@@ -140,29 +144,124 @@
   .ue-btn:hover { opacity: 1; }
   .ue-btn .arrow { font-size: 10px; margin-right: 3px; opacity: 0.7; }
 
+  /* 모아보기 모달 */
+  .collection-modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 200;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    overflow-y: auto;
+  }
+  .collection-modal-bg.show { display: flex; }
+  .collection-modal {
+    width: 100%;
+    max-width: 480px;
+    background: #fff8ee;
+    border-radius: 16px;
+    border: 2.5px solid #1a1a1a;
+    padding: 24px 22px;
+    position: relative;
+    box-shadow: 5px 5px 0 #1a1a1a;
+  }
+  .collection-modal h2 {
+    text-align: center;
+    font-family: "Hachi Maru Pop", serif;
+    font-size: 22px;
+    color: #ec5829;
+    margin: 0 0 4px;
+    font-weight: 400;
+  }
+  .collection-modal .sub {
+    text-align: center;
+    font-size: 10px;
+    color: #888;
+    margin-bottom: 18px;
+    font-family: "Special Elite", monospace;
+    letter-spacing: 0.18em;
+  }
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+  .collection-item {
+    background: #fff;
+    border: 2px solid #1a1a1a;
+    border-radius: 10px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.18s;
+  }
+  .collection-item:hover { transform: translateY(-2px); }
+  .collection-item img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    display: block;
+    border-bottom: 2px solid #1a1a1a;
+  }
+  .collection-item .info {
+    padding: 8px 8px 10px;
+    text-align: center;
+    font-family: "Inter", sans-serif;
+  }
+  .collection-item .info .name {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+    line-height: 1.3;
+  }
+  .collection-item .info .area, .collection-item .info .added {
+    display: block;
+    font-family: "Special Elite", monospace;
+    font-size: 8.5px;
+    color: #888;
+    letter-spacing: 0.1em;
+  }
+  .collection-modal-close {
+    position: absolute;
+    top: 10px; right: 12px;
+    width: 30px; height: 30px;
+    border: 0;
+    background: rgba(0,0,0,0.08);
+    color: #555;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 50%;
+    line-height: 1;
+  }
+
   @media (max-width: 540px) {
-    body { padding: 18px 10px 60px; }
+    body { padding: 18px 10px 80px; }
     .page-head { padding: 0 16px; margin: 18px auto 8px; }
     .page-title { font-size: 22px; }
     .page-subtitle { font-size: 11px; }
     .folders { padding: 18px 0 40px; }
-    .folder-1 { margin-left: 6%;  width: 58%; }
-    .folder-2 { margin-left: 36%; width: 52%; }
-    .folder-3 { margin-left: 10%; width: 54%; }
-    .folder-4 { margin-left: 32%; width: 56%; }
-    .folder-5 { margin-left: 6%;  width: 50%; }
+    .folder-1 { margin-left: 10%; width: 40%; }
+    .folder-2 { margin-left: 50%; width: 36%; }
+    .folder-3 { margin-left: 8%;  width: 56%; }
+    .folder-4 { margin-left: 36%; width: 54%; }
+    .folder-5 { margin-left: 4%;  width: 50%; }
     .folder { margin-bottom: 40px; }
     .folder.no-label { margin-bottom: 32px; }
     .folder .label { font-size: 13px; margin-top: 10px; }
-    .back-link, .home-link { right: 4px; width: 50px; }
-    .back-link img, .home-link img { width: 46px; height: 46px; }
-    .home-link { bottom: calc(50% + 30px); }
-    .back-link { bottom: calc(50% - 32px); }
-    .ue-btn { right: 4px; bottom: calc(50% - 96px); font-size: 11px; padding: 5px 8px; }
+    .back-link, .home-link, .all-link { right: 4px; width: 50px; }
+    .back-link img, .home-link img, .all-link img { width: 46px; height: 46px; }
+    .home-link { bottom: calc(50% + 60px); }
+    .all-link  { bottom: calc(50% - 64px); }
+    .ue-btn { right: 4px; bottom: calc(50% - 132px); font-size: 11px; padding: 5px 8px; }
   }
   @media (max-width: 380px) {
-    .folder-2 { margin-left: 34%; width: 50%; }
-    .folder-4 { margin-left: 30%; width: 54%; }
+    .folder-1 { width: 38%; }
+    .folder-2 { margin-left: 48%; width: 34%; }
+    .folder-4 { margin-left: 32%; width: 54%; }
   }
 </style>
 </head>
@@ -189,6 +288,10 @@
     <img src="btn-bread.png" alt="" />
     <span class="btn-label">back</span>
   </a>
+  <a class="all-link" id="allBtn" href="javascript:void(0)" title="ALL">
+    <img src="btn-eyes.png" alt="" />
+    <span class="btn-label">all</span>
+  </a>
 
   <header class="page-head">
     <div class="page-title">"内なる味"</div>
@@ -196,25 +299,19 @@
   </header>
 
   <div class="folders">
-    <!-- 폴더 1: bundang 지역 → 분당페이지 -->
+    <!-- 폴더 1: 분당 = 핑크 하트 (작은 폴더 버튼) -->
     <a class="folder folder-1" href="main.html">
-      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 18 22 H 100 Q 110 22 113 32 L 122 50 H 18 Z" fill="url(#folderTab)"/>
-        <rect x="0" y="42" width="280" height="170" rx="18" fill="url(#folderBody)"/>
-      </svg>
+      <img src="bundang-heart.png" class="folder-img" alt="bundang"/>
       <div class="label"><span class="dot" style="background:#3ec751"></span>bundang</div>
     </a>
 
-    <!-- 폴더 2: seoul 지역 → 분당페이지 (당장은 동일) -->
+    <!-- 폴더 2: 서울 = 회오리 (작은 폴더 버튼) -->
     <a class="folder folder-2" href="main.html">
-      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 18 22 H 100 Q 110 22 113 32 L 122 50 H 18 Z" fill="url(#folderTab)"/>
-        <rect x="0" y="42" width="280" height="170" rx="18" fill="url(#folderBody)"/>
-      </svg>
+      <img src="seoul-spiral.png" class="folder-img" alt="seoul"/>
       <div class="label"><span class="dot" style="background:#e84a4a"></span>seoul</div>
     </a>
 
-    <!-- 폴더 3: 빈 무드 -->
+    <!-- 폴더 3: 빈 무드 (큰 블루) -->
     <div class="folder folder-3 no-label">
       <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
         <path d="M 18 22 H 100 Q 110 22 113 32 L 122 50 H 18 Z" fill="url(#folderTab)"/>
@@ -222,7 +319,7 @@
       </svg>
     </div>
 
-    <!-- 폴더 4: 빈 무드 -->
+    <!-- 폴더 4: 빈 무드 (큰 블루) -->
     <div class="folder folder-4 no-label">
       <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
         <path d="M 18 22 H 100 Q 110 22 113 32 L 122 50 H 18 Z" fill="url(#folderTab)"/>
@@ -230,7 +327,7 @@
       </svg>
     </div>
 
-    <!-- 폴더 5: 빈 무드 -->
+    <!-- 폴더 5: 빈 무드 (작은 블루) -->
     <div class="folder folder-5 no-label">
       <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
         <path d="M 18 22 H 100 Q 110 22 113 32 L 122 50 H 18 Z" fill="url(#folderTab)"/>
@@ -239,10 +336,60 @@
     </div>
   </div>
 
+  <!-- 모아보기 모달 -->
+  <div class="collection-modal-bg" id="allModalBg">
+    <div class="collection-modal">
+      <button class="collection-modal-close" aria-label="close">×</button>
+      <h2>YAMI SPOTS</h2>
+      <div class="sub">— ALL · LATEST FIRST —</div>
+      <div class="collection-grid">
+        <a class="collection-item" href="main.html#bajirak" data-added="2026-04-23">
+          <img src="bajirak-thumb.jpg" alt="전라도팥바지락칼국수" />
+          <div class="info">
+            <span class="name">전라도팥바지락칼국수</span>
+            <span class="area">BUNDANG</span>
+            <span class="added">2026-04-23</span>
+          </div>
+        </a>
+        <a class="collection-item" href="main.html#yudam" data-added="2026-04-27">
+          <img src="yudam-photo.jpg" alt="유담" />
+          <div class="info">
+            <span class="name">유담 솥뚜껑닭볶음탕</span>
+            <span class="area">JEONGJA</span>
+            <span class="added">2026-04-27</span>
+          </div>
+        </a>
+        <a class="collection-item" href="main.html#seowoone" data-added="2026-04-27">
+          <img src="seowoone-photo.jpg" alt="서우네" />
+          <div class="info">
+            <span class="name">서우네 장작구이</span>
+            <span class="area">JEONGJA</span>
+            <span class="added">2026-04-27</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <button class="ue-btn" type="button" aria-label="scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="arrow">▲</span>u e</button>
 
   <script>
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+    const allBtn = document.getElementById('allBtn');
+    const allModalBg = document.getElementById('allModalBg');
+    function sortCollectionByLatest() {
+      const grid = document.querySelector('.collection-modal .collection-grid');
+      if (!grid) return;
+      const items = Array.from(grid.querySelectorAll('.collection-item'));
+      items.sort((a, b) => (b.dataset.added || '').localeCompare(a.dataset.added || ''));
+      items.forEach(it => grid.appendChild(it));
+    }
+    function openAll() { sortCollectionByLatest(); allModalBg.classList.add('show'); }
+    function closeAll() { allModalBg.classList.remove('show'); }
+    allBtn.addEventListener('click', openAll);
+    allModalBg.addEventListener('click', (e) => { if (e.target === allModalBg) closeAll(); });
+    document.querySelector('.collection-modal-close')?.addEventListener('click', closeAll);
   </script>
 </body>
 </html>
