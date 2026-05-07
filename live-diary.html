@@ -467,12 +467,12 @@
       if (role !== 'host') return toast('HOST 모드에서만 가능');
       const txt = hostChatInput.value.trim();
       if (!txt) return;
-      // 위치 계산 — 좌상단부터 한 줄씩 내려오며 쌓이고, 바닥 닿으면 우측으로 다음 칼럼
+      // 겹침 방지 — 현재 캔버스에 있는 노트 갯수 기준으로 다음 자리 계산
+      chatNotePos = itemsLayer.querySelectorAll('.item.note').length;
       const col = Math.floor(chatNotePos / 14);
       const row = chatNotePos % 14;
       const px = Math.min(0.05 + col * 0.32, 0.7);
       const py = 0.06 + row * 0.065;
-      chatNotePos++;
       const item = {
         session_date: today, type: 'note', content: txt,
         pos_x: px, pos_y: py, rotation: 0,
@@ -628,14 +628,12 @@
           width: '20px', height: '20px', borderRadius: '50%',
           background: '#c8243a', color: '#fff',
           fontSize: '14px', lineHeight: '20px', textAlign: 'center',
-          cursor: 'pointer', display: 'none', zIndex: '20',
+          cursor: 'pointer', display: 'block', zIndex: '20',
           fontFamily: 'sans-serif', fontWeight: 'bold',
           boxShadow: '0 2px 6px rgba(0,0,0,0.25)'
         });
         el.style.position = 'absolute';
         el.appendChild(x);
-        el.addEventListener('mouseenter', () => x.style.display = 'block');
-        el.addEventListener('mouseleave', () => x.style.display = 'none');
         x.addEventListener('click', async (ev) => {
           ev.stopPropagation();
           if (!confirm('이 항목을 지울까요?')) return;
@@ -684,6 +682,30 @@
       else if (c.type === 'photo') body = `<img src="${c.content}" />`;
       else if (c.type === 'drawing') body = `<canvas data-strokes='${c.content}' width="280" height="200"></canvas>`;
       el.innerHTML = `<div class="meta"><span class="name">@${c.nickname || 'guest'}</span><span>${time}</span></div>${body}`;
+      // host는 모든 댓글에 × 삭제 버튼
+      if (role === 'host') {
+        el.style.position = 'relative';
+        const cx = document.createElement('span');
+        cx.textContent = '×';
+        Object.assign(cx.style, {
+          position: 'absolute', top: '4px', right: '6px',
+          width: '20px', height: '20px', borderRadius: '50%',
+          background: '#c8243a', color: '#fff',
+          fontSize: '13px', lineHeight: '20px', textAlign: 'center',
+          cursor: 'pointer', zIndex: '10',
+          fontFamily: 'sans-serif', fontWeight: 'bold',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.25)'
+        });
+        el.appendChild(cx);
+        cx.addEventListener('click', async (ev) => {
+          ev.stopPropagation();
+          if (!confirm('이 댓글을 지울까요?')) return;
+          const { error } = await supabase.from('diary_comments').delete().eq('id', c.id);
+          if (error) { toast('삭제 실패: ' + error.message); return; }
+          el.remove();
+          renderedComments.delete(c.id);
+        });
+      }
       commentsList.appendChild(el);
       // 그림 댓글 그리기
       if (c.type === 'drawing') {
