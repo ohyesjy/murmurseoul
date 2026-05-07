@@ -319,13 +319,10 @@
   <div class="modal-bg" id="enterModal">
     <div class="modal">
       <h2>WELCOME ✦</h2>
-      <p>그림일기 LIVE에 들어왔어요.<br/>닉네임을 입력하고 역할을 선택해주세요.</p>
+      <p>그림일기 LIVE에 들어왔어요.<br/>닉네임을 입력해주세요.</p>
       <input type="text" id="nicknameInput" placeholder="nickname / ニックネーム" maxlength="20" />
-      <div class="role-choice">
-        <button class="btn selected" data-role="visitor" id="btnRoleVisitor">VISITOR</button>
-        <button class="btn" data-role="host" id="btnRoleHost">HOST ✦</button>
-      </div>
-      <p style="font-size: 10px; color: #999; margin: 6px 0;">HOST = 그림 + 사진 + 제목 작성 / VISITOR = 댓글</p>
+      <input type="password" id="hostPassword" placeholder="관리자 비밀번호 (선택)" maxlength="40" style="margin-top:6px;" />
+      <p style="font-size: 10px; color: #999; margin: 6px 0;">비밀번호 입력 시 HOST 모드 (그림+사진+제목 편집)</p>
       <div style="display:flex; gap:8px; margin-top:4px;">
         <button class="btn" id="btnCancel" style="flex:1; padding:10px; background:#e8e4d8; color:#1a1a1a;">캔슬</button>
         <button class="btn primary" id="btnEnter" style="flex:1; padding:10px;">등록 ▸</button>
@@ -794,24 +791,22 @@
       });
     }
 
-    // 모달 (닉네임 + 역할)
-    let chosenRole = role;
-    document.getElementById('btnRoleVisitor').addEventListener('click', () => {
-      chosenRole = 'visitor';
-      document.getElementById('btnRoleVisitor').classList.add('selected');
-      document.getElementById('btnRoleHost').classList.remove('selected');
-    });
-    document.getElementById('btnRoleHost').addEventListener('click', () => {
-      chosenRole = 'host';
-      document.getElementById('btnRoleHost').classList.add('selected');
-      document.getElementById('btnRoleVisitor').classList.remove('selected');
-    });
+    // 모달 (닉네임 + 비번)
+    const HOST_PASSWORD = 'murmur';  // 변경하려면 이 한 줄만 수정
 
     document.getElementById('btnEnter').addEventListener('click', () => {
       const v = document.getElementById('nicknameInput').value.trim();
       if (v) { nickname = v; localStorage.setItem('mj_nickname', v); }
-      role = chosenRole;
+
+      const pw = document.getElementById('hostPassword').value;
+      if (pw && pw === HOST_PASSWORD) {
+        role = 'host';
+      } else {
+        role = 'visitor';
+        if (pw && pw !== HOST_PASSWORD) toast('비밀번호 불일치 — visitor로 입장');
+      }
       localStorage.setItem('mj_role', role);
+
       const em = document.getElementById('enterModal');
       em.classList.add('hidden');
       em.style.display = 'none';
@@ -827,11 +822,6 @@
     });
 
     if (nickname) document.getElementById('nicknameInput').value = nickname;
-    if (role === 'host') {
-      document.getElementById('btnRoleHost').classList.add('selected');
-      document.getElementById('btnRoleVisitor').classList.remove('selected');
-      chosenRole = 'host';
-    }
   </script>
 </body>
 </html>
