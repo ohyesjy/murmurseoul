@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>murmur josun · yami</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
+  body {
+    background: #ece6dc;
+    color: #1a1a1a;
+    font-family: "Inter", "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif;
+    padding: 22px 12px 80px;
+  }
+
+  /* ─── 헤더 ─── */
+  .page-head {
+    max-width: 480px;
+    margin: 24px auto 14px;
+    padding: 0 24px;
+    text-align: right;
+  }
+  .page-title {
+    font-family: "Zen Kaku Gothic New", sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1f5b8e;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+  }
+  .page-subtitle {
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #5c8eb3;
+    margin-top: 4px;
+  }
+
+  /* ─── 폴더 영역 ─── */
+  .folders {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 26px 0 60px;
+    position: relative;
+  }
+  .folder {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    width: 56%;
+    margin-bottom: 60px;
+    transition: transform 0.2s ease;
+  }
+  .folder svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 6px 14px rgba(40,100,160,0.18));
+  }
+  .folder .label {
+    font-family: "Inter", "Zen Kaku Gothic New", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #1a1a1a;
+  }
+  .folder .label .dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .folder.no-label { margin-bottom: 50px; }
+
+  /* 폴더 흩뿌림 */
+  .folder-1 { margin-left: 6%;  transform: rotate(-2deg); }
+  .folder-2 { margin-left: 38%; transform: rotate(1.5deg);  width: 50%; }
+  .folder-3 { margin-left: 12%; transform: rotate(-1deg);   width: 50%; }
+  .folder-4 { margin-left: 40%; transform: rotate(2deg);    width: 52%; }
+  .folder-5 { margin-left: 4%;  transform: rotate(-1.5deg); width: 46%; }
+
+  .folder-1:hover { transform: rotate(-2deg) scale(1.03); }
+  .folder-2:hover { transform: rotate(1.5deg) scale(1.03); }
+  .folder-3:hover { transform: rotate(-1deg) scale(1.03); }
+  .folder-4:hover { transform: rotate(2deg) scale(1.03); }
+  .folder-5:hover { transform: rotate(-1.5deg) scale(1.03); }
+
+  /* ─── 우측 고정 버튼 (home/back/u e) ─── */
+  .back-link, .home-link {
+    position: fixed;
+    right: 10px;
+    width: 60px;
+    background: transparent;
+    border: 0;
+    z-index: 50;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 220ms ease;
+  }
+  .back-link img, .home-link img {
+    width: 56px; height: 56px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,0.2));
+    pointer-events: none;
+  }
+  .back-link .btn-label, .home-link .btn-label {
+    font-family: "Special Elite", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    color: #1a1a1a;
+    margin-top: 2px;
+  }
+  .back-link:hover, .home-link:hover { transform: scale(1.08); }
+  .home-link { bottom: calc(50% + 36px); }
+  .back-link { bottom: calc(50% - 40px); }
+
+  .ue-btn {
+    position: fixed; right: 18px; bottom: calc(50% - 116px);
+    z-index: 100;
+    font-family: "Special Elite", monospace;
+    font-size: 12px; letter-spacing: 0.1em;
+    color: #1a1a1a; background: rgba(255,255,255,0.85);
+    padding: 6px 10px; border: 1.5px solid #1a1a1a;
+    border-radius: 4px; cursor: pointer;
+    opacity: 0.6; line-height: 1; user-select: none;
+  }
+  .ue-btn:hover { opacity: 1; }
+  .ue-btn .arrow { font-size: 10px; margin-right: 3px; opacity: 0.7; }
+
+  @media (max-width: 540px) {
+    body { padding: 18px 10px 60px; }
+    .page-head { padding: 0 16px; margin: 18px auto 8px; }
+    .page-title { font-size: 22px; }
+    .page-subtitle { font-size: 11px; }
+    .folders { padding: 18px 0 40px; }
+    .folder-1 { margin-left: 6%;  width: 58%; }
+    .folder-2 { margin-left: 36%; width: 52%; }
+    .folder-3 { margin-left: 10%; width: 54%; }
+    .folder-4 { margin-left: 32%; width: 56%; }
+    .folder-5 { margin-left: 6%;  width: 50%; }
+    .folder { margin-bottom: 40px; }
+    .folder.no-label { margin-bottom: 32px; }
+    .folder .label { font-size: 13px; margin-top: 10px; }
+    .back-link, .home-link { right: 4px; width: 50px; }
+    .back-link img, .home-link img { width: 46px; height: 46px; }
+    .home-link { bottom: calc(50% + 30px); }
+    .back-link { bottom: calc(50% - 32px); }
+    .ue-btn { right: 4px; bottom: calc(50% - 96px); font-size: 11px; padding: 5px 8px; }
+  }
+  @media (max-width: 380px) {
+    .folder-2 { margin-left: 34%; width: 50%; }
+    .folder-4 { margin-left: 30%; width: 54%; }
+  }
+</style>
+</head>
+<body>
+  <!-- 폴더 SVG defs -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="folderTab" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#5cabe0"/>
+        <stop offset="1" stop-color="#2e88c4"/>
+      </linearGradient>
+      <linearGradient id="folderBody" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#82c4eb"/>
+        <stop offset="1" stop-color="#4fa3da"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <a class="home-link" href="index.html" title="HOME">
+    <img src="btn-tomato.png" alt="" />
+    <span class="btn-label">home</span>
+  </a>
+  <a class="back-link" href="index.html" title="BACK">
+    <img src="btn-bread.png" alt="" />
+    <span class="btn-label">back</span>
+  </a>
+
+  <header class="page-head">
+    <div class="page-title">"内なる味"</div>
+    <div class="page-subtitle">미각이슈</div>
+  </header>
+
+  <div class="folders">
+    <!-- 폴더 1: bundang 지역 → 분당페이지 -->
+    <a class="folder folder-1" href="main.html">
+      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 18 22 H 100 Q 110 22 113 32 L 122 50 H 18 Z" fill="url(#folderTab)"/>
+        <rect x="0" y="42" width="280" height="170" rx="18" fill="url(#folderBody)"/>
+      </svg>
+      <div class="label"><span class="dot" style="background:#3ec751"></span>bundang</div>
+    </a>
+
+    <!-- 폴더 2: seoul 지역 → 분당페이지 (당장은 동일) -->
+    <a class="folder folder-2" href="main.html">
+      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 18 22 H 100 Q 110 22 113 32 L 122 50 H 18 Z" fill="url(#folderTab)"/>
+        <rect x="0" y="42" width="280" height="170" rx="18" fill="url(#folderBody)"/>
+      </svg>
+      <div class="label"><span class="dot" style="background:#e84a4a"></span>seoul</div>
+    </a>
+
+    <!-- 폴더 3: 빈 무드 -->
+    <div class="folder folder-3 no-label">
+      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 18 22 H 100 Q 110 22 113 32 L 122 50 H 18 Z" fill="url(#folderTab)"/>
+        <rect x="0" y="42" width="280" height="170" rx="18" fill="url(#folderBody)"/>
+      </svg>
+    </div>
+
+    <!-- 폴더 4: 빈 무드 -->
+    <div class="folder folder-4 no-label">
+      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 18 22 H 100 Q 110 22 113 32 L 122 50 H 18 Z" fill="url(#folderTab)"/>
+        <rect x="0" y="42" width="280" height="170" rx="18" fill="url(#folderBody)"/>
+      </svg>
+    </div>
+
+    <!-- 폴더 5: 빈 무드 -->
+    <div class="folder folder-5 no-label">
+      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 18 22 H 100 Q 110 22 113 32 L 122 50 H 18 Z" fill="url(#folderTab)"/>
+        <rect x="0" y="42" width="280" height="170" rx="18" fill="url(#folderBody)"/>
+      </svg>
+    </div>
+  </div>
+
+  <button class="ue-btn" type="button" aria-label="scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="arrow">▲</span>u e</button>
+
+  <script>
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  </script>
+</body>
+</html>
