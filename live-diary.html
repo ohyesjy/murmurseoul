@@ -125,7 +125,21 @@
     margin-bottom: 12px;
     letter-spacing: 0.04em;
   }
-  .comments-list { display: flex; flex-direction: column; gap: 10px; }
+  .comments-list {
+    display: flex; flex-direction: column; gap: 10px;
+    max-height: clamp(260px, 52vh, 380px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    padding-right: 2px;
+  }
+  .comment {
+    animation: slideUpIn 0.32s ease-out;
+  }
+  @keyframes slideUpIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
   .comment {
     background: #fff; border: 1px solid #e6e2d2;
     border-radius: 4px; padding: 10px 12px;
@@ -686,7 +700,11 @@
           cctx.stroke();
         });
       }
-      el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      // 라이브 채팅처럼 — 사용자가 맨 아래 근처에 있을 때만 자동 스크롤
+      const nearBottom = (commentsList.scrollHeight - commentsList.clientHeight - commentsList.scrollTop) < 80;
+      if (nearBottom) {
+        commentsList.scrollTop = commentsList.scrollHeight;
+      }
     }
 
     // 댓글 보내기
@@ -791,7 +809,9 @@
       if (v) { nickname = v; localStorage.setItem('mj_nickname', v); }
       role = chosenRole;
       localStorage.setItem('mj_role', role);
-      document.getElementById('enterModal').classList.add('hidden');
+      const em = document.getElementById('enterModal');
+      em.classList.add('hidden');
+      em.style.display = 'none';
       applyRole();
       resizeCanvas();
       loadAll();
