@@ -395,6 +395,7 @@
     color: #888;
     letter-spacing: 0.1em;
   }
+  .collection-item .info .added { font-family: "Special Elite", monospace; font-size: 9px; letter-spacing: 0.1em; color: #888; margin-top: 3px; display: block; }
   .collection-modal-close {
     position: absolute;
     top: 10px; right: 12px;
@@ -505,6 +506,24 @@
     .back-link .btn-label, .home-link .btn-label, .all-link .btn-label { font-size: 9px; }
     .home-link { bottom: calc(42% + 64px); }
     .all-link  { bottom: calc(42% - 90px); }
+  }
+
+  /* ─── u e (위로 스크롤) 버튼 ─── */
+  .ue-btn {
+    position: fixed; right: 18px; bottom: 22px;
+    z-index: 200;
+    font-family: "Special Elite", monospace;
+    font-size: 12px; letter-spacing: 0.18em;
+    color: #1a1a1a; background: rgba(255,255,255,0.9);
+    padding: 9px 13px; border: 1px solid #1a1a1a;
+    border-radius: 4px; cursor: pointer; text-decoration: none;
+    opacity: 0.65; transition: 0.2s;
+    line-height: 1; user-select: none;
+  }
+  .ue-btn:hover { opacity: 1; background: #1a1a1a; color: #fff; }
+  .ue-btn .arrow { font-size: 10px; margin-right: 4px; opacity: 0.7; }
+  @media (max-width: 540px) {
+    .ue-btn { right: 10px; bottom: 14px; font-size: 11px; padding: 7px 10px; }
   }
 </style>
 </head>
@@ -696,27 +715,30 @@
     <div class="collection-modal">
       <button class="collection-modal-close" aria-label="close">×</button>
       <h2>BUNDANG SPOTS</h2>
-      <div class="sub">分당の店をまとめて見る</div>
+      <div class="sub">分당の店をまとめて見る — 最新順 (latest first)</div>
       <div class="collection-grid">
-        <a class="collection-item" href="#bajirak">
-          <img src="bajirak.mp4#t=0.5" alt="" onerror="this.style.display='none'" />
+        <a class="collection-item" href="#bajirak" data-added="2026-04-23">
+          <img src="bajirak-thumb.jpg" alt="전라도팥바지락칼국수" />
           <div class="info">
             <span class="name">전라도팥바지락칼국수</span>
             <span class="area">BUNDANG / 분당</span>
+            <span class="added">UPDATED 2026-04-23</span>
           </div>
         </a>
-        <a class="collection-item" href="#yudam">
+        <a class="collection-item" href="#yudam" data-added="2026-04-27">
           <img src="yudam-photo.jpg" alt="유담" />
           <div class="info">
             <span class="name">유담 솥뚜껑닭볶음탕</span>
             <span class="area">JEONGJA / 정자</span>
+            <span class="added">UPDATED 2026-04-27</span>
           </div>
         </a>
-        <a class="collection-item" href="#seowoone">
+        <a class="collection-item" href="#seowoone" data-added="2026-04-27">
           <img src="seowoone-photo.jpg" alt="서우네" />
           <div class="info">
             <span class="name">서우네 장작구이</span>
             <span class="area">JEONGJA / 정자</span>
+            <span class="added">UPDATED 2026-04-27</span>
           </div>
         </a>
       </div>
@@ -788,7 +810,14 @@
     // ─── 모아보기 모달 ───
     const allBtn = document.getElementById('allBtn');
     const allModalBg = document.getElementById('allModalBg');
-    function openAll() { allModalBg.classList.add('show'); }
+    function sortCollectionByLatest() {
+      const grid = document.querySelector('.collection-modal .collection-grid');
+      if (!grid) return;
+      const items = Array.from(grid.querySelectorAll('.collection-item'));
+      items.sort((a, b) => (b.dataset.added || '').localeCompare(a.dataset.added || ''));
+      items.forEach(it => grid.appendChild(it));
+    }
+    function openAll() { sortCollectionByLatest(); allModalBg.classList.add('show'); }
     function closeAll() { allModalBg.classList.remove('show'); }
     allBtn.addEventListener('click', openAll);
     allModalBg.addEventListener('click', (e) => {
@@ -807,5 +836,6 @@
     });
     document.querySelector('.collection-modal-close')?.addEventListener('click', closeAll);
   </script>
+  <button class="ue-btn" type="button" aria-label="scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="arrow">▲</span>u e</button>
 </body>
 </html>
