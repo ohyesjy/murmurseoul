@@ -326,7 +326,10 @@
         <button class="btn" data-role="host" id="btnRoleHost">HOST ✦</button>
       </div>
       <p style="font-size: 10px; color: #999; margin: 6px 0;">HOST = 그림 + 사진 + 제목 작성 / VISITOR = 댓글</p>
-      <button class="btn primary" id="btnEnter" style="width: 100%; padding: 10px;">ENTER ▸</button>
+      <div style="display:flex; gap:8px; margin-top:4px;">
+        <button class="btn" id="btnCancel" style="flex:1; padding:10px; background:#e8e4d8; color:#1a1a1a;">캔슬</button>
+        <button class="btn primary" id="btnEnter" style="flex:1; padding:10px;">등록 ▸</button>
+      </div>
     </div>
   </div>
 
@@ -816,6 +819,11 @@
       resizeCanvas();
       loadAll();
       subscribeRealtime();
+    });
+
+    document.getElementById('btnCancel').addEventListener('click', () => {
+      if (history.length > 1) history.back();
+      else window.location.href = 'index.html';
     });
 
     if (nickname) document.getElementById('nicknameInput').value = nickname;
