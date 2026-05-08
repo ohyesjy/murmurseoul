@@ -1705,6 +1705,25 @@
       const nick = document.getElementById('loginNick').value.trim();
       const pw = document.getElementById('loginPw').value;
       if (!nick || !pw) { toast('ニックネーム+パスワード必須'); return; }
+
+      // HOST 직접 진입 — 닉네임 'murmur' + HOST 비번
+      if (nick.toLowerCase() === 'murmur' && pw === HOST_PASSWORD) {
+        nickname = 'murmur';
+        role = 'host';
+        localStorage.setItem('mj_nickname', 'murmur');
+        localStorage.setItem('mj_role', 'host');
+        localStorage.setItem('mj_email', 'host@murmur');
+        const em = document.getElementById('enterModal');
+        em.classList.add('hidden');
+        em.style.display = 'none';
+        try { applyRole(); } catch (e) {}
+        try { resizeCanvas(); } catch (e) {}
+        try { loadAll(); } catch (e) {}
+        try { subscribeRealtime(); } catch (e) {}
+        toast('🔓 HOST 진입');
+        return;
+      }
+
       try {
         const { data, error } = await supabase.from('members')
           .select('*')
