@@ -195,10 +195,11 @@
     }
 
     async function loadSnaps() {
+      // snapshot 식별 — type='snapshot' 또는 pos_x<0 (magic) 또는 type='photo'+pos_x<0
       const { data, error } = await supabase
         .from('diary_items')
         .select('*')
-        .eq('type', 'snapshot')
+        .lt('pos_x', 0)
         .order('created_at', { ascending: false });
       if (error) { console.error('load snaps err', error); return; }
       if (!data || data.length === 0) return;
@@ -208,11 +209,12 @@
 
     loadSnaps();
 
-    // realtime — 새 NOW 캡처 시 자동 추가
+    // realtime — 새 NOW 캡처 시 자동 추가 (pos_x<0 인 것만)
     supabase.channel('snap-wall')
       .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'diary_items', filter: 'type=eq.snapshot' },
+        { event: 'INSERT', schema: 'public', table: 'diary_items' },
         (p) => {
+          if (!p.new || p.new.pos_x >= 0) return;
           emptyCard.style.display = 'none';
           gallery.insertBefore(renderSnap(p.new), gallery.firstChild);
         })
