@@ -743,21 +743,26 @@
         el.style.wordBreak = 'normal';
         el.textContent = item.content;
       }
-      // host는 자기 항목 위에 마우스 올리면 × 삭제 버튼
+      // 호스트 자기 항목 — 드래그 위치 이동 + 탭 시 X 표시 토글
       if (role === 'host' && item.client_id === clientId) {
-        el.style.cursor = 'pointer';
+        el.style.position = 'absolute';
+        el.style.cursor = 'move';
+        el.style.touchAction = 'none';
+
+        // X 버튼 (기본 숨김, 탭 시 표시)
         const x = document.createElement('span');
+        x.className = 'x-mark';
         x.textContent = '×';
         Object.assign(x.style, {
-          position: 'absolute', top: '-10px', right: '-10px',
-          width: '20px', height: '20px', borderRadius: '50%',
+          position: 'absolute', top: '-12px', right: '-12px',
+          width: '26px', height: '26px', borderRadius: '50%',
           background: '#c8243a', color: '#fff',
-          fontSize: '14px', lineHeight: '20px', textAlign: 'center',
-          cursor: 'pointer', display: 'block', zIndex: '20',
+          fontSize: '15px', lineHeight: '26px', textAlign: 'center',
+          cursor: 'pointer', display: 'none', zIndex: '25',
           fontFamily: 'sans-serif', fontWeight: 'bold',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.25)'
+          boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+          touchAction: 'manipulation'
         });
-        el.style.position = 'absolute';
         el.appendChild(x);
         x.addEventListener('click', async (ev) => {
           ev.stopPropagation();
@@ -767,14 +772,11 @@
           el.remove();
           renderedItems.delete(item.id);
         });
-      }
-      // 호스트 자기 사진 — 드래그로 위치 변경 + 사이즈/회전 컨트롤
-      if (item.type === 'photo' && role === 'host' && item.client_id === clientId) {
-        // === 드래그 위치 변경 ===
+
+        // 드래그 + 탭 구분
         let dragging = false, dragStart = null, didMove = false;
         function startDrag(e) {
-          // 버튼/×/컨트롤 누른 경우 무시
-          if (e.target.closest('button') || e.target.closest('span')) return;
+          if (e.target.closest('button') || e.target.classList.contains('x-mark')) return;
           e.preventDefault(); e.stopPropagation();
           dragging = true; didMove = false;
           const t = e.touches ? e.touches[0] : e;
@@ -791,7 +793,7 @@
           const r = document.getElementById('canvasArea').getBoundingClientRect();
           const ndx = (t.clientX - dragStart.x) / r.width;
           const ndy = (t.clientY - dragStart.y) / r.height;
-          if (Math.abs(ndx) + Math.abs(ndy) > 0.005) didMove = true;
+          if (Math.abs(ndx) + Math.abs(ndy) > 0.008) didMove = true;
           item.pos_x = Math.max(0, Math.min(1, dragStart.px + ndx));
           item.pos_y = Math.max(0, Math.min(1, dragStart.py + ndy));
           el.style.left = (item.pos_x * 100) + '%';
@@ -804,20 +806,35 @@
           document.removeEventListener('touchmove', moveDrag);
           document.removeEventListener('mouseup', endDrag);
           document.removeEventListener('touchend', endDrag);
-          if (!didMove) return;
-          await supabase.from('diary_items').update({ pos_x: item.pos_x, pos_y: item.pos_y }).eq('id', item.id);
+          if (didMove) {
+            // 위치 변경 → DB sync
+            await supabase.from('diary_items').update({ pos_x: item.pos_x, pos_y: item.pos_y }).eq('id', item.id);
+          } else {
+            // 그냥 탭 → 다른 항목 X 모두 숨김 + 이 항목 X 토글
+            document.querySelectorAll('.canvas-area .x-mark').forEach(m => {
+              if (m !== x) m.style.display = 'none';
+            });
+            // 사진 컨트롤도 토글
+            document.querySelectorAll('.canvas-area .photo-ctrl').forEach(c => {
+              if (c.parentElement !== el) c.style.display = 'none';
+            });
+            x.style.display = (x.style.display === 'block') ? 'none' : 'block';
+            const myCtrl = el.querySelector('.photo-ctrl');
+            if (myCtrl) myCtrl.style.display = (x.style.display === 'block') ? 'flex' : 'none';
+          }
         }
         el.addEventListener('mousedown', startDrag);
         el.addEventListener('touchstart', startDrag, { passive: false });
-        el.style.touchAction = 'none';
-        el.style.cursor = 'move';
+      }
 
-        // === 사이즈/회전 컨트롤 ===
+      // 호스트 자기 사진 — 사이즈/회전 컨트롤 (탭 시 같이 표시)
+      if (item.type === 'photo' && role === 'host' && item.client_id === clientId) {
         const ctrl = document.createElement('div');
+        ctrl.className = 'photo-ctrl';
         Object.assign(ctrl.style, {
           position: 'absolute', bottom: '-44px', left: '50%',
           transform: 'translateX(-50%)',
-          display: 'flex', gap: '3px', zIndex: '30',
+          display: 'none', gap: '3px', zIndex: '30',
           background: 'rgba(0,0,0,0.82)', padding: '4px 5px', borderRadius: '8px',
           boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
           pointerEvents: 'auto'
