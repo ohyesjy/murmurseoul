@@ -308,11 +308,15 @@
     </div>
 
     <div class="canvas-area" id="canvasArea">
-      <canvas id="canvas"></canvas>
-      <div id="items-layer"></div>
-      <div class="canvas-locked-overlay" id="lockedOverlay">
-        <span>🔒 HOST 만 그림 그리기 가능 — 댓글로 참여해주세요</span>
-      </div>
+      <!-- whiteboardfox 임베드 — 줌인해서 그리고 줌아웃하면 모두 볼 수 있음 -->
+      <iframe src="https://r7.whiteboardfox.com/76778445-2653-6128"
+        style="position:absolute; inset:0; width:100%; height:100%; border:0; z-index:20;"
+        allow="clipboard-write"
+        title="murmur josun shared whiteboard"></iframe>
+      <!-- 기존 자체 캔버스는 안전하게 숨김 (호환성 위해 DOM 유지) -->
+      <canvas id="canvas" style="display:none;"></canvas>
+      <div id="items-layer" style="display:none;"></div>
+      <div class="canvas-locked-overlay" id="lockedOverlay" style="display:none;"></div>
     </div>
 
     <!-- 호스트 캔버스 타이핑 — 제목 바로 위 -->
@@ -402,8 +406,8 @@
       <input type="email" id="regEmail" placeholder="email" maxlength="80" style="margin-top:6px;" />
       <input type="text" id="nicknameInput" placeholder="nickname / ニックネーム" maxlength="20" style="margin-top:6px;" />
       <input type="password" id="regUserPw" placeholder="パスワード / 비밀번호 (4자 이상)" maxlength="40" style="margin-top:6px;" />
-      <input type="password" id="hostPassword" placeholder="HOST 비밀번호 (관리자만)" maxlength="40" style="margin-top:6px; font-size: 13px;" />
-      <p style="font-size: 10px; color: #999; margin: 4px 0 8px;">HOST 비번은 관리자 전용 (일반 사용자는 비워두세요)</p>
+      <input type="password" id="hostPassword" placeholder="HOSTパスワード（管理者専用）" maxlength="40" style="margin-top:6px; font-size: 13px;" />
+      <p style="font-size: 10px; color: #999; margin: 4px 0 8px;">HOSTパスワードは管理者専用です（一般ユーザーは空欄でOK）</p>
       <div style="display:flex; gap:10px; margin-top:6px;">
         <button class="btn" id="btnCancel" style="flex:1; padding:14px 12px; min-height:50px; background:#e8e4d8; color:#1a1a1a; font-size:15px;">캔슬</button>
         <button class="btn primary" id="btnEnter" style="flex:1; padding:14px 12px; min-height:50px; font-size:15px;">등록 ▸</button>
