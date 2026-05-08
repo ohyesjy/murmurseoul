@@ -981,9 +981,15 @@
     photoInput.addEventListener('change', async (e) => {
       const file = e.target.files[0]; if (!file) return;
       const b64 = await fileToBase64Resized(file, 600);
+      // 무한 캔버스 — 현재 viewport 중앙에 사진 떨어지게
+      const rr = canvasArea.getBoundingClientRect();
+      const cx = ((rr.width / 2) - panX) / zoom;
+      const cy = ((rr.height / 2) - panY) / zoom;
+      const px = Math.max(0.05, Math.min(0.95, cx / CANVAS_W + (Math.random() - 0.5) * 0.04));
+      const py = Math.max(0.05, Math.min(0.95, cy / CANVAS_H + (Math.random() - 0.5) * 0.04));
       const item = {
         session_date: today, type: 'photo', content: b64,
-        pos_x: 0.3 + Math.random() * 0.4, pos_y: 0.3 + Math.random() * 0.4,
+        pos_x: px, pos_y: py,
         rotation: (Math.random() - 0.5) * 14, client_id: clientId, nickname: nickname || null
       };
       const { data, error } = await supabase.from('diary_items').insert(item).select().single();
