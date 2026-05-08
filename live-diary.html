@@ -686,7 +686,10 @@
 
     // 사진 업로드 (메인 영역, host 전용)
     const photoInput = document.getElementById('photoInput');
-    document.getElementById('btnPhoto').addEventListener('click', () => photoInput.click());
+    document.getElementById('btnPhoto').addEventListener('click', () => {
+      if (role !== 'host') return toast('HOST 만 사진 추가 가능');
+      photoInput.click();
+    });
     photoInput.addEventListener('change', async (e) => {
       const file = e.target.files[0]; if (!file) return;
       const b64 = await fileToBase64Resized(file, 600);
