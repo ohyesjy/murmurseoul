@@ -126,12 +126,37 @@
     letter-spacing: 0.04em;
   }
   .comments-list {
-    display: flex; flex-direction: column; gap: 10px;
-    max-height: clamp(260px, 52vh, 380px);
+    display: flex; flex-direction: column; gap: 8px;
+    max-height: 30vh;
+    min-height: 180px;
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
     padding-right: 2px;
+  }
+  /* 호스트 캔버스 타이핑 바 — 제목 바로 위 */
+  .host-canvas-input {
+    display: flex; gap: 6px; align-items: center;
+    padding: 8px 12px;
+    background: #fafaf6;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  /* 댓글 사라짐 애니메이션 */
+  .comment.leaving {
+    pointer-events: none;
+    animation: cmtLeave 0.32s ease-in forwards;
+  }
+  @keyframes cmtLeave {
+    to {
+      opacity: 0;
+      transform: translateY(-12px);
+      max-height: 0;
+      margin-top: -10px;
+      padding-top: 0;
+      padding-bottom: 0;
+      overflow: hidden;
+      border-width: 0;
+    }
   }
   .comment {
     animation: slideUpIn 0.32s ease-out;
@@ -283,6 +308,12 @@
       </div>
     </div>
 
+    <!-- 호스트 캔버스 타이핑 — 제목 바로 위 -->
+    <div class="host-canvas-input" id="hostCanvasInputBar" style="display:none;">
+      <input class="comment-input" id="hostChatInput" placeholder="여기 바로 타이핑 → Enter (캔버스에 올라감)" style="flex:1; min-width:140px;" />
+      <button class="btn primary" id="btnHostChatSend">SEND ▸</button>
+    </div>
+
     <div class="title-bar">
       <span class="label">제목:</span>
       <input id="titleInput" type="text" placeholder="今日の일기 タイトル..." maxlength="80" disabled />
@@ -313,10 +344,6 @@
         <button class="btn" id="btnUndo" title="마지막 그림 한 획 지우기">↶</button>
         <button class="btn" id="btnPhoto">📷</button>
         <button class="btn" id="btnText" title="원하는 위치에 붙이기">T</button>
-      </div>
-      <div class="row" style="margin-top: 6px;">
-        <input class="comment-input" id="hostChatInput" placeholder="여기 바로 타이핑 → Enter (캔버스에 올라감) / 채팅처럼" style="flex:1; min-width:140px;" />
-        <button class="btn primary" id="btnHostChatSend">SEND ▸</button>
       </div>
     </div>
     <div class="tools-visitor" id="toolsVisitor">
@@ -387,6 +414,7 @@
       document.getElementById('canvasArea').style.cursor = isHost ? 'crosshair' : 'default';
       document.getElementById('canvas').style.pointerEvents = isHost ? 'auto' : 'none';
       document.getElementById('titleInput').disabled = !isHost;
+      document.getElementById('hostCanvasInputBar').style.display = isHost ? 'flex' : 'none';
       document.querySelectorAll('.weather-grid .w').forEach(w => {
         w.style.cursor = isHost ? 'pointer' : 'default';
       });
@@ -757,7 +785,17 @@
           cctx.stroke();
         });
       }
-      // 라이브 채팅처럼 — 사용자가 맨 아래 근처에 있을 때만 자동 스크롤
+      // 5개 초과하면 가장 오래된 거 위로 사라지게
+      const items = commentsList.querySelectorAll('.comment:not(.leaving)');
+      if (items.length > 5) {
+        const overflow = items.length - 5;
+        for (let i = 0; i < overflow; i++) {
+          const oldest = items[i];
+          oldest.classList.add('leaving');
+          setTimeout(() => oldest.remove(), 340);
+        }
+      }
+      // 자동 스크롤 (보통은 5개 제한이라 안 필요하지만 안전장치)
       const nearBottom = (commentsList.scrollHeight - commentsList.clientHeight - commentsList.scrollTop) < 80;
       if (nearBottom) {
         commentsList.scrollTop = commentsList.scrollHeight;
