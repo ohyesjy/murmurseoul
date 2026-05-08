@@ -754,34 +754,39 @@
         el.style.cursor = 'move';
         el.style.touchAction = 'none';
 
-        // X 버튼 (기본 숨김, 탭 시 표시)
+        // X 버튼 (기본 숨김, 탭 시 표시) — 이미지 우상단 바로 옆 + 큰 터치 영역
         const x = document.createElement('span');
         x.className = 'x-mark';
         x.textContent = '×';
         Object.assign(x.style, {
-          position: 'absolute', top: '-12px', right: '-12px',
-          width: '26px', height: '26px', borderRadius: '50%',
+          position: 'absolute', top: '-4px', right: '-4px',
+          width: '40px', height: '40px', borderRadius: '50%',
           background: '#c8243a', color: '#fff',
-          fontSize: '15px', lineHeight: '26px', textAlign: 'center',
+          fontSize: '22px', lineHeight: '40px', textAlign: 'center',
           cursor: 'pointer', display: 'none', zIndex: '25',
           fontFamily: 'sans-serif', fontWeight: 'bold',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
-          touchAction: 'manipulation'
+          boxShadow: '0 3px 10px rgba(0,0,0,0.35)',
+          touchAction: 'manipulation',
+          userSelect: 'none', WebkitUserSelect: 'none',
+          border: '2px solid #fff'
         });
         el.appendChild(x);
-        x.addEventListener('click', async (ev) => {
-          ev.stopPropagation();
+        const removeItem = async (ev) => {
+          ev.stopPropagation(); ev.preventDefault();
           if (!confirm('이 항목을 지울까요?')) return;
           const { error } = await supabase.from('diary_items').delete().eq('id', item.id);
           if (error) { toast('삭제 실패: ' + error.message); return; }
           el.remove();
           renderedItems.delete(item.id);
-        });
+        };
+        x.addEventListener('click', removeItem);
+        x.addEventListener('touchstart', (ev) => { ev.stopPropagation(); }, { passive: true });
+        x.addEventListener('touchend', removeItem, { passive: false });
 
         // 드래그 + 탭 구분
         let dragging = false, dragStart = null, didMove = false;
         function startDrag(e) {
-          if (e.target.closest('button') || e.target.classList.contains('x-mark')) return;
+          if (e.target.closest('button') || e.target.closest('.x-mark') || e.target.closest('.photo-ctrl')) return;
           e.preventDefault(); e.stopPropagation();
           dragging = true; didMove = false;
           const t = e.touches ? e.touches[0] : e;
