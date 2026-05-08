@@ -467,21 +467,20 @@
     }
     document.getElementById('roleToggle').addEventListener('click', () => {
       if (role === 'visitor') {
-        // visitor → host: 비번 확인 필요
+        // visitor → host: 비번 확인 필요 (HOST_PASSWORD 변수 스코프 이슈 회피 위해 직접 비교)
         const pw = prompt('HOST パスワード / 호스트 비밀번호');
-        if (pw === null) return; // 취소
-        if (pw !== HOST_PASSWORD) {
+        if (pw === null) return;
+        if (pw !== 'ohyesjy') {
           toast('비밀번호 불일치');
           return;
         }
         role = 'host';
       } else {
-        // host → visitor: 자유 전환
         role = 'visitor';
       }
       localStorage.setItem('mj_role', role);
       applyRole();
-      toast(role === 'host' ? '🔓 HOST 모드 — 그림/제목 편집 가능' : 'VISITOR 모드');
+      toast(role === 'host' ? '🔓 HOST 모드' : 'VISITOR 모드');
     });
 
     // Canvas
