@@ -465,22 +465,55 @@
         w.style.cursor = isHost ? 'pointer' : 'default';
       });
     }
+    function showHostAuthModal() {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:300; display:flex; align-items:center; justify-content:center; padding:16px;';
+      overlay.innerHTML = `
+        <div style="background:#fff; border-radius:10px; padding:24px 22px; max-width:340px; width:100%; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+          <h2 style="margin:0 0 14px; font-family:'Special Elite',monospace; letter-spacing:0.06em; font-size:18px;">🔓 HOST モード進入</h2>
+          <p style="font-size:12px; color:#888; margin:0 0 14px;">ニックネームと HOST パスワードを入力</p>
+          <input type="text" id="_hostNick" placeholder="ニックネーム / 닉네임" style="width:100%; padding:12px 14px; font-size:16px; border:1px solid #ccc; border-radius:6px; margin-bottom:8px; box-sizing:border-box; font-family:inherit;" />
+          <input type="password" id="_hostPw" placeholder="HOST パスワード" style="width:100%; padding:12px 14px; font-size:16px; border:1px solid #ccc; border-radius:6px; margin-bottom:14px; box-sizing:border-box; font-family:inherit;" />
+          <div style="display:flex; gap:10px;">
+            <button id="_cancelHostBtn" style="flex:1; padding:14px; background:#e8e4d8; border:0; border-radius:6px; font-family:'Special Elite',monospace; min-height:48px; cursor:pointer;">キャンセル</button>
+            <button id="_okHostBtn" style="flex:1; padding:14px; background:#1a1a1a; color:#fff; border:0; border-radius:6px; font-family:'Special Elite',monospace; min-height:48px; cursor:pointer;">OK ▸</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      const nickIn = document.getElementById('_hostNick');
+      if (nickname) nickIn.value = nickname;
+      else nickIn.focus();
+      const pwIn = document.getElementById('_hostPw');
+      if (nickname) pwIn.focus();
+
+      const close = () => overlay.remove();
+      document.getElementById('_cancelHostBtn').addEventListener('click', close);
+      const submit = () => {
+        const n = nickIn.value.trim();
+        const p = pwIn.value;
+        if (!n) { toast('ニックネーム入力'); return; }
+        if (n !== nickname) { toast('닉네임 불일치'); return; }
+        if (p !== HOST_PASSWORD) { toast('비밀번호 불일치'); return; }
+        role = 'host';
+        localStorage.setItem('mj_role', role);
+        applyRole();
+        toast('🔓 HOST モード');
+        close();
+      };
+      document.getElementById('_okHostBtn').addEventListener('click', submit);
+      pwIn.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+    }
+
     document.getElementById('roleToggle').addEventListener('click', () => {
       if (role === 'visitor') {
-        // visitor → host: 비번 확인 필요 (HOST_PASSWORD 변수 스코프 이슈 회피 위해 직접 비교)
-        const pw = prompt('HOST パスワード / 호스트 비밀번호');
-        if (pw === null) return;
-        if (pw !== HOST_PASSWORD) {
-          toast('비밀번호 불일치');
-          return;
-        }
-        role = 'host';
-      } else {
-        role = 'visitor';
+        showHostAuthModal();
+        return;
       }
+      role = 'visitor';
       localStorage.setItem('mj_role', role);
       applyRole();
-      toast(role === 'host' ? '🔓 HOST 모드' : 'VISITOR 모드');
+      toast('VISITOR 모드');
     });
 
     // Canvas
