@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>murmur josun · diary wall</title>
+<title>murmur josun · picture diary</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; }
   html, body { margin: 0; padding: 0; min-height: 100vh; background: #ffffff; color: #0a0a0a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; }
@@ -38,26 +38,43 @@
     cursor: pointer;
     transition: opacity 200ms ease;
   }
-  .btn-primary { background: #0a0a0a; color: #fff; border: none; }
+  .btn-primary { background: #c8243a; color: #fff; border: none; }
   .btn-secondary { background: #fff; color: #0a0a0a; border: 1px solid #0a0a0a; }
-  .btn:hover { opacity: 0.8; }
+  .btn:hover { opacity: 0.85; }
 
   .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
-  .card {
-    border: 1px solid #eee;
-    background: #fafafa;
-    padding: 14px;
+  .snap-card {
+    border: 1px solid #ddd;
+    background: #fff;
     border-radius: 6px;
-    aspect-ratio: 4/5;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    background-image: linear-gradient(135deg, #f7f7f7 25%, #efefef 25%, #efefef 50%, #f7f7f7 50%, #f7f7f7 75%, #efefef 75%, #efefef);
-    background-size: 14px 14px;
-    color: #888;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+    cursor: pointer;
   }
-  .card .meta { font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.1em; }
-  .card .name { font-size: 12px; margin-top: 4px; color: #555; }
+  .snap-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  .snap-card img {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    display: block;
+    background: #f5f5f5;
+  }
+  .snap-card .meta {
+    padding: 10px 12px;
+    font-family: "Special Elite", monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: #888;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .snap-card .meta .name { color: #c8243a; }
 
   .empty-card {
     border: 1px dashed #c8243a;
@@ -72,57 +89,134 @@
     background: #fff;
     color: #c8243a;
     font-family: "Special Elite", monospace;
-    font-size: 13px;
+    font-size: 12px;
     letter-spacing: 0.1em;
+    line-height: 1.6;
   }
   .empty-card .plus { font-size: 32px; margin-bottom: 8px; opacity: 0.7; }
 
-  .bottom-gif { display: block; width: min(420px, 88vw); height: auto; margin: 48px auto 0; }
+  .lightbox {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none; align-items: center; justify-content: center;
+    z-index: 200; padding: 20px;
+    cursor: zoom-out;
+  }
+  .lightbox.show { display: flex; }
+  .lightbox img { max-width: 96vw; max-height: 92vh; object-fit: contain; border-radius: 4px; box-shadow: 0 6px 30px rgba(0,0,0,0.5); }
 
-  .back-link { position: fixed; bottom: 42%; right: 18px; font-family: "Special Elite", monospace; font-size: 12px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; opacity: 0.55; padding: 6px 10px; z-index: 50; background: rgba(255,255,255,0.85); border-radius: 4px; transition: opacity 200ms ease; }
-  .back-link:hover { opacity: 1; }
-  .home-link { position: fixed; bottom: calc(42% + 36px); right: 18px; font-family: "Special Elite", monospace; font-size: 12px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; opacity: 0.55; padding: 6px 10px; z-index: 51; background: rgba(255,255,255,0.85); border-radius: 4px; transition: opacity 200ms ease; }
-  .home-link:hover { opacity: 1; }
+  .back-link, .home-link {
+    position: fixed; right: 18px;
+    font-family: "Special Elite", monospace;
+    font-size: 12px;
+    color: #1a1a1a;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    opacity: 0.55;
+    padding: 6px 10px;
+    z-index: 50;
+    background: rgba(255,255,255,0.85);
+    border-radius: 4px;
+    transition: opacity 200ms ease;
+  }
+  .back-link { bottom: 42%; }
+  .home-link { bottom: calc(42% + 36px); }
+  .back-link:hover, .home-link:hover { opacity: 1; }
+
   @media (max-width: 540px) {
-    .back-link { right: 10px; bottom: 42%; font-size: 11px; padding: 5px 8px; }
-    .home-link { right: 10px; bottom: calc(42% + 32px); font-size: 11px; padding: 5px 8px; }
+    .wrap { padding: 32px 16px 80px; }
+    h1 { font-size: 26px; }
+    .back-link, .home-link { right: 10px; font-size: 11px; padding: 5px 8px; }
+    .back-link { bottom: 42%; }
+    .home-link { bottom: calc(42% + 32px); }
   }
 </style>
 </head>
 <body>
-  <div class="wrap" id="content">
-    <a class="home-link" href="index.html">⌂ home</a>
-    <a class="back-link" href="index.html">← back</a>
-    <h1>diary wall</h1>
+  <a class="home-link" href="index.html">⌂ home</a>
+  <a class="back-link" href="index.html">← back</a>
+
+  <div class="wrap">
+    <h1>picture diary</h1>
     <p class="subtitle">
-      韓国旅行で感じたこと、絵や写真で残してください。
-      <span class="ja">An open wall for travelers to share their feelings — in drawings or photos.</span>
+      LIVE 그림일기에서 「NOW!」 누른 순간들이 차곡차곡 쌓이는 곳.
+      <span class="ja">A wall of "now" — moments captured from the live diary.</span>
     </p>
 
     <div class="intro">
-      <b>みんなの絵日記の壁。誰でも見て、書いて、共有できる空間。</b>
-      <span class="ja">Open journal wall — drawings, photos, small notes from your trip.</span>
+      <b>ライブ中、誰かのコメント・絵・写真が重なって生まれた瞬間を残す壁。</b>
+      <span class="ja">Each card is a screenshot of a real moment — drawings, comments, photos all together as they were.</span>
     </div>
 
     <div class="actions">
-      <a class="btn btn-primary" href="#" onclick="alert('투고 기능은 라이브 그림일기에서 열려요!\nLive diary is coming soon ✦'); return false;">+ POST YOUR DIARY</a>
-      <a class="btn btn-secondary" href="live-diary.html">▸ LIVE DIARY (会員専用)</a>
+      <a class="btn btn-primary" href="live-diary.html">▸ GO TO LIVE DIARY</a>
     </div>
 
-    <div class="gallery">
-      <div class="empty-card">
+    <div class="gallery" id="gallery">
+      <div class="empty-card" id="emptyCard">
         <span class="plus">+</span>
-        FIRST DIARY
-        <span style="opacity:0.7; font-size:11px; margin-top:4px">투고를 기다리는 중</span>
+        WAITING FOR FIRST 「NOW!」
+        <span style="opacity:0.7; font-size:10px; margin-top:6px">라이브에서 NOW! 누르면 여기 떠요</span>
       </div>
-      <div class="card"><span class="meta">SOON</span><span class="name">— from a friend</span></div>
-      <div class="card"><span class="meta">SOON</span><span class="name">— from a friend</span></div>
-      <div class="card"><span class="meta">SOON</span><span class="name">— from a friend</span></div>
     </div>
-
-    <img class="bottom-gif" src="diary-1.gif" alt="diary" />
   </div>
 
-  <script></script>
+  <div class="lightbox" id="lightbox" onclick="this.classList.remove('show')">
+    <img id="lightboxImg" alt="snapshot" />
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const SB_URL = 'https://zhaabmqdbgmisyurcslv.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoYWFibXFkYmdtaXN5dXJjc2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTEyMTcsImV4cCI6MjA5MjY2NzIxN30.pcN8mQHPKhws2mMxeScDb3bc9rPJnZlYMRM23T8ksVE';
+    const supabase = createClient(SB_URL, SB_KEY);
+    const gallery = document.getElementById('gallery');
+    const emptyCard = document.getElementById('emptyCard');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+
+    function renderSnap(s) {
+      const card = document.createElement('div');
+      card.className = 'snap-card';
+      const date = (s.session_date || '').replace(/-/g, '.');
+      const time = new Date(s.created_at).toTimeString().slice(0, 5);
+      card.innerHTML = `
+        <img src="${s.content}" alt="snapshot ${date}" loading="lazy" />
+        <div class="meta">
+          <span>${date} · ${time}</span>
+          <span class="name">${s.nickname ? '@' + s.nickname : ''}</span>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        lightboxImg.src = s.content;
+        lightbox.classList.add('show');
+      });
+      return card;
+    }
+
+    async function loadSnaps() {
+      const { data, error } = await supabase
+        .from('diary_items')
+        .select('*')
+        .eq('type', 'snapshot')
+        .order('created_at', { ascending: false });
+      if (error) { console.error('load snaps err', error); return; }
+      if (!data || data.length === 0) return;
+      emptyCard.style.display = 'none';
+      data.forEach(s => gallery.appendChild(renderSnap(s)));
+    }
+
+    loadSnaps();
+
+    // realtime — 새 NOW 캡처 시 자동 추가
+    supabase.channel('snap-wall')
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'diary_items', filter: 'type=eq.snapshot' },
+        (p) => {
+          emptyCard.style.display = 'none';
+          gallery.insertBefore(renderSnap(p.new), gallery.firstChild);
+        })
+      .subscribe();
+  </script>
 </body>
 </html>
