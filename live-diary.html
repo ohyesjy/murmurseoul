@@ -459,6 +459,8 @@
       document.getElementById('canvas').style.pointerEvents = 'auto';
       document.getElementById('titleInput').disabled = !isHost;
       document.getElementById('hostCanvasInputBar').style.display = isHost ? 'flex' : 'none';
+      const bn = document.getElementById('btnNow');
+      if (bn) bn.style.display = isHost ? '' : 'none';
       document.querySelectorAll('.weather-grid .w').forEach(w => {
         w.style.cursor = isHost ? 'pointer' : 'default';
       });
