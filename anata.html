@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>murmur josun · anata diary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; background: #f7f3ec; color: #1a1a1a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 120px; }
+  h1 { font-family: "Special Elite", monospace; font-size: 30px; letter-spacing: 0.08em; margin: 0 0 8px; font-weight: 400; color: #c8243a; }
+  .subtitle { font-size: 13px; color: #555; margin-bottom: 24px; letter-spacing: 0.04em; line-height: 1.7; }
+  .subtitle .ja { display: block; margin-top: 4px; color: #888; font-size: 12px; }
+
+  .intro {
+    border-left: 3px solid #c8243a;
+    padding: 14px 16px;
+    margin: 0 0 28px;
+    font-size: 13px;
+    line-height: 1.7;
+    background: #fff;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .compose {
+    background: #fff;
+    border: 1px solid #e0dccc;
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .compose .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .compose input[type="text"], .compose textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    -webkit-user-select: text; user-select: text;
+    background: #fafafa;
+    resize: vertical;
+  }
+  .compose textarea { min-height: 80px; line-height: 1.5; }
+  .compose .send {
+    background: #1a1a1a; color: #fff;
+    border: 0; padding: 10px 18px;
+    font-family: "Special Elite", monospace;
+    font-size: 12px; letter-spacing: 0.16em;
+    border-radius: 4px; cursor: pointer;
+    margin-left: auto;
+    min-height: 40px;
+    touch-action: manipulation;
+  }
+  .compose .send:hover { background: #c8243a; }
+  .compose .end { display: flex; justify-content: flex-end; }
+
+  .posts { display: flex; flex-direction: column; gap: 12px; }
+  .post {
+    background: #fff;
+    border: 1px solid #e0dccc;
+    border-radius: 6px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    animation: slideIn 0.32s ease-out;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .post .head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 6px;
+    font-family: "Special Elite", monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: #888;
+  }
+  .post .head .name { color: #c8243a; font-weight: 500; }
+  .post .body {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #1a1a1a;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .empty { text-align: center; color: #999; padding: 40px 16px; font-size: 12px; font-family: "Special Elite", monospace; letter-spacing: 0.1em; }
+
+  .back-link, .home-link {
+    position: fixed; right: 18px;
+    font-family: "Special Elite", monospace;
+    font-size: 12px;
+    color: #1a1a1a;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    opacity: 0.55;
+    padding: 6px 10px;
+    z-index: 50;
+    background: rgba(255,255,255,0.85);
+    border-radius: 4px;
+    transition: opacity 200ms ease;
+  }
+  .back-link { bottom: 42%; }
+  .home-link { bottom: calc(42% + 36px); }
+  .back-link:hover, .home-link:hover { opacity: 1; }
+
+  @media (max-width: 540px) {
+    .wrap { padding: 28px 14px 80px; }
+    h1 { font-size: 24px; }
+    .back-link, .home-link { right: 10px; font-size: 11px; padding: 5px 8px; }
+    .back-link { bottom: 42%; }
+    .home-link { bottom: calc(42% + 32px); }
+  }
+</style>
+</head>
+<body>
+  <a class="home-link" href="index.html">⌂ home</a>
+  <a class="back-link" href="index.html">← back</a>
+
+  <div class="wrap">
+    <h1>anata diary</h1>
+    <p class="subtitle">
+      자유롭게 남기는 게시판.
+      <span class="ja">Open journal — leave anything you want.</span>
+    </p>
+
+    <div class="intro">
+      <b>あなたの今日のひとこと、思い出、感想 ─ 自由に残してください。</b>
+      <br/><br/>
+      여기는 자유게시판입니다. 일기 한 줄, 여행 후기, 한국 카페 추천 무엇이든.
+    </div>
+
+    <div class="compose">
+      <div class="row">
+        <input type="text" id="nickInput" placeholder="ニックネーム / 닉네임 (선택)" maxlength="24" />
+      </div>
+      <textarea id="bodyInput" placeholder="今日のひとこと... / 자유롭게 적어주세요" maxlength="800"></textarea>
+      <div class="end" style="margin-top: 8px;">
+        <button class="send" id="btnSend">SEND ▸</button>
+      </div>
+    </div>
+
+    <div class="posts" id="posts">
+      <div class="empty" id="emptyState">no posts yet ✦ 첫 글의 주인공이 되어주세요</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const SB_URL = 'https://zhaabmqdbgmisyurcslv.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoYWFibXFkYmdtaXN5dXJjc2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTEyMTcsImV4cCI6MjA5MjY2NzIxN30.pcN8mQHPKhws2mMxeScDb3bc9rPJnZlYMRM23T8ksVE';
+    const supabase = createClient(SB_URL, SB_KEY);
+    const ANATA_KEY = 'anata-diary'; // session_date 자리에 식별자
+
+    let clientId = localStorage.getItem('mj_client_id');
+    if (!clientId) { clientId = 'c_' + Math.random().toString(36).slice(2, 10); localStorage.setItem('mj_client_id', clientId); }
+    const savedNick = localStorage.getItem('mj_nickname') || '';
+    document.getElementById('nickInput').value = savedNick;
+
+    const posts = document.getElementById('posts');
+    const emptyState = document.getElementById('emptyState');
+    const seenIds = new Set();
+
+    function renderPost(p) {
+      if (seenIds.has(p.id)) return;
+      seenIds.add(p.id);
+      emptyState.style.display = 'none';
+      const el = document.createElement('div');
+      el.className = 'post';
+      const time = new Date(p.created_at);
+      const ymd = time.toISOString().slice(0, 10).replace(/-/g, '.');
+      const hm = time.toTimeString().slice(0, 5);
+      const safeBody = (p.content || '').replace(/</g, '&lt;');
+      el.innerHTML = `
+        <div class="head">
+          <span class="name">${p.nickname ? '@' + p.nickname : '@guest'}</span>
+          <span>${ymd} · ${hm}</span>
+        </div>
+        <div class="body">${safeBody}</div>
+      `;
+      posts.insertBefore(el, posts.firstChild);
+    }
+
+    async function load() {
+      const { data, error } = await supabase
+        .from('diary_comments')
+        .select('*')
+        .eq('session_date', ANATA_KEY)
+        .order('created_at', { ascending: true });
+      if (error) { console.error('load err', error); return; }
+      if (!data || data.length === 0) return;
+      data.forEach(renderPost);
+    }
+
+    document.getElementById('btnSend').addEventListener('click', async () => {
+      const nick = document.getElementById('nickInput').value.trim();
+      const body = document.getElementById('bodyInput').value.trim();
+      if (!body) { alert('내용을 입력해주세요 / 内容を入力してください'); return; }
+      if (nick) localStorage.setItem('mj_nickname', nick);
+      const { data, error } = await supabase.from('diary_comments').insert({
+        session_date: ANATA_KEY,
+        type: 'text',
+        content: body,
+        client_id: clientId,
+        nickname: nick || null
+      }).select().single();
+      if (error) { alert('등록 실패: ' + error.message); return; }
+      document.getElementById('bodyInput').value = '';
+      if (data) renderPost(data);
+    });
+
+    load();
+
+    // realtime
+    supabase.channel('anata-' + ANATA_KEY)
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'diary_comments', filter: `session_date=eq.${ANATA_KEY}` },
+        (p) => renderPost(p.new))
+      .subscribe();
+  </script>
+</body>
+</html>
