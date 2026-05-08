@@ -697,7 +697,7 @@
 
     async function loadCmsItems() {
       try {
-        const r = await fetch(`${SB_URL}/rest/v1/webtoons_cms?is_published=eq.true&order=display_order.asc,created_at.desc&select=*`, {
+        const r = await fetch(`${SB_URL}/rest/v1/webtoons_cms?is_published=eq.true&order=created_at.desc&select=*`, {
           headers: { apikey: SB_KEY }
         });
         if (!r.ok) { console.warn('cms fetch failed', r.status); return; }
