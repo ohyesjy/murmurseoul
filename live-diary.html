@@ -442,12 +442,24 @@
 
     let allStrokes = [];
     function drawStroke(s) {
-      const p = s.path; if (!p || !p.length) return;
+      const p = s.path; if (!p || p.length < 2) return;
       ctx.strokeStyle = s.color; ctx.lineWidth = s.size;
-      ctx.beginPath();
       const w = canvas.width / dpr, h = canvas.height / dpr;
+      // 점 사이 거리가 임계값 넘으면 새 path (지우개로 끊긴 부분 자연스럽게)
+      const GAP = 0.04; // 4% 이상 떨어지면 분리
+      ctx.beginPath();
       ctx.moveTo(p[0].x * w, p[0].y * h);
-      for (let i = 1; i < p.length; i++) ctx.lineTo(p[i].x * w, p[i].y * h);
+      for (let i = 1; i < p.length; i++) {
+        const dx = p[i].x - p[i-1].x;
+        const dy = p[i].y - p[i-1].y;
+        if (Math.hypot(dx, dy) > GAP) {
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(p[i].x * w, p[i].y * h);
+        } else {
+          ctx.lineTo(p[i].x * w, p[i].y * h);
+        }
+      }
       ctx.stroke();
     }
     function redraw() { ctx.clearRect(0, 0, canvas.width, canvas.height); allStrokes.forEach(drawStroke); }
@@ -498,26 +510,41 @@
     canvas.addEventListener('mouseleave', () => { endDraw(); endErase(); });
     canvas.addEventListener('touchend', () => { endDraw(); endErase(); });
 
-    // 지우개 — 두꺼운 영역 안의 stroke 모두 삭제
+    // 섬세 지우개 — 손가락 위치에 닿은 점만 제거 (stroke 일부만 지워짐)
+    const dirtyStrokes = new Set(); // 변경된 stroke ID
     function eraseAt(p) {
-      const R = 0.06; // 캔버스 6% 반경
-      const toRemove = [];
-      allStrokes = allStrokes.filter(s => {
-        if (eraseQueue.has(s.id)) return false;
-        const hit = s.path && s.path.some(pt => Math.hypot(pt.x - p.x, pt.y - p.y) < R);
-        if (hit) { eraseQueue.add(s.id); toRemove.push(s.id); return false; }
-        return true;
-      });
-      if (toRemove.length) redraw();
+      const R = 0.025; // 캔버스 2.5% 반경 — 손가락 끝 정도
+      let changed = false;
+      for (let i = allStrokes.length - 1; i >= 0; i--) {
+        const s = allStrokes[i];
+        if (!s.path || !s.path.length) continue;
+        const before = s.path.length;
+        s.path = s.path.filter(pt => Math.hypot(pt.x - p.x, pt.y - p.y) > R);
+        if (s.path.length !== before) {
+          dirtyStrokes.add(s.id);
+          changed = true;
+        }
+      }
+      if (changed) redraw();
     }
     async function endErase() {
       if (!erasing) return;
       erasing = false;
-      if (eraseQueue.size === 0) return;
-      const ids = [...eraseQueue];
-      eraseQueue.clear();
-      const { error } = await supabase.from('diary_strokes').delete().in('id', ids);
-      if (error) toast('지우기 실패: ' + error.message);
+      if (dirtyStrokes.size === 0) return;
+      const ids = [...dirtyStrokes];
+      dirtyStrokes.clear();
+      // 각 stroke 처리: 점 거의 없으면 delete, 남으면 path update
+      for (const id of ids) {
+        const stroke = allStrokes.find(s => s.id === id);
+        if (!stroke || !stroke.path || stroke.path.length < 2) {
+          // 거의 다 지워짐 → 완전 삭제
+          allStrokes = allStrokes.filter(s => s.id !== id);
+          await supabase.from('diary_strokes').delete().eq('id', id);
+        } else {
+          // 일부만 지워짐 → path 업데이트
+          await supabase.from('diary_strokes').update({ path: stroke.path }).eq('id', id);
+        }
+      }
     }
     // 지우개 모드 토글
     const btnEraser = document.getElementById('btnEraser');
