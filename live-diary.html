@@ -515,13 +515,15 @@
     canvasArea.addEventListener('touchend', () => { endDraw(); endErase(); });
 
     // 섬세 지우개 — 손가락 위치에 닿은 점만 제거 (stroke 일부만 지워짐)
-    const dirtyStrokes = new Set(); // 변경된 stroke ID
+    // visitor는 자기 stroke만, host는 모든 stroke 지움
+    const dirtyStrokes = new Set();
     function eraseAt(p) {
-      const R = 0.025; // 캔버스 2.5% 반경 — 손가락 끝 정도
+      const R = 0.025;
       let changed = false;
       for (let i = allStrokes.length - 1; i >= 0; i--) {
         const s = allStrokes[i];
         if (!s.path || !s.path.length) continue;
+        if (role !== 'host' && s.client_id !== clientId) continue; // 남의 그림은 visitor가 못 지움
         const before = s.path.length;
         s.path = s.path.filter(pt => Math.hypot(pt.x - p.x, pt.y - p.y) > R);
         if (s.path.length !== before) {
@@ -553,7 +555,7 @@
     // 지우개 모드 토글
     const btnEraser = document.getElementById('btnEraser');
     btnEraser.addEventListener('click', () => {
-      if (role !== 'host') return toast('HOST 만 사용 가능');
+      // visitor도 자기 그림은 지울 수 있음. host는 모든 그림 지움.
       eraserMode = !eraserMode;
       btnEraser.classList.toggle('primary', eraserMode);
       // 다른 모드와 상호 배타
