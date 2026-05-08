@@ -1396,14 +1396,38 @@
       localStorage.setItem('mj_full_name', fullName);
       localStorage.setItem('mj_phone', phone);
 
-      // Supabase members 테이블에 INSERT 시도 (테이블 없으면 무시)
+      // Supabase members 테이블에 신청 — status='pending'으로 저장 → 영석 승인 대기
+      let approved = false;
       try {
-        await supabase.from('members').upsert({
+        const { data, error } = await supabase.from('members').upsert({
           email, full_name: fullName, phone, nickname,
-          password_hash: userPw
-        }, { onConflict: 'email' });
+          password_hash: userPw,
+          status: 'pending'
+        }, { onConflict: 'email' }).select().single();
+        if (!error && data) approved = (data.status === 'approved');
       } catch (e) {
         console.warn('members table insert skip:', e);
+      }
+
+      // HOST 비번 맞으면 즉시 입장 (관리자 우회)
+      const pwCheck = document.getElementById('hostPassword').value;
+      if (pwCheck === HOST_PASSWORD) approved = true;
+
+      if (!approved) {
+        // 승인 대기 — 모달 안 닫고 메시지 표시
+        const modal = document.querySelector('#enterModal .modal');
+        modal.innerHTML = `
+          <h2 style="color:#c8243a;">承認待ち / 승인 대기</h2>
+          <p style="font-size:13px; line-height:1.7; margin: 16px 0; color:#555;">
+            申請を受け付けました ✦<br/>
+            管理者の承認後、ご入場いただけます。<br/><br/>
+            신청 접수 완료. 관리자 승인 후 입장 가능합니다.
+          </p>
+          <p style="font-size:11px; color:#888;">${email} 로 등록되었습니다</p>
+          <button id="reCheck" style="margin-top:14px; padding:12px 22px; background:#1a1a1a; color:#fff; border:0; border-radius:6px; font-family:'Special Elite',monospace; letter-spacing:0.1em; cursor:pointer; min-height:44px;">CHECK AGAIN</button>
+        `;
+        document.getElementById('reCheck').addEventListener('click', () => location.reload());
+        return;
       }
 
       // 비번 체크
@@ -1441,7 +1465,17 @@
     if (localStorage.getItem('mj_full_name')) document.getElementById('regName').value = localStorage.getItem('mj_full_name');
     if (localStorage.getItem('mj_phone')) document.getElementById('regPhone').value = localStorage.getItem('mj_phone');
 
-    if (nickname && savedEmail) {
+    // 자동 로그인 — Supabase에서 status='approved' 확인된 사용자만 입장
+    (async () => {
+      if (!nickname || !savedEmail) return;
+      let approved = false;
+      try {
+        const { data, error } = await supabase.from('members').select('status').eq('email', savedEmail).single();
+        if (!error && data && data.status === 'approved') approved = true;
+      } catch (e) {
+        console.warn('members status check err:', e);
+      }
+      if (!approved) return; // 모달 그대로 — 사용자가 다시 가입 또는 승인 대기 메시지 봄
       const em = document.getElementById('enterModal');
       em.classList.add('hidden');
       em.style.display = 'none';
@@ -1449,7 +1483,7 @@
       try { resizeCanvas(); } catch (e) { console.error('resizeCanvas', e); }
       try { loadAll(); } catch (e) { console.error('loadAll', e); }
       try { subscribeRealtime(); } catch (e) { console.error('subscribeRealtime', e); }
-    }
+    })();
   </script>
 </body>
 </html>
