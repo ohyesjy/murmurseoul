@@ -1560,12 +1560,28 @@
     if (localStorage.getItem('mj_full_name')) document.getElementById('regName').value = localStorage.getItem('mj_full_name');
     if (localStorage.getItem('mj_phone')) document.getElementById('regPhone').value = localStorage.getItem('mj_phone');
 
-    // 자동 로그인 비활성 — 매번 Welcome 화면 보고 등록/로그인 선택
-    // 단 로그인 폼에 이전 닉네임 자동 채움 (빠른 재로그인)
+    // 로그인 폼 닉네임 자동 채움
     if (nickname) {
       const ln = document.getElementById('loginNick');
       if (ln) ln.value = nickname;
     }
+    // 자동 로그인 — Supabase에서 status='approved' 확인된 회원이면 모달 skip
+    (async () => {
+      if (!nickname || !savedEmail) return;
+      try {
+        const { data, error } = await supabase.from('members').select('status').eq('email', savedEmail).maybeSingle();
+        if (error || !data || data.status !== 'approved') return;
+        const em = document.getElementById('enterModal');
+        em.classList.add('hidden');
+        em.style.display = 'none';
+        try { applyRole(); } catch (e) {}
+        try { resizeCanvas(); } catch (e) {}
+        try { loadAll(); } catch (e) {}
+        try { subscribeRealtime(); } catch (e) {}
+      } catch (e) {
+        console.warn('auto-login check err:', e);
+      }
+    })();
   </script>
 </body>
 </html>
