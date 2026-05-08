@@ -1420,13 +1420,33 @@
           <h2 style="color:#c8243a;">承認待ち / 승인 대기</h2>
           <p style="font-size:13px; line-height:1.7; margin: 16px 0; color:#555;">
             申請を受け付けました ✦<br/>
-            管理者の承認後、ご入場いただけます。<br/><br/>
-            신청 접수 완료. 관리자 승인 후 입장 가능합니다.
+            管理者の承認後、自動的にご入場いただけます。<br/><br/>
+            신청 접수 완료. 승인되면 자동으로 입장됩니다.
           </p>
-          <p style="font-size:11px; color:#888;">${email} 로 등록되었습니다</p>
-          <button id="reCheck" style="margin-top:14px; padding:12px 22px; background:#1a1a1a; color:#fff; border:0; border-radius:6px; font-family:'Special Elite',monospace; letter-spacing:0.1em; cursor:pointer; min-height:44px;">CHECK AGAIN</button>
+          <p style="font-size:11px; color:#888;">${email} 로 등록</p>
+          <p style="font-size:11px; color:#888; margin-top:6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ffa500; animation: blink 1.4s infinite;"></span> 承認待機中... / 대기 중...</p>
+          <style>@keyframes blink { 50% { opacity: 0.3; } }</style>
+          <button id="reCheck" style="margin-top:14px; padding:12px 22px; background:#1a1a1a; color:#fff; border:0; border-radius:6px; font-family:'Special Elite',monospace; letter-spacing:0.1em; cursor:pointer; min-height:44px;">CHECK NOW</button>
         `;
         document.getElementById('reCheck').addEventListener('click', () => location.reload());
+
+        // realtime 자동 감지 — 영석이 승인하면 즉시 페이지 새로고침
+        const chName = 'member_watch_' + email.replace(/[^a-z0-9]/gi, '_');
+        supabase.channel(chName)
+          .on('postgres_changes',
+            { event: 'UPDATE', schema: 'public', table: 'members', filter: `email=eq.${email}` },
+            (p) => { if (p.new && p.new.status === 'approved') location.reload(); })
+          .subscribe();
+        // polling fallback (realtime 끊겨도 5초 안에 감지)
+        const pollId = setInterval(async () => {
+          try {
+            const { data } = await supabase.from('members').select('status').eq('email', email).single();
+            if (data && data.status === 'approved') {
+              clearInterval(pollId);
+              location.reload();
+            }
+          } catch (e) {}
+        }, 5000);
         return;
       }
 
