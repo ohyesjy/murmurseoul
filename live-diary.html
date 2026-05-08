@@ -634,7 +634,7 @@
     // 손그림/지우개 OFF 상태에서 한 손가락/마우스 드래그 → 팬
     let panning = false, panMoveStart = null;
     canvasArea.addEventListener('mousedown', e => {
-      if (drawingMode || (role === 'host' && eraserMode)) return;
+      if (drawingMode || eraserMode) return;
       if (e.target.closest('.item')) return;
       panning = true;
       panMoveStart = { x: e.clientX, y: e.clientY, panX, panY };
