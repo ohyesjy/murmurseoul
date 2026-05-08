@@ -449,7 +449,8 @@
       ctx.strokeStyle = s.color; ctx.lineWidth = s.size;
       const w = canvas.width / dpr, h = canvas.height / dpr;
       // 점 사이 거리가 임계값 넘으면 새 path (지우개로 끊긴 부분 자연스럽게)
-      const GAP = 0.04; // 4% 이상 떨어지면 분리
+      // 빠른 손가락 동작 시 정상 stroke가 끊기지 않도록 임계값 크게 (15%)
+      const GAP = 0.15;
       ctx.beginPath();
       ctx.moveTo(p[0].x * w, p[0].y * h);
       for (let i = 1; i < p.length; i++) {
@@ -490,7 +491,12 @@
       drawing = true; currentPath = [getPos(e)];
     }, { passive: false });
     function moveDraw(e) {
-      if (erasing) { e.preventDefault(); eraseAt(getPos(e)); return; }
+      if (eraserMode && !erasing) {
+        // 지우개 모드일 때 커서 따라다니기 (드래그 아닐 때도)
+        const p = getPos(e);
+        moveEraserCursor(p);
+      }
+      if (erasing) { e.preventDefault(); const p = getPos(e); moveEraserCursor(p); eraseAt(p); return; }
       if (!drawing) return;
       e.preventDefault();
       const p = getPos(e); currentPath.push(p);
@@ -511,14 +517,15 @@
       currentPath = [];
     }
     canvasArea.addEventListener('mouseup', () => { endDraw(); endErase(); });
-    canvasArea.addEventListener('mouseleave', () => { endDraw(); endErase(); });
-    canvasArea.addEventListener('touchend', () => { endDraw(); endErase(); });
+    canvasArea.addEventListener('mouseleave', () => { endDraw(); endErase(); hideEraserCursor(); });
+    canvasArea.addEventListener('touchend', () => { endDraw(); endErase(); hideEraserCursor(); });
 
     // 섬세 지우개 — 손가락 위치에 닿은 점만 제거 (stroke 일부만 지워짐)
     // visitor는 자기 stroke만, host는 모든 stroke 지움
     const dirtyStrokes = new Set();
+    const ERASER_R = 0.06; // 캔버스 6% 반경 (두꺼움)
     function eraseAt(p) {
-      const R = 0.025;
+      const R = ERASER_R;
       let changed = false;
       for (let i = allStrokes.length - 1; i >= 0; i--) {
         const s = allStrokes[i];
@@ -555,17 +562,17 @@
     // 지우개 모드 토글
     const btnEraser = document.getElementById('btnEraser');
     btnEraser.addEventListener('click', () => {
-      // visitor도 자기 그림은 지울 수 있음. host는 모든 그림 지움.
       eraserMode = !eraserMode;
       btnEraser.classList.toggle('primary', eraserMode);
-      // 다른 모드와 상호 배타
       if (eraserMode) {
         textMode = false;
         if (btnText) btnText.classList.remove('primary');
         drawingMode = false;
         btnDraw.classList.remove('primary');
+      } else {
+        hideEraserCursor();
       }
-      toast(eraserMode ? '🧽 지우개 ON — 손가락으로 문지르면 지워짐' : '지우개 OFF');
+      toast(eraserMode ? '🧽 지우개 ON — 두꺼운 영역으로 문지르면 지워짐' : '지우개 OFF');
     });
 
     // 손그림 모드 토글
