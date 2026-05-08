@@ -342,6 +342,7 @@
           <div class="size" data-size="12"><span class="dot s3"></span></div>
         </div>
         <button class="btn" id="btnUndo" title="마지막 그림 한 획 지우기">↶</button>
+        <button class="btn" id="btnEraser" title="지우개 모드 — 캔버스에서 문지르면 지워짐">🧽</button>
         <button class="btn" id="btnPhoto">📷</button>
         <button class="btn" id="btnText" title="원하는 위치에 붙이기">T</button>
       </div>
@@ -457,9 +458,23 @@
       const t = e.touches ? e.touches[0] : e;
       return { x: (t.clientX - r.left) / r.width, y: (t.clientY - r.top) / r.height };
     }
-    canvas.addEventListener('mousedown', e => { if (role !== 'host') return; e.preventDefault(); drawing = true; currentPath = [getPos(e)]; });
-    canvas.addEventListener('touchstart', e => { if (role !== 'host') return; e.preventDefault(); drawing = true; currentPath = [getPos(e)]; }, { passive: false });
+    let eraserMode = false;
+    let erasing = false;
+    const eraseQueue = new Set();
+    canvas.addEventListener('mousedown', e => {
+      if (role !== 'host') return;
+      e.preventDefault();
+      if (eraserMode) { erasing = true; eraseAt(getPos(e)); return; }
+      drawing = true; currentPath = [getPos(e)];
+    });
+    canvas.addEventListener('touchstart', e => {
+      if (role !== 'host') return;
+      e.preventDefault();
+      if (eraserMode) { erasing = true; eraseAt(getPos(e)); return; }
+      drawing = true; currentPath = [getPos(e)];
+    }, { passive: false });
     function moveDraw(e) {
+      if (erasing) { e.preventDefault(); eraseAt(getPos(e)); return; }
       if (!drawing) return;
       e.preventDefault();
       const p = getPos(e); currentPath.push(p);
@@ -479,9 +494,45 @@
       if (data) allStrokes.push(data);
       currentPath = [];
     }
-    canvas.addEventListener('mouseup', endDraw);
-    canvas.addEventListener('mouseleave', endDraw);
-    canvas.addEventListener('touchend', endDraw);
+    canvas.addEventListener('mouseup', () => { endDraw(); endErase(); });
+    canvas.addEventListener('mouseleave', () => { endDraw(); endErase(); });
+    canvas.addEventListener('touchend', () => { endDraw(); endErase(); });
+
+    // 지우개 — 두꺼운 영역 안의 stroke 모두 삭제
+    function eraseAt(p) {
+      const R = 0.06; // 캔버스 6% 반경
+      const toRemove = [];
+      allStrokes = allStrokes.filter(s => {
+        if (eraseQueue.has(s.id)) return false;
+        const hit = s.path && s.path.some(pt => Math.hypot(pt.x - p.x, pt.y - p.y) < R);
+        if (hit) { eraseQueue.add(s.id); toRemove.push(s.id); return false; }
+        return true;
+      });
+      if (toRemove.length) redraw();
+    }
+    async function endErase() {
+      if (!erasing) return;
+      erasing = false;
+      if (eraseQueue.size === 0) return;
+      const ids = [...eraseQueue];
+      eraseQueue.clear();
+      const { error } = await supabase.from('diary_strokes').delete().in('id', ids);
+      if (error) toast('지우기 실패: ' + error.message);
+    }
+    // 지우개 모드 토글
+    const btnEraser = document.getElementById('btnEraser');
+    btnEraser.addEventListener('click', () => {
+      if (role !== 'host') return toast('HOST 만 사용 가능');
+      eraserMode = !eraserMode;
+      btnEraser.classList.toggle('primary', eraserMode);
+      // 텍스트 모드와 상호 배타
+      if (eraserMode) {
+        textMode = false;
+        if (btnText) btnText.classList.remove('primary');
+      }
+      canvas.style.cursor = eraserMode ? 'crosshair' : 'crosshair';
+      toast(eraserMode ? '🧽 지우개 ON — 손가락으로 문지르면 지워짐' : '지우개 OFF');
+    });
 
     document.querySelectorAll('.color').forEach(el => el.addEventListener('click', () => {
       document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
