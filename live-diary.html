@@ -881,6 +881,14 @@
           item.pos_y = Math.max(0, Math.min(1, dragStart.py + ndy));
           el.style.left = (item.pos_x * 100) + '%';
           el.style.top = (item.pos_y * 100) + '%';
+          // transform 명시적 유지 — 위치 변경 시 사이즈/회전 보존
+          const sc = item.scale || 1;
+          const rot = item.rotation || 0;
+          if (item.type === 'photo') {
+            el.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(${sc})`;
+          } else {
+            el.style.transform = `rotate(${rot}deg)`;
+          }
         }
         async function endDrag(e) {
           if (!dragging) return;
