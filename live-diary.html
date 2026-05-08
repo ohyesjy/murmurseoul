@@ -1202,6 +1202,21 @@
       (comments || []).forEach(renderComment);
     }
 
+    // 화면의 item element 위치/사이즈/회전 업데이트 (UPDATE 이벤트 + polling 공용)
+    function updateItemPosition(it) {
+      const el = document.querySelector(`.item[data-item-id="${it.id}"]`);
+      if (!el) return;
+      el.style.left = (it.pos_x * 100) + '%';
+      el.style.top = (it.pos_y * 100) + '%';
+      if (it.type === 'photo') {
+        const sc = it.scale || 1;
+        const rot = it.rotation || 0;
+        el.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(${sc})`;
+      } else if (it.type === 'note') {
+        el.style.transform = `rotate(${it.rotation || 0}deg)`;
+      }
+    }
+
     // 실시간
     function subscribeRealtime() {
       supabase.channel('live-' + today)
@@ -1211,6 +1226,12 @@
           (p) => { allStrokes = allStrokes.filter(s => s.id !== p.old.id); redraw(); })
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'diary_items', filter: `session_date=eq.${today}` },
           (p) => renderItem(p.new))
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'diary_items', filter: `session_date=eq.${today}` },
+          (p) => {
+            // 자기 디바이스에서 발생한 변경은 무시 (자기 드래그 중 자기에게 reset 방지)
+            if (p.new.client_id === clientId) return;
+            updateItemPosition(p.new);
+          })
         .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'diary_items' },
           (p) => {
             const el = document.querySelector(`.item[data-item-id="${p.old.id}"]`);
@@ -1265,7 +1286,14 @@
               renderedItems.delete(id);
             }
           });
-          newItems.forEach(it => { if (!renderedItems.has(it.id)) renderItem(it); });
+          newItems.forEach(it => {
+            if (!renderedItems.has(it.id)) {
+              renderItem(it);
+            } else if (it.client_id !== clientId) {
+              // 다른 디바이스에서 변경된 위치/사이즈/회전 반영
+              updateItemPosition(it);
+            }
+          });
         }
         // strokes도 양방향 — 다른 디바이스에서 지운 stroke가 화면에 남는 것 방지
         const { data: allCurrentStrokes } = await supabase
