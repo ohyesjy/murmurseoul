@@ -341,6 +341,7 @@
           <div class="size" data-size="6"><span class="dot s2"></span></div>
           <div class="size" data-size="12"><span class="dot s3"></span></div>
         </div>
+        <button class="btn" id="btnDraw" title="손그림 ON/OFF — 클릭해서 토글">✏️</button>
         <button class="btn" id="btnUndo" title="마지막 그림 한 획 지우기">↶</button>
         <button class="btn" id="btnEraser" title="지우개 모드 — 캔버스에서 문지르면 지워짐">🧽</button>
         <button class="btn" id="btnPhoto">📷</button>
@@ -474,16 +475,18 @@
     }
     let eraserMode = false;
     let erasing = false;
+    let drawingMode = false; // 손그림 토글 — 기본 OFF (지우개와 같은 패턴)
     const eraseQueue = new Set();
     canvasArea.addEventListener('mousedown', e => {
       e.preventDefault();
-      // 지우개는 host 전용 (다른 사람 그림까지 지울 수 있어서)
       if (role === 'host' && eraserMode) { erasing = true; eraseAt(getPos(e)); return; }
+      if (!drawingMode) return; // 손그림 OFF면 그림 안 그림
       drawing = true; currentPath = [getPos(e)];
     });
     canvasArea.addEventListener('touchstart', e => {
       e.preventDefault();
       if (role === 'host' && eraserMode) { erasing = true; eraseAt(getPos(e)); return; }
+      if (!drawingMode) return;
       drawing = true; currentPath = [getPos(e)];
     }, { passive: false });
     function moveDraw(e) {
@@ -553,13 +556,28 @@
       if (role !== 'host') return toast('HOST 만 사용 가능');
       eraserMode = !eraserMode;
       btnEraser.classList.toggle('primary', eraserMode);
-      // 텍스트 모드와 상호 배타
+      // 다른 모드와 상호 배타
       if (eraserMode) {
         textMode = false;
         if (btnText) btnText.classList.remove('primary');
+        drawingMode = false;
+        btnDraw.classList.remove('primary');
       }
-      canvas.style.cursor = eraserMode ? 'crosshair' : 'crosshair';
       toast(eraserMode ? '🧽 지우개 ON — 손가락으로 문지르면 지워짐' : '지우개 OFF');
+    });
+
+    // 손그림 모드 토글
+    const btnDraw = document.getElementById('btnDraw');
+    btnDraw.addEventListener('click', () => {
+      drawingMode = !drawingMode;
+      btnDraw.classList.toggle('primary', drawingMode);
+      if (drawingMode) {
+        eraserMode = false;
+        btnEraser.classList.remove('primary');
+        textMode = false;
+        if (btnText) btnText.classList.remove('primary');
+      }
+      toast(drawingMode ? '✏️ 손그림 ON' : '손그림 OFF');
     });
 
     document.querySelectorAll('.color').forEach(el => el.addEventListener('click', () => {
