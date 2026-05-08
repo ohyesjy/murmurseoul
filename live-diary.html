@@ -1138,6 +1138,39 @@
           })
         .subscribe();
 
+      // realtime fallback — 5초마다 새 stroke/item/comment 폴링 (realtime 끊겨도 동기화)
+      setInterval(async () => {
+        const lastStrokeTime = allStrokes.length > 0
+          ? Math.max(...allStrokes.map(s => new Date(s.created_at).getTime()))
+          : 0;
+        const lastItemTime = Math.max(0, ...Array.from(renderedItems).map(() => 0)); // items 시간 추적 안 하니 0
+        const sinceISO = new Date(Math.max(lastStrokeTime - 1000, 0)).toISOString();
+        const { data: newStrokes } = await supabase
+          .from('diary_strokes').select('*')
+          .eq('session_date', today)
+          .gt('created_at', sinceISO)
+          .order('created_at');
+        if (newStrokes) {
+          newStrokes.forEach(s => {
+            if (allStrokes.find(x => x.id === s.id)) return;
+            allStrokes.push(s);
+            drawStroke(s);
+          });
+        }
+        // items도 가져옴 (이미 렌더된 건 renderedItems set으로 중복 방지)
+        const { data: newItems } = await supabase
+          .from('diary_items').select('*')
+          .eq('session_date', today)
+          .order('created_at');
+        if (newItems) newItems.forEach(it => { if (!renderedItems.has(it.id)) renderItem(it); });
+        // comments도
+        const { data: newComments } = await supabase
+          .from('diary_comments').select('*')
+          .eq('session_date', today)
+          .order('created_at');
+        if (newComments) newComments.forEach(c => { if (!renderedComments.has(c.id)) renderComment(c); });
+      }, 5000);
+
       const presence = supabase.channel('pres-' + today, { config: { presence: { key: clientId } } });
       presence.on('presence', { event: 'sync' }, () => {
         const c = Object.keys(presence.presenceState()).length;
