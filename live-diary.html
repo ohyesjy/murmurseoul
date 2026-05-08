@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Hachi+Maru+Pop&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   * { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; box-sizing: border-box; }
   html, body { margin: 0; padding: 0; min-height: 100vh; background: #f0ede4; color: #1a1a1a; font-family: "Zen Kaku Gothic New", "Apple SD Gothic Neo", sans-serif; -webkit-user-select: none; user-select: none; }
@@ -352,6 +353,7 @@
         <button class="btn" id="btnEraser" title="지우개 모드 — 캔버스에서 문지르면 지워짐">🧽</button>
         <button class="btn" id="btnPhoto">📷</button>
         <button class="btn" id="btnText" title="원하는 위치에 붙이기">T</button>
+        <button class="btn" id="btnNow" title="지금 화면 캡처 → picture diary에 올림" style="background:#c8243a; color:#fff; font-weight:700; letter-spacing:0.1em;">NOW!</button>
       </div>
     </div>
     <div class="tools-visitor" id="toolsVisitor">
@@ -581,6 +583,48 @@
       toast(eraserMode ? '🧽 지우개 ON — 두꺼운 영역으로 문지르면 지워짐' : '지우개 OFF');
     });
 
+    // NOW! 버튼 — 현재 화면 캡처 → picture diary에 업로드
+    document.getElementById('btnNow').addEventListener('click', async () => {
+      if (role !== 'host') return toast('HOST 만 NOW! 사용 가능');
+      if (typeof html2canvas === 'undefined') return toast('캡처 라이브러리 로딩 중...');
+      toast('📸 캡처 중...');
+      try {
+        const target = document.querySelector('.diary');
+        const cv = await html2canvas(target, {
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          allowTaint: true,
+          scale: 1,
+          logging: false
+        });
+        // 800px max width로 리사이즈
+        const maxW = 800;
+        const ratio = Math.min(maxW / cv.width, maxW / cv.height, 1);
+        const out = document.createElement('canvas');
+        out.width = cv.width * ratio; out.height = cv.height * ratio;
+        out.getContext('2d').drawImage(cv, 0, 0, out.width, out.height);
+        const b64 = out.toDataURL('image/jpeg', 0.82);
+        const { error } = await supabase.from('diary_items').insert({
+          session_date: today,
+          type: 'snapshot',
+          content: b64,
+          pos_x: 0, pos_y: 0,
+          rotation: 0,
+          client_id: clientId,
+          nickname: nickname || null
+        }).select().single();
+        if (error) {
+          toast('업로드 실패: ' + (error.message || ''));
+          console.error('NOW upload err', error);
+        } else {
+          toast('📸 picture diary에 올라감 ✓');
+        }
+      } catch (e) {
+        toast('캡처 실패: ' + e.message);
+        console.error('NOW capture err', e);
+      }
+    });
+
     // 손그림 모드 토글
     const btnDraw = document.getElementById('btnDraw');
     btnDraw.addEventListener('click', () => {
@@ -768,6 +812,8 @@
     const renderedItems = new Set();
     function renderItem(item) {
       if (renderedItems.has(item.id)) return;
+      // snapshot 타입은 캔버스에 표시 안 함 (picture diary 전용)
+      if (item.type === 'snapshot') { renderedItems.add(item.id); return; }
       renderedItems.add(item.id);
       const el = document.createElement('div');
       el.className = 'item ' + item.type;
