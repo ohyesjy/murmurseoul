@@ -786,10 +786,10 @@
         x.className = 'x-mark';
         x.textContent = '×';
         Object.assign(x.style, {
-          position: 'absolute', top: '-4px', right: '-4px',
-          width: '40px', height: '40px', borderRadius: '50%',
+          position: 'absolute', top: '2px', right: '2px',
+          width: '36px', height: '36px', borderRadius: '50%',
           background: '#c8243a', color: '#fff',
-          fontSize: '22px', lineHeight: '40px', textAlign: 'center',
+          fontSize: '20px', lineHeight: '36px', textAlign: 'center',
           cursor: 'pointer', display: 'none', zIndex: '25',
           fontFamily: 'sans-serif', fontWeight: 'bold',
           boxShadow: '0 3px 10px rgba(0,0,0,0.35)',
@@ -815,6 +815,8 @@
         let pinching = false, pinchStart = null;
         function startDrag(e) {
           if (e.target.closest('button') || e.target.closest('.x-mark') || e.target.closest('.photo-ctrl')) return;
+          // 손그림/지우개 모드면 이미지 클릭 무시 → 캔버스로 통과해서 그림 그릴 수 있게
+          if (drawingMode || eraserMode) return;
 
           // 두 손가락 → 핀치 (사진만)
           if (e.touches && e.touches.length >= 2 && item.type === 'photo') {
@@ -913,10 +915,10 @@
         const ctrl = document.createElement('div');
         ctrl.className = 'photo-ctrl';
         Object.assign(ctrl.style, {
-          position: 'absolute', bottom: '-44px', left: '50%',
+          position: 'absolute', bottom: '4px', left: '50%',
           transform: 'translateX(-50%)',
           display: 'none', gap: '3px', zIndex: '30',
-          background: 'rgba(0,0,0,0.82)', padding: '4px 5px', borderRadius: '8px',
+          background: 'rgba(0,0,0,0.85)', padding: '4px 5px', borderRadius: '8px',
           boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
           pointerEvents: 'auto'
         });
