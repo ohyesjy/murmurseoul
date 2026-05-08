@@ -818,8 +818,8 @@
           // 손그림/지우개 모드면 이미지 클릭 무시 → 캔버스로 통과해서 그림 그릴 수 있게
           if (drawingMode || eraserMode) return;
 
-          // 두 손가락 → 핀치 (사진만)
-          if (e.touches && e.touches.length >= 2 && item.type === 'photo') {
+          // 두 손가락 → 핀치 (사진만, 그리고 드래그 중이 아닐 때만)
+          if (e.touches && e.touches.length >= 2 && item.type === 'photo' && !dragging) {
             e.preventDefault(); e.stopPropagation();
             pinching = true; dragging = false;
             const [t1, t2] = e.touches;
