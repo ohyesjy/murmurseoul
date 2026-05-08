@@ -597,18 +597,19 @@
           scale: 1,
           logging: false
         });
-        // 800px max width로 리사이즈
-        const maxW = 800;
+        // 600px max width로 리사이즈 + 더 강한 압축
+        const maxW = 600;
         const ratio = Math.min(maxW / cv.width, maxW / cv.height, 1);
         const out = document.createElement('canvas');
         out.width = cv.width * ratio; out.height = cv.height * ratio;
         out.getContext('2d').drawImage(cv, 0, 0, out.width, out.height);
-        const b64 = out.toDataURL('image/jpeg', 0.82);
+        const b64 = out.toDataURL('image/jpeg', 0.72);
+        // type='photo'로 저장 + magic pos_x: -999로 snapshot 식별
         const { error } = await supabase.from('diary_items').insert({
           session_date: today,
-          type: 'snapshot',
+          type: 'photo',
           content: b64,
-          pos_x: 0, pos_y: 0,
+          pos_x: -999, pos_y: -999,
           rotation: 0,
           client_id: clientId,
           nickname: nickname || null
@@ -812,8 +813,8 @@
     const renderedItems = new Set();
     function renderItem(item) {
       if (renderedItems.has(item.id)) return;
-      // snapshot 타입은 캔버스에 표시 안 함 (picture diary 전용)
-      if (item.type === 'snapshot') { renderedItems.add(item.id); return; }
+      // snapshot은 캔버스에 표시 안 함 (picture diary 전용) — type='snapshot' 또는 pos_x<0 magic
+      if (item.type === 'snapshot' || item.pos_x < 0) { renderedItems.add(item.id); return; }
       renderedItems.add(item.id);
       const el = document.createElement('div');
       el.className = 'item ' + item.type;
