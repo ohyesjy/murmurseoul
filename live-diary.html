@@ -641,7 +641,11 @@
     }
     btnHostChatSend.addEventListener('click', sendHostChat);
     hostChatInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); sendHostChat(); }
+      // IME(한글/일본어) 변환 중 Enter는 무시 — 변환 확정용 Enter가 sendHostChat까지 발동되는 중복 방지
+      if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
+        e.preventDefault();
+        sendHostChat();
+      }
     });
 
     // UNDO — 마지막 내가 그은 stroke 한 획 지우기
