@@ -513,10 +513,9 @@
       `;
       document.body.appendChild(overlay);
       const nickIn = document.getElementById('_hostNick');
-      if (nickname) nickIn.value = nickname;
-      else nickIn.focus();
+      nickIn.placeholder = 'HOST ニックネーム (murmur)';
       const pwIn = document.getElementById('_hostPw');
-      if (nickname) pwIn.focus();
+      nickIn.focus();
 
       const close = () => overlay.remove();
       document.getElementById('_cancelHostBtn').addEventListener('click', close);
@@ -524,7 +523,7 @@
         const n = nickIn.value.trim();
         const p = pwIn.value;
         if (!n) { toast('ニックネーム入力'); return; }
-        if (n !== nickname) { toast('닉네임 불일치'); return; }
+        if (n !== 'murmur') { toast('닉네임 불일치 (HOST 닉네임은 murmur)'); return; }
         if (p !== HOST_PASSWORD) { toast('비밀번호 불일치'); return; }
         role = 'host';
         localStorage.setItem('mj_role', role);
