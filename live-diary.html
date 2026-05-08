@@ -1231,12 +1231,32 @@
             drawStroke(s);
           });
         }
-        // items도 가져옴 (이미 렌더된 건 renderedItems set으로 중복 방지)
+        // items 양방향 동기화 — DB에 없으면 화면에서도 제거 (다른 디바이스 삭제 반영)
         const { data: newItems } = await supabase
           .from('diary_items').select('*')
           .eq('session_date', today)
           .order('created_at');
-        if (newItems) newItems.forEach(it => { if (!renderedItems.has(it.id)) renderItem(it); });
+        if (newItems) {
+          const dbIds = new Set(newItems.map(it => String(it.id)));
+          document.querySelectorAll('.canvas-area .item[data-item-id]').forEach(el => {
+            const id = el.dataset.itemId;
+            if (id && !dbIds.has(String(id))) {
+              el.remove();
+              renderedItems.delete(id);
+            }
+          });
+          newItems.forEach(it => { if (!renderedItems.has(it.id)) renderItem(it); });
+        }
+        // strokes도 양방향 — 다른 디바이스에서 지운 stroke가 화면에 남는 것 방지
+        const { data: allCurrentStrokes } = await supabase
+          .from('diary_strokes').select('id')
+          .eq('session_date', today);
+        if (allCurrentStrokes) {
+          const dbStrokeIds = new Set(allCurrentStrokes.map(s => String(s.id)));
+          const before = allStrokes.length;
+          allStrokes = allStrokes.filter(s => dbStrokeIds.has(String(s.id)));
+          if (allStrokes.length !== before) redraw();
+        }
         // comments도
         const { data: newComments } = await supabase
           .from('diary_comments').select('*')
