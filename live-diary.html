@@ -810,10 +810,28 @@
         x.addEventListener('touchstart', (ev) => { ev.stopPropagation(); }, { passive: true });
         x.addEventListener('touchend', removeItem, { passive: false });
 
-        // 드래그 + 탭 구분
+        // 드래그 + 탭 + 핀치(2손가락 사이즈/회전) 구분
         let dragging = false, dragStart = null, didMove = false;
+        let pinching = false, pinchStart = null;
         function startDrag(e) {
           if (e.target.closest('button') || e.target.closest('.x-mark') || e.target.closest('.photo-ctrl')) return;
+
+          // 두 손가락 → 핀치 (사진만)
+          if (e.touches && e.touches.length >= 2 && item.type === 'photo') {
+            e.preventDefault(); e.stopPropagation();
+            pinching = true; dragging = false;
+            const [t1, t2] = e.touches;
+            pinchStart = {
+              dist: Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY),
+              angle: Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180 / Math.PI,
+              scale: item.scale || 1,
+              rotation: item.rotation || 0
+            };
+            document.addEventListener('touchmove', movePinch, { passive: false });
+            document.addEventListener('touchend', endPinch);
+            return;
+          }
+
           e.preventDefault(); e.stopPropagation();
           dragging = true; didMove = false;
           const t = e.touches ? e.touches[0] : e;
@@ -822,6 +840,29 @@
           document.addEventListener('touchmove', moveDrag, { passive: false });
           document.addEventListener('mouseup', endDrag);
           document.addEventListener('touchend', endDrag);
+        }
+        function movePinch(e) {
+          if (!pinching || !e.touches || e.touches.length < 2) return;
+          e.preventDefault();
+          const [t1, t2] = e.touches;
+          const newDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+          const newAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180 / Math.PI;
+          const scaleFactor = newDist / pinchStart.dist;
+          item.scale = Math.max(0.3, Math.min(4, pinchStart.scale * scaleFactor));
+          item.rotation = pinchStart.rotation + (newAngle - pinchStart.angle);
+          el.style.transform = `translate(-50%, -50%) rotate(${item.rotation}deg) scale(${item.scale})`;
+        }
+        async function endPinch() {
+          if (!pinching) return;
+          pinching = false;
+          document.removeEventListener('touchmove', movePinch);
+          document.removeEventListener('touchend', endPinch);
+          const { error } = await supabase.from('diary_items').update({
+            rotation: item.rotation, scale: item.scale
+          }).eq('id', item.id);
+          if (error && /scale/i.test(error.message || '')) {
+            await supabase.from('diary_items').update({ rotation: item.rotation }).eq('id', item.id);
+          }
         }
         function moveDrag(e) {
           if (!dragging) return;
@@ -912,10 +953,10 @@
             console.error('photo transform err', error);
           }
         }
-        bUp.addEventListener('click', e => { e.stopPropagation(); applyTransform({ scale: Math.min((item.scale || 1) + 0.15, 3) }); });
-        bDown.addEventListener('click', e => { e.stopPropagation(); applyTransform({ scale: Math.max((item.scale || 1) - 0.15, 0.3) }); });
-        bRotL.addEventListener('click', e => { e.stopPropagation(); applyTransform({ rotation: (item.rotation || 0) - 15 }); });
-        bRotR.addEventListener('click', e => { e.stopPropagation(); applyTransform({ rotation: (item.rotation || 0) + 15 }); });
+        bUp.addEventListener('click', e => { e.stopPropagation(); applyTransform({ scale: Math.min((item.scale || 1) + 0.25, 4) }); });
+        bDown.addEventListener('click', e => { e.stopPropagation(); applyTransform({ scale: Math.max((item.scale || 1) - 0.25, 0.3) }); });
+        bRotL.addEventListener('click', e => { e.stopPropagation(); applyTransform({ rotation: (item.rotation || 0) - 22 }); });
+        bRotR.addEventListener('click', e => { e.stopPropagation(); applyTransform({ rotation: (item.rotation || 0) + 22 }); });
       }
       itemsLayer.appendChild(el);
     }
