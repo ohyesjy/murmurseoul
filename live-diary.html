@@ -731,16 +731,16 @@
         el.style.transform = `translate(-50%, -50%) rotate(${initRot}deg) scale(${initScale})`;
         el.innerHTML = `<img src="${item.content}" />`;
       } else if (item.type === 'note') {
-        // 캔버스 텍스트 — 좌상단 기준으로 배치 (잘림 방지)
+        // 캔버스 텍스트 — 자동 줄바꿈 X, 사용자가 명시한 \n 만 줄바꿈
         el.style.transform = `rotate(${item.rotation || 0}deg)`;
         el.style.fontSize = '15px';
         el.style.fontFamily = '"Hachi Maru Pop", "Zen Kaku Gothic New", sans-serif';
         el.style.color = '#1a1a1a';
-        el.style.maxWidth = '28%';
+        el.style.maxWidth = 'none';
         el.style.lineHeight = '1.4';
         el.style.padding = '2px 4px';
-        el.style.whiteSpace = 'pre-wrap';
-        el.style.wordBreak = 'break-word';
+        el.style.whiteSpace = 'pre';
+        el.style.wordBreak = 'normal';
         el.textContent = item.content;
       }
       // host는 자기 항목 위에 마우스 올리면 × 삭제 버튼
@@ -768,8 +768,51 @@
           renderedItems.delete(item.id);
         });
       }
-      // 호스트 자기 사진 — 사이즈/회전 컨트롤 추가
+      // 호스트 자기 사진 — 드래그로 위치 변경 + 사이즈/회전 컨트롤
       if (item.type === 'photo' && role === 'host' && item.client_id === clientId) {
+        // === 드래그 위치 변경 ===
+        let dragging = false, dragStart = null, didMove = false;
+        function startDrag(e) {
+          // 버튼/×/컨트롤 누른 경우 무시
+          if (e.target.closest('button') || e.target.closest('span')) return;
+          e.preventDefault(); e.stopPropagation();
+          dragging = true; didMove = false;
+          const t = e.touches ? e.touches[0] : e;
+          dragStart = { x: t.clientX, y: t.clientY, px: item.pos_x, py: item.pos_y };
+          document.addEventListener('mousemove', moveDrag);
+          document.addEventListener('touchmove', moveDrag, { passive: false });
+          document.addEventListener('mouseup', endDrag);
+          document.addEventListener('touchend', endDrag);
+        }
+        function moveDrag(e) {
+          if (!dragging) return;
+          e.preventDefault();
+          const t = e.touches ? e.touches[0] : e;
+          const r = document.getElementById('canvasArea').getBoundingClientRect();
+          const ndx = (t.clientX - dragStart.x) / r.width;
+          const ndy = (t.clientY - dragStart.y) / r.height;
+          if (Math.abs(ndx) + Math.abs(ndy) > 0.005) didMove = true;
+          item.pos_x = Math.max(0, Math.min(1, dragStart.px + ndx));
+          item.pos_y = Math.max(0, Math.min(1, dragStart.py + ndy));
+          el.style.left = (item.pos_x * 100) + '%';
+          el.style.top = (item.pos_y * 100) + '%';
+        }
+        async function endDrag(e) {
+          if (!dragging) return;
+          dragging = false;
+          document.removeEventListener('mousemove', moveDrag);
+          document.removeEventListener('touchmove', moveDrag);
+          document.removeEventListener('mouseup', endDrag);
+          document.removeEventListener('touchend', endDrag);
+          if (!didMove) return;
+          await supabase.from('diary_items').update({ pos_x: item.pos_x, pos_y: item.pos_y }).eq('id', item.id);
+        }
+        el.addEventListener('mousedown', startDrag);
+        el.addEventListener('touchstart', startDrag, { passive: false });
+        el.style.touchAction = 'none';
+        el.style.cursor = 'move';
+
+        // === 사이즈/회전 컨트롤 ===
         const ctrl = document.createElement('div');
         Object.assign(ctrl.style, {
           position: 'absolute', bottom: '-44px', left: '50%',
