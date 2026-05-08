@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>murmur josun · members admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #f5f1ea; font-family: "Zen Kaku Gothic New", sans-serif; color: #1a1a1a; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { font-family: "Special Elite", monospace; letter-spacing: 0.08em; margin: 0 0 18px; }
+  .lock { background: #fff; border: 1px solid #ddd; padding: 22px; border-radius: 8px; max-width: 360px; margin: 60px auto; }
+  .lock input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px; font-family: inherit; }
+  .lock button { width: 100%; padding: 12px; background: #1a1a1a; color: #fff; border: 0; border-radius: 4px; font-family: "Special Elite", monospace; cursor: pointer; min-height: 44px; }
+  .toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-btn { padding: 8px 14px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-family: "Special Elite", monospace; font-size: 12px; }
+  .filter-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .member { background: #fff; border: 1px solid #e0dccc; border-radius: 6px; padding: 14px 16px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .member .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .member .name { font-weight: 700; font-size: 16px; }
+  .member .badge { font-family: "Special Elite", monospace; font-size: 10px; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.1em; }
+  .badge-pending { background: #fff8e0; color: #b07a1a; border: 1px solid #e0c48a; }
+  .badge-approved { background: #e8f5ec; color: #2a8a3e; border: 1px solid #9ed4af; }
+  .badge-rejected { background: #f8e8e8; color: #b03030; border: 1px solid #d4a8a8; }
+  .member .info { font-size: 13px; color: #555; line-height: 1.6; }
+  .member .info b { color: #1a1a1a; font-weight: 500; }
+  .member .actions { display: flex; gap: 8px; margin-top: 10px; }
+  .member .actions button { padding: 8px 14px; border: 0; border-radius: 4px; cursor: pointer; font-family: "Special Elite", monospace; font-size: 11px; letter-spacing: 0.08em; min-height: 36px; }
+  .btn-approve { background: #2a8a3e; color: #fff; }
+  .btn-reject { background: #c8243a; color: #fff; }
+  .btn-pending { background: #888; color: #fff; }
+  .empty { text-align: center; padding: 40px; color: #888; }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #fff; padding: 10px 18px; border-radius: 4px; font-size: 13px; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 200ms; }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+  <div class="wrap" id="content" style="display:none;">
+    <h1>MEMBERS — admin</h1>
+    <div class="toolbar">
+      <button class="filter-btn active" data-f="pending">대기 (pending)</button>
+      <button class="filter-btn" data-f="approved">승인 (approved)</button>
+      <button class="filter-btn" data-f="rejected">거부 (rejected)</button>
+      <button class="filter-btn" data-f="all">전체</button>
+    </div>
+    <div id="list"></div>
+  </div>
+
+  <div class="lock" id="lock">
+    <h2 style="margin:0 0 12px; font-family:'Special Elite',monospace; font-size:18px;">🔒 ADMIN</h2>
+    <p style="font-size:12px; color:#666; margin:0 0 12px;">관리자 비밀번호 입력</p>
+    <input type="password" id="pwInput" placeholder="HOST 비밀번호" autofocus />
+    <button id="pwBtn">ENTER ▸</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const SB_URL = 'https://zhaabmqdbgmisyurcslv.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoYWFibXFkYmdtaXN5dXJjc2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTEyMTcsImV4cCI6MjA5MjY2NzIxN30.pcN8mQHPKhws2mMxeScDb3bc9rPJnZlYMRM23T8ksVE';
+    const HOST_PW = 'ohyesjy';
+    const supabase = createClient(SB_URL, SB_KEY);
+    let currentFilter = 'pending';
+    let allMembers = [];
+
+    function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+
+    document.getElementById('pwBtn').addEventListener('click', () => {
+      if (document.getElementById('pwInput').value !== HOST_PW) { toast('비밀번호 틀림'); return; }
+      document.getElementById('lock').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+      load();
+    });
+    document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('pwBtn').click(); });
+
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        currentFilter = b.dataset.f;
+        render();
+      });
+    });
+
+    async function load() {
+      const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
+      if (error) {
+        document.getElementById('list').innerHTML = `<div class="empty">members 테이블이 없거나 접근 실패<br/><br/>Supabase SQL Editor에서 아래 실행:<br/><br/><pre style="text-align:left; background:#fff; padding:14px; border-radius:4px; font-size:11px; overflow:auto;">create table if not exists members (
+  id uuid primary key default gen_random_uuid(),
+  email text unique not null,
+  password_hash text,
+  full_name text,
+  phone text,
+  nickname text,
+  status text default 'pending',
+  created_at timestamptz default now(),
+  approved_at timestamptz
+);
+alter table members enable row level security;
+create policy "Anyone can read members" on members for select using (true);
+create policy "Anyone can insert members" on members for insert with check (true);
+create policy "Anyone can update members" on members for update using (true);</pre>`;
+        return;
+      }
+      allMembers = data || [];
+      render();
+    }
+
+    function render() {
+      const list = document.getElementById('list');
+      const filtered = currentFilter === 'all' ? allMembers : allMembers.filter(m => (m.status || 'pending') === currentFilter);
+      if (filtered.length === 0) { list.innerHTML = '<div class="empty">신청 없음</div>'; return; }
+      list.innerHTML = filtered.map(m => {
+        const status = m.status || 'pending';
+        const created = new Date(m.created_at).toISOString().slice(0, 16).replace('T', ' ');
+        return `
+        <div class="member" data-id="${m.id}">
+          <div class="head">
+            <div class="name">${escape(m.nickname || m.full_name || '?')}</div>
+            <span class="badge badge-${status}">${status}</span>
+          </div>
+          <div class="info">
+            <b>姓名 / 성명:</b> ${escape(m.full_name || '-')}<br/>
+            <b>email:</b> ${escape(m.email || '-')}<br/>
+            <b>電話 / 폰:</b> ${escape(m.phone || '-')}<br/>
+            <b>申請日時:</b> ${created}
+          </div>
+          <div class="actions">
+            ${status !== 'approved' ? `<button class="btn-approve" data-act="approved">✓ 승인</button>` : ''}
+            ${status !== 'rejected' ? `<button class="btn-reject" data-act="rejected">✗ 거부</button>` : ''}
+            ${status !== 'pending' ? `<button class="btn-pending" data-act="pending">↺ 대기로</button>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+      list.querySelectorAll('.member').forEach(el => {
+        const id = el.dataset.id;
+        el.querySelectorAll('button').forEach(b => {
+          b.addEventListener('click', async () => {
+            const newStatus = b.dataset.act;
+            const update = { status: newStatus };
+            if (newStatus === 'approved') update.approved_at = new Date().toISOString();
+            const { error } = await supabase.from('members').update(update).eq('id', id);
+            if (error) { toast('업데이트 실패: ' + error.message); return; }
+            toast(newStatus + ' 처리됨');
+            load();
+          });
+        });
+      });
+    }
+
+    function escape(s) { return String(s).replace(/[<>&"]/g, c => ({ '<':'&lt;', '>':'&gt;', '&':'&amp;', '"':'&quot;' }[c])); }
+  </script>
+</body>
+</html>
