@@ -72,8 +72,8 @@
     background: #fff;
     border-bottom: 1px solid #1a1a1a;
   }
-  #canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
-  .canvas-area #items-layer { position: absolute; inset: 0; pointer-events: none; }
+  #canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; position: absolute; inset: 0; z-index: 10; pointer-events: none !important; }
+  .canvas-area #items-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
   .canvas-area .item { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; }
   .canvas-area .item.photo img {
     max-width: 30%; max-height: 60%;
@@ -430,6 +430,7 @@
 
     // Canvas
     const canvas = document.getElementById('canvas');
+    const canvasArea = document.getElementById('canvasArea');
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
     function resizeCanvas() {
@@ -474,13 +475,13 @@
     let eraserMode = false;
     let erasing = false;
     const eraseQueue = new Set();
-    canvas.addEventListener('mousedown', e => {
+    canvasArea.addEventListener('mousedown', e => {
       e.preventDefault();
       // 지우개는 host 전용 (다른 사람 그림까지 지울 수 있어서)
       if (role === 'host' && eraserMode) { erasing = true; eraseAt(getPos(e)); return; }
       drawing = true; currentPath = [getPos(e)];
     });
-    canvas.addEventListener('touchstart', e => {
+    canvasArea.addEventListener('touchstart', e => {
       e.preventDefault();
       if (role === 'host' && eraserMode) { erasing = true; eraseAt(getPos(e)); return; }
       drawing = true; currentPath = [getPos(e)];
@@ -496,8 +497,8 @@
       const last = currentPath[currentPath.length - 2];
       ctx.moveTo(last.x * w, last.y * h); ctx.lineTo(p.x * w, p.y * h); ctx.stroke();
     }
-    canvas.addEventListener('mousemove', moveDraw);
-    canvas.addEventListener('touchmove', moveDraw, { passive: false });
+    canvasArea.addEventListener('mousemove', moveDraw);
+    canvasArea.addEventListener('touchmove', moveDraw, { passive: false });
     async function endDraw() {
       if (!drawing) return; drawing = false;
       if (currentPath.length < 2) return;
@@ -506,9 +507,9 @@
       if (data) allStrokes.push(data);
       currentPath = [];
     }
-    canvas.addEventListener('mouseup', () => { endDraw(); endErase(); });
-    canvas.addEventListener('mouseleave', () => { endDraw(); endErase(); });
-    canvas.addEventListener('touchend', () => { endDraw(); endErase(); });
+    canvasArea.addEventListener('mouseup', () => { endDraw(); endErase(); });
+    canvasArea.addEventListener('mouseleave', () => { endDraw(); endErase(); });
+    canvasArea.addEventListener('touchend', () => { endDraw(); endErase(); });
 
     // 섬세 지우개 — 손가락 위치에 닿은 점만 제거 (stroke 일부만 지워짐)
     const dirtyStrokes = new Set(); // 변경된 stroke ID
@@ -627,8 +628,9 @@
 
     // 캔버스 클릭 → 텍스트 입력 (텍스트 모드일 때만)
     let textInputEl = null;
-    canvas.addEventListener('click', (e) => {
+    canvasArea.addEventListener('click', (e) => {
       if (!textMode || role !== 'host') return;
+      if (e.target.closest('.item')) return; // 사진/노트 클릭은 무시
       e.preventDefault();
       e.stopPropagation();
       if (textInputEl) { textInputEl.remove(); textInputEl = null; }
