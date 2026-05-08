@@ -65,20 +65,50 @@
   .weather-grid .w.active { opacity: 1; background: #fff8b0; }
   .weather-grid .w:hover { opacity: 0.85; }
 
-  /* 메인 캔버스 영역 */
+  /* 메인 캔버스 영역 — 무한 캔버스 viewport */
   .canvas-area {
     position: relative;
     aspect-ratio: 4 / 3;
     overflow: hidden;
     background: #fff;
     border-bottom: 1px solid #1a1a1a;
+    touch-action: none;
   }
-  #canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; position: absolute; inset: 0; z-index: 10; pointer-events: none !important; }
-  .canvas-area #items-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+  /* 무한 캔버스 — 절대 사이즈 1600x1200, transform으로 줌/팬 */
+  #canvas {
+    position: absolute;
+    left: 0; top: 0;
+    width: 1600px !important; height: 1200px !important;
+    display: block;
+    touch-action: none;
+    cursor: crosshair;
+    z-index: 10;
+    pointer-events: none !important;
+    transform-origin: 0 0;
+    background: #fff;
+  }
+  .canvas-area #items-layer {
+    position: absolute;
+    left: 0; top: 0;
+    width: 1600px; height: 1200px;
+    pointer-events: none;
+    z-index: 5;
+    transform-origin: 0 0;
+  }
   .canvas-area .item { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; }
   .canvas-area .item.photo {
-    width: 30%;
-    max-width: 240px;
+    width: 360px;
+    max-width: none;
+  }
+  /* 줌 표시 */
+  .zoom-badge {
+    position: absolute; top: 8px; left: 8px;
+    background: rgba(0,0,0,0.6); color: #fff;
+    font-family: "Special Elite", monospace; font-size: 11px;
+    padding: 4px 8px; border-radius: 4px;
+    z-index: 100;
+    pointer-events: none;
+    letter-spacing: 0.05em;
   }
   .canvas-area .item.photo img {
     width: 100%;
@@ -319,6 +349,7 @@
       <div class="canvas-locked-overlay" id="lockedOverlay">
         <span>🔒 HOST 만 그림 그리기 가능 — 댓글로 참여해주세요</span>
       </div>
+      <div class="zoom-badge" id="zoomBadge">100%</div>
     </div>
 
     <!-- 호스트 캔버스 타이핑 — 제목 바로 위 -->
@@ -522,13 +553,100 @@
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
     function resizeCanvas() {
-      const rect = document.getElementById('canvasArea').getBoundingClientRect();
-      canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
-      canvas.style.width = rect.width + 'px'; canvas.style.height = rect.height + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      // 캔버스는 절대 사이즈 (1600x1200) 고정. transform으로 줌/팬.
+      canvas.width = CANVAS_W * dpr;
+      canvas.height = CANVAS_H * dpr;
+      canvas.style.width = CANVAS_W + 'px';
+      canvas.style.height = CANVAS_H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      centerCanvas();
       redraw();
     }
     window.addEventListener('resize', resizeCanvas);
+
+    // ===== 무한 캔버스 (줌/팬) =====
+    const CANVAS_W = 1600, CANVAS_H = 1200;
+    let zoom = 0.5, panX = 0, panY = 0;
+    const zoomBadge = document.getElementById('zoomBadge');
+
+    function applyTransform() {
+      const t = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+      canvas.style.transform = t;
+      itemsLayer.style.transform = t;
+      if (zoomBadge) zoomBadge.textContent = Math.round(zoom * 100) + '%';
+    }
+
+    function centerCanvas() {
+      const r = canvasArea.getBoundingClientRect();
+      panX = (r.width - CANVAS_W * zoom) / 2;
+      panY = (r.height - CANVAS_H * zoom) / 2;
+      applyTransform();
+    }
+
+    // 마우스 휠 + 트랙패드 핀치(ctrlKey + wheel) → 줌
+    canvasArea.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const r = canvasArea.getBoundingClientRect();
+      const mx = e.clientX - r.left;
+      const my = e.clientY - r.top;
+      const oldZoom = zoom;
+      const factor = e.ctrlKey ? (e.deltaY > 0 ? 0.95 : 1.05) : (e.deltaY > 0 ? 0.9 : 1.1);
+      zoom = Math.max(0.15, Math.min(3, zoom * factor));
+      panX = mx - (mx - panX) * (zoom / oldZoom);
+      panY = my - (my - panY) * (zoom / oldZoom);
+      applyTransform();
+    }, { passive: false });
+
+    // 모바일 핀치 줌 (두 손가락) — 캔버스 빈 영역에서만
+    let canvasPinch = false, canvasPinchStart = null;
+    canvasArea.addEventListener('touchstart', e => {
+      if (e.touches.length === 2 && !e.target.closest('.item')) {
+        canvasPinch = true;
+        const [t1, t2] = e.touches;
+        canvasPinchStart = {
+          dist: Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY),
+          zoom, panX, panY,
+          cx: (t1.clientX + t2.clientX) / 2,
+          cy: (t1.clientY + t2.clientY) / 2
+        };
+      }
+    });
+    canvasArea.addEventListener('touchmove', e => {
+      if (!canvasPinch || e.touches.length < 2) return;
+      e.preventDefault();
+      const [t1, t2] = e.touches;
+      const newDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      const factor = newDist / canvasPinchStart.dist;
+      zoom = Math.max(0.15, Math.min(3, canvasPinchStart.zoom * factor));
+      const r = canvasArea.getBoundingClientRect();
+      const cx = canvasPinchStart.cx - r.left;
+      const cy = canvasPinchStart.cy - r.top;
+      panX = cx - (cx - canvasPinchStart.panX) * (zoom / canvasPinchStart.zoom);
+      panY = cy - (cy - canvasPinchStart.panY) * (zoom / canvasPinchStart.zoom);
+      applyTransform();
+    }, { passive: false });
+    canvasArea.addEventListener('touchend', () => {
+      if (canvasPinch) canvasPinch = false;
+    });
+
+    // 손그림/지우개 OFF 상태에서 한 손가락/마우스 드래그 → 팬
+    let panning = false, panMoveStart = null;
+    canvasArea.addEventListener('mousedown', e => {
+      if (drawingMode || (role === 'host' && eraserMode)) return;
+      if (e.target.closest('.item')) return;
+      panning = true;
+      panMoveStart = { x: e.clientX, y: e.clientY, panX, panY };
+    });
+    canvasArea.addEventListener('mousemove', e => {
+      if (!panning) return;
+      panX = panMoveStart.panX + (e.clientX - panMoveStart.x);
+      panY = panMoveStart.panY + (e.clientY - panMoveStart.y);
+      applyTransform();
+    });
+    canvasArea.addEventListener('mouseup', () => panning = false);
+    canvasArea.addEventListener('mouseleave', () => panning = false);
 
     let allStrokes = [];
     function drawStroke(s) {
