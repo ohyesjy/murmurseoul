@@ -375,8 +375,17 @@
       <p>그림일기 LIVE에 들어왔어요.<br/>닉네임을 입력해주세요.</p>
       <input type="text" id="nicknameInput" placeholder="nickname / ニックネーム" maxlength="20" />
       <input type="password" id="hostPassword" placeholder="관리자 비밀번호 (선택)" maxlength="40" style="margin-top:6px;" />
-      <p style="font-size: 13px; color: #c8243a; margin: 10px 0 6px; font-weight: 600; line-height: 1.4;">ゲストの方はパスワード不要です</p>
-      <p style="font-size: 10px; color: #999; margin: 4px 0 8px;">비밀번호 입력 시 HOST 모드 (그림+사진+제목 편집)</p>
+      <p style="font-size: 13px; color: #c8243a; margin: 10px 0 4px; font-weight: 700; line-height: 1.4;">✦ 日本人女性専用スペース ✦</p>
+      <p style="font-size: 11px; color: #888; margin: 0 0 8px;">この空間は日本人女性のための場所です</p>
+      <div style="display:flex; gap:18px; justify-content:center; align-items:center; margin: 10px 0; font-size: 14px; padding: 10px; background: #fdf6f7; border: 1px solid #f0d8d8; border-radius: 6px;">
+        <label style="display:flex; gap:6px; align-items:center; cursor:pointer;">
+          <input type="radio" name="gender" value="female" /> 女性
+        </label>
+        <label style="display:flex; gap:6px; align-items:center; cursor:pointer; opacity:0.7;">
+          <input type="radio" name="gender" value="male" /> 男性
+        </label>
+      </div>
+      <p style="font-size: 10px; color: #999; margin: 4px 0 8px;">비밀번호 입력 시 HOST 모드</p>
       <div style="display:flex; gap:10px; margin-top:6px;">
         <button class="btn" id="btnCancel" style="flex:1; padding:14px 12px; min-height:50px; background:#e8e4d8; color:#1a1a1a; font-size:15px;">캔슬</button>
         <button class="btn primary" id="btnEnter" style="flex:1; padding:14px 12px; min-height:50px; font-size:15px;">등록 ▸</button>
@@ -1373,10 +1382,28 @@
     const HOST_PASSWORD = 'ohyesjy';  // 변경하려면 이 한 줄만 수정
 
     document.getElementById('btnEnter').addEventListener('click', () => {
-      // 닉네임 비면 자동 anon 닉네임
+      // 성별 체크 — 여성 전용
+      const genderEl = document.querySelector('input[name="gender"]:checked');
+      if (!genderEl) {
+        toast('性別を選択してください / 성별 선택');
+        return;
+      }
+      if (genderEl.value !== 'female') {
+        toast('日本人女性専用スペースです 🙏');
+        return;
+      }
+      // 닉네임 필수
       const v = document.getElementById('nicknameInput').value.trim();
-      nickname = v || ('anon_' + Math.floor(Math.random() * 9999));
+      if (!v) {
+        const ni = document.getElementById('nicknameInput');
+        ni.focus();
+        ni.style.borderColor = '#c8243a';
+        toast('ニックネーム必須 / 닉네임 입력');
+        return;
+      }
+      nickname = v;
       localStorage.setItem('mj_nickname', nickname);
+      localStorage.setItem('mj_gender', 'female');
 
       // 비번 체크
       const pw = document.getElementById('hostPassword').value;
@@ -1406,6 +1433,17 @@
     });
 
     if (nickname) document.getElementById('nicknameInput').value = nickname;
+
+    // 이미 등록한 회원이면 모달 skip + 자동 입장
+    if (nickname && localStorage.getItem('mj_gender') === 'female') {
+      const em = document.getElementById('enterModal');
+      em.classList.add('hidden');
+      em.style.display = 'none';
+      try { applyRole(); } catch (e) { console.error('applyRole', e); }
+      try { resizeCanvas(); } catch (e) { console.error('resizeCanvas', e); }
+      try { loadAll(); } catch (e) { console.error('loadAll', e); }
+      try { subscribeRealtime(); } catch (e) { console.error('subscribeRealtime', e); }
+    }
   </script>
 </body>
 </html>
