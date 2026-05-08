@@ -746,8 +746,8 @@
         el.style.wordBreak = 'normal';
         el.textContent = item.content;
       }
-      // 호스트 자기 항목 — 드래그 위치 이동 + 탭 시 X 표시 토글
-      if (role === 'host' && item.client_id === clientId) {
+      // 호스트면 모든 항목 — 드래그 위치 이동 + 탭 시 X 표시 토글 (디바이스 무관)
+      if (role === 'host') {
         el.style.position = 'absolute';
         el.style.cursor = 'move';
         el.style.touchAction = 'none';
@@ -833,8 +833,8 @@
         el.addEventListener('touchstart', startDrag, { passive: false });
       }
 
-      // 호스트 자기 사진 — 사이즈/회전 컨트롤 (탭 시 같이 표시)
-      if (item.type === 'photo' && role === 'host' && item.client_id === clientId) {
+      // 호스트면 모든 사진 — 사이즈/회전 컨트롤 (탭 시 같이 표시)
+      if (item.type === 'photo' && role === 'host') {
         const ctrl = document.createElement('div');
         ctrl.className = 'photo-ctrl';
         Object.assign(ctrl.style, {
