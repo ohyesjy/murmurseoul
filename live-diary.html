@@ -1425,26 +1425,22 @@
       localStorage.setItem('mj_full_name', fullName);
       localStorage.setItem('mj_phone', phone);
 
-      // Supabase members 테이블에 신청 — status='pending'으로 저장 → 영석 승인 대기
-      let approved = false;
-      try {
-        const { data, error } = await supabase.from('members').upsert({
-          email, full_name: fullName, phone, nickname,
-          password_hash: userPw,
-          status: 'pending'
-        }, { onConflict: 'email' }).select().single();
-        if (!error && data) approved = (data.status === 'approved');
-      } catch (e) {
-        console.warn('members table insert skip:', e);
-      }
-
-      // HOST 비번 맞으면 즉시 입장 (관리자 우회)
+      // HOST 비번 즉시 체크 (sync) — 관리자 우회
       const pwCheck = document.getElementById('hostPassword').value;
-      if (pwCheck === HOST_PASSWORD) approved = true;
+      const isHostBypass = (pwCheck === HOST_PASSWORD);
 
-      if (!approved) {
-        // 승인 대기 — 모달 안 닫고 메시지 표시
-        const modal = document.querySelector('#enterModal .modal');
+      // Supabase INSERT는 fire-and-forget (await 안 함 — 멈출 수 있어서)
+      supabase.from('members').upsert({
+        email, full_name: fullName, phone, nickname,
+        password_hash: userPw,
+        status: 'pending'
+      }, { onConflict: 'email' }).then(({error}) => {
+        if (error) console.warn('members upsert err:', error);
+      }).catch(e => console.warn('members upsert err:', e));
+
+      if (!isHostBypass) {
+        // 승인 대기 — 모달 즉시 변경 (Supabase 응답 안 기다림)
+        const modal = document.getElementById('registerScreen');
         modal.innerHTML = `
           <h2 style="color:#c8243a;">承認待ち / 승인 대기</h2>
           <p style="font-size:13px; line-height:1.7; margin: 16px 0; color:#555;">
