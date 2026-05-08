@@ -39,6 +39,18 @@
 <body>
   <div class="wrap" id="content" style="display:none;">
     <h1>MEMBERS — admin</h1>
+
+    <!-- 설정 섹션 — HOST 비번 변경 -->
+    <div style="background:#fff; border:1px solid #e0dccc; border-radius:8px; padding:18px 20px; margin-bottom:20px;">
+      <h2 style="margin:0 0 12px; font-size:16px; font-family:'Special Elite',monospace; letter-spacing:0.06em;">⚙ HOST 비밀번호 변경</h2>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <input type="password" id="newHostPw" placeholder="새 HOST 비밀번호" style="flex:1; min-width:180px; padding:10px; font-size:15px; border:1px solid #ccc; border-radius:4px; font-family:inherit;" />
+        <button id="saveHostPw" style="padding:10px 18px; background:#1a1a1a; color:#fff; border:0; border-radius:4px; cursor:pointer; font-family:'Special Elite',monospace; min-height:42px;">저장</button>
+      </div>
+      <p id="currentPwHint" style="font-size:11px; color:#888; margin:8px 0 0;">현재 비번: 로딩 중...</p>
+    </div>
+
+    <h2 style="margin:0 0 12px; font-size:16px;">신청 회원 목록</h2>
     <div class="toolbar">
       <button class="filter-btn active" data-f="pending">대기 (pending)</button>
       <button class="filter-btn" data-f="approved">승인 (approved)</button>
@@ -73,8 +85,36 @@
       document.getElementById('lock').style.display = 'none';
       document.getElementById('content').style.display = 'block';
       load();
+      loadCurrentHostPw();
     });
     document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('pwBtn').click(); });
+
+    // HOST 비번 변경
+    async function loadCurrentHostPw() {
+      try {
+        const { data } = await supabase.from('settings').select('value').eq('key', 'host_password').maybeSingle();
+        const v = data?.value || 'wldud0013 (default)';
+        document.getElementById('currentPwHint').textContent = `현재 비번: ${v}`;
+      } catch (e) {
+        document.getElementById('currentPwHint').textContent = 'settings 테이블이 없거나 접근 실패';
+      }
+    }
+    document.getElementById('saveHostPw').addEventListener('click', async () => {
+      const newPw = document.getElementById('newHostPw').value.trim();
+      if (!newPw || newPw.length < 4) { toast('4자 이상 입력'); return; }
+      try {
+        const { error } = await supabase.from('settings').upsert({ key: 'host_password', value: newPw }, { onConflict: 'key' });
+        if (error) {
+          toast('저장 실패: ' + error.message);
+          return;
+        }
+        document.getElementById('newHostPw').value = '';
+        toast('비번 변경됨 ✓');
+        loadCurrentHostPw();
+      } catch (e) {
+        toast('실패: ' + e.message);
+      }
+    });
 
     document.querySelectorAll('.filter-btn').forEach(b => {
       b.addEventListener('click', () => {
