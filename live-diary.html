@@ -466,10 +466,22 @@
       });
     }
     document.getElementById('roleToggle').addEventListener('click', () => {
-      role = role === 'host' ? 'visitor' : 'host';
+      if (role === 'visitor') {
+        // visitor → host: 비번 확인 필요
+        const pw = prompt('HOST パスワード / 호스트 비밀번호');
+        if (pw === null) return; // 취소
+        if (pw !== HOST_PASSWORD) {
+          toast('비밀번호 불일치');
+          return;
+        }
+        role = 'host';
+      } else {
+        // host → visitor: 자유 전환
+        role = 'visitor';
+      }
       localStorage.setItem('mj_role', role);
       applyRole();
-      toast(role === 'host' ? 'HOST 모드 — 그림/제목 편집 가능' : 'VISITOR 모드 — 댓글로 참여');
+      toast(role === 'host' ? '🔓 HOST 모드 — 그림/제목 편집 가능' : 'VISITOR 모드');
     });
 
     // Canvas
