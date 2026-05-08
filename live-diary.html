@@ -728,7 +728,7 @@
     // 섬세 지우개 — 손가락 위치에 닿은 점만 제거 (stroke 일부만 지워짐)
     // visitor는 자기 stroke만, host는 모든 stroke 지움
     const dirtyStrokes = new Set();
-    const ERASER_R = 0.06; // 캔버스 6% 반경 (두꺼움)
+    const ERASER_R = 0.10; // 캔버스 10% 반경 (더 두껍고 잘 지워짐)
     function eraseAt(p) {
       const R = ERASER_R;
       let changed = false;
@@ -866,12 +866,19 @@
       if (role !== 'host') return toast('HOST 모드에서만 가능');
       const txt = hostChatInput.value.trim();
       if (!txt) return;
-      // 겹침 방지 — 현재 캔버스에 있는 노트 갯수 기준으로 다음 자리 계산
+      // 무한 캔버스 — 현재 viewport 중앙 좌표 → 캔버스 비율 좌표
+      const r = canvasArea.getBoundingClientRect();
+      const vcx = r.width / 2;
+      const vcy = r.height / 2;
+      // transform 역산: viewport 좌표 → 캔버스 절대 좌표 → 비율
+      const cx = (vcx - panX) / zoom;
+      const cy = (vcy - panY) / zoom;
+      // 약간씩 offset 줘서 같은 위치 겹침 방지
       chatNotePos = itemsLayer.querySelectorAll('.item.note').length;
-      const col = Math.floor(chatNotePos / 14);
-      const row = chatNotePos % 14;
-      const px = Math.min(0.05 + col * 0.32, 0.7);
-      const py = 0.06 + row * 0.065;
+      const offX = (chatNotePos % 5) * 24;
+      const offY = Math.floor(chatNotePos / 5) * 50;
+      const px = Math.max(0.02, Math.min(0.95, (cx + offX) / CANVAS_W));
+      const py = Math.max(0.02, Math.min(0.95, (cy + offY) / CANVAS_H));
       const item = {
         session_date: today, type: 'note', content: txt,
         pos_x: px, pos_y: py, rotation: 0,
