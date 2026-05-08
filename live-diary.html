@@ -648,7 +648,9 @@
       el.dataset.itemId = item.id;
       el.style.left = (item.pos_x * 100) + '%'; el.style.top = (item.pos_y * 100) + '%';
       if (item.type === 'photo') {
-        el.style.transform = `translate(-50%, -50%) rotate(${item.rotation || 0}deg)`;
+        const initRot = item.rotation || 0;
+        const initScale = item.scale || 1;
+        el.style.transform = `translate(-50%, -50%) rotate(${initRot}deg) scale(${initScale})`;
         el.innerHTML = `<img src="${item.content}" />`;
       } else if (item.type === 'note') {
         // 캔버스 텍스트 — 좌상단 기준으로 배치 (잘림 방지)
@@ -687,6 +689,55 @@
           el.remove();
           renderedItems.delete(item.id);
         });
+      }
+      // 호스트 자기 사진 — 사이즈/회전 컨트롤 추가
+      if (item.type === 'photo' && role === 'host' && item.client_id === clientId) {
+        const ctrl = document.createElement('div');
+        Object.assign(ctrl.style, {
+          position: 'absolute', bottom: '-44px', left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex', gap: '3px', zIndex: '30',
+          background: 'rgba(0,0,0,0.82)', padding: '4px 5px', borderRadius: '8px',
+          boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
+          pointerEvents: 'auto'
+        });
+        const mkBtn = (label) => {
+          const b = document.createElement('button');
+          b.textContent = label;
+          Object.assign(b.style, {
+            width: '34px', height: '34px', border: '0',
+            background: 'rgba(255,255,255,0.95)', color: '#1a1a1a',
+            borderRadius: '4px', cursor: 'pointer',
+            fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '600',
+            lineHeight: '1', padding: '0', touchAction: 'manipulation'
+          });
+          return b;
+        };
+        const bDown = mkBtn('－'), bUp = mkBtn('＋'), bRotL = mkBtn('↶'), bRotR = mkBtn('↷');
+        ctrl.append(bDown, bUp, bRotL, bRotR);
+        el.appendChild(ctrl);
+
+        async function applyTransform(updates) {
+          if ('rotation' in updates) item.rotation = updates.rotation;
+          if ('scale' in updates) item.scale = updates.scale;
+          const sc = item.scale || 1;
+          const rot = item.rotation || 0;
+          el.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(${sc})`;
+          const { error } = await supabase.from('diary_items').update(updates).eq('id', item.id);
+          if (error && /column.*scale|scale.*does not exist/i.test(error.message || '')) {
+            // scale 컬럼이 DB에 없음 — rotation만 다시 저장
+            if ('rotation' in updates) {
+              await supabase.from('diary_items').update({ rotation: updates.rotation }).eq('id', item.id);
+            }
+            if ('scale' in updates) toast('사이즈는 일시적 (Supabase에 scale 컬럼 추가 필요)');
+          } else if (error) {
+            console.error('photo transform err', error);
+          }
+        }
+        bUp.addEventListener('click', e => { e.stopPropagation(); applyTransform({ scale: Math.min((item.scale || 1) + 0.15, 3) }); });
+        bDown.addEventListener('click', e => { e.stopPropagation(); applyTransform({ scale: Math.max((item.scale || 1) - 0.15, 0.3) }); });
+        bRotL.addEventListener('click', e => { e.stopPropagation(); applyTransform({ rotation: (item.rotation || 0) - 15 }); });
+        bRotR.addEventListener('click', e => { e.stopPropagation(); applyTransform({ rotation: (item.rotation || 0) + 15 }); });
       }
       itemsLayer.appendChild(el);
     }
