@@ -793,10 +793,13 @@
           if (!dragging) return;
           e.preventDefault();
           const t = e.touches ? e.touches[0] : e;
+          // 8px 이상 이동했을 때만 드래그로 인식 (그 이하는 탭)
+          const totalMove = Math.hypot(t.clientX - dragStart.x, t.clientY - dragStart.y);
+          if (totalMove > 8) didMove = true;
+          if (!didMove) return; // 탭 단계에선 위치 업데이트 안 함
           const r = document.getElementById('canvasArea').getBoundingClientRect();
           const ndx = (t.clientX - dragStart.x) / r.width;
           const ndy = (t.clientY - dragStart.y) / r.height;
-          if (Math.abs(ndx) + Math.abs(ndy) > 0.008) didMove = true;
           item.pos_x = Math.max(0, Math.min(1, dragStart.px + ndx));
           item.pos_y = Math.max(0, Math.min(1, dragStart.py + ndy));
           el.style.left = (item.pos_x * 100) + '%';
