@@ -1558,25 +1558,12 @@
     if (localStorage.getItem('mj_full_name')) document.getElementById('regName').value = localStorage.getItem('mj_full_name');
     if (localStorage.getItem('mj_phone')) document.getElementById('regPhone').value = localStorage.getItem('mj_phone');
 
-    // 자동 로그인 — Supabase에서 status='approved' 확인된 사용자만 입장
-    (async () => {
-      if (!nickname || !savedEmail) return;
-      let approved = false;
-      try {
-        const { data, error } = await supabase.from('members').select('status').eq('email', savedEmail).single();
-        if (!error && data && data.status === 'approved') approved = true;
-      } catch (e) {
-        console.warn('members status check err:', e);
-      }
-      if (!approved) return; // 모달 그대로 — 사용자가 다시 가입 또는 승인 대기 메시지 봄
-      const em = document.getElementById('enterModal');
-      em.classList.add('hidden');
-      em.style.display = 'none';
-      try { applyRole(); } catch (e) { console.error('applyRole', e); }
-      try { resizeCanvas(); } catch (e) { console.error('resizeCanvas', e); }
-      try { loadAll(); } catch (e) { console.error('loadAll', e); }
-      try { subscribeRealtime(); } catch (e) { console.error('subscribeRealtime', e); }
-    })();
+    // 자동 로그인 비활성 — 매번 Welcome 화면 보고 등록/로그인 선택
+    // 단 로그인 폼에 이전 닉네임 자동 채움 (빠른 재로그인)
+    if (nickname) {
+      const ln = document.getElementById('loginNick');
+      if (ln) ln.value = nickname;
+    }
   </script>
 </body>
 </html>
