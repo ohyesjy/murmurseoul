@@ -372,12 +372,14 @@
   <div class="modal-bg" id="enterModal">
     <div class="modal">
       <h2>WELCOME ✦</h2>
-      <p>그림일기 LIVE에 들어왔어요.<br/>닉네임을 입력해주세요.</p>
-      <input type="text" id="nicknameInput" placeholder="nickname / ニックネーム" maxlength="20" />
-      <input type="password" id="hostPassword" placeholder="관리자 비밀번호 (선택)" maxlength="40" style="margin-top:6px;" />
-      <p style="font-size: 13px; color: #c8243a; margin: 10px 0 4px; font-weight: 700; line-height: 1.4;">✦ 日本人女性専用スペース ✦</p>
-      <p style="font-size: 11px; color: #888; margin: 0 0 8px;">この空間は日本人女性のための場所です</p>
-      <div style="display:flex; gap:18px; justify-content:center; align-items:center; margin: 10px 0; font-size: 14px; padding: 10px; background: #fdf6f7; border: 1px solid #f0d8d8; border-radius: 6px;">
+      <p style="font-size: 13px; color: #c8243a; margin: 4px 0 6px; font-weight: 700;">✦ 日本人女性専用スペース ✦</p>
+      <p style="font-size: 11px; color: #888; margin: 0 0 12px; line-height:1.5;">参加するには下記情報の登録をお願いします<br/>참가하려면 아래 정보 등록이 필요합니다</p>
+      <input type="text" id="regName" placeholder="お名前 / 성명" maxlength="40" />
+      <input type="tel" id="regPhone" placeholder="電話番号 / 폰번호" maxlength="20" style="margin-top:6px;" />
+      <input type="email" id="regEmail" placeholder="email" maxlength="80" style="margin-top:6px;" />
+      <input type="text" id="nicknameInput" placeholder="nickname / ニックネーム" maxlength="20" style="margin-top:6px;" />
+      <input type="password" id="regUserPw" placeholder="パスワード / 비밀번호 (4자 이상)" maxlength="40" style="margin-top:6px;" />
+      <div style="display:flex; gap:18px; justify-content:center; align-items:center; margin: 10px 0; font-size: 14px; padding: 8px; background: #fdf6f7; border: 1px solid #f0d8d8; border-radius: 6px;">
         <label style="display:flex; gap:6px; align-items:center; cursor:pointer;">
           <input type="radio" name="gender" value="female" /> 女性
         </label>
@@ -385,7 +387,8 @@
           <input type="radio" name="gender" value="male" /> 男性
         </label>
       </div>
-      <p style="font-size: 10px; color: #999; margin: 4px 0 8px;">비밀번호 입력 시 HOST 모드</p>
+      <input type="password" id="hostPassword" placeholder="HOST 비밀번호 (관리자만)" maxlength="40" style="margin-top:4px; font-size: 13px;" />
+      <p style="font-size: 10px; color: #999; margin: 4px 0 8px;">HOST 비번은 관리자 전용 (일반 사용자는 비워두세요)</p>
       <div style="display:flex; gap:10px; margin-top:6px;">
         <button class="btn" id="btnCancel" style="flex:1; padding:14px 12px; min-height:50px; background:#e8e4d8; color:#1a1a1a; font-size:15px;">캔슬</button>
         <button class="btn primary" id="btnEnter" style="flex:1; padding:14px 12px; min-height:50px; font-size:15px;">등록 ▸</button>
@@ -1381,29 +1384,40 @@
     // 모달 (닉네임 + 비번)
     const HOST_PASSWORD = 'ohyesjy';  // 변경하려면 이 한 줄만 수정
 
-    document.getElementById('btnEnter').addEventListener('click', () => {
-      // 성별 체크 — 여성 전용
-      const genderEl = document.querySelector('input[name="gender"]:checked');
-      if (!genderEl) {
-        toast('性別を選択してください / 성별 선택');
-        return;
-      }
-      if (genderEl.value !== 'female') {
-        toast('日本人女性専用スペースです 🙏');
-        return;
-      }
-      // 닉네임 필수
+    document.getElementById('btnEnter').addEventListener('click', async () => {
+      const fullName = document.getElementById('regName').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
       const v = document.getElementById('nicknameInput').value.trim();
-      if (!v) {
-        const ni = document.getElementById('nicknameInput');
-        ni.focus();
-        ni.style.borderColor = '#c8243a';
-        toast('ニックネーム必須 / 닉네임 입력');
-        return;
-      }
+      const userPw = document.getElementById('regUserPw').value;
+      const genderEl = document.querySelector('input[name="gender"]:checked');
+
+      // 성별 체크 — 여성 전용
+      if (!genderEl) { toast('性別を選択 / 성별 선택'); return; }
+      if (genderEl.value !== 'female') { toast('日本人女性専用スペースです 🙏'); return; }
+      // 필수 필드
+      if (!fullName) { toast('お名前を入力 / 성명 입력'); return; }
+      if (!phone) { toast('電話番号 / 폰번호 입력'); return; }
+      if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { toast('正しいemail / 이메일 형식 확인'); return; }
+      if (!v) { toast('ニックネーム / 닉네임 입력'); return; }
+      if (!userPw || userPw.length < 4) { toast('パスワード4文字以上 / 비번 4자 이상'); return; }
+
       nickname = v;
       localStorage.setItem('mj_nickname', nickname);
       localStorage.setItem('mj_gender', 'female');
+      localStorage.setItem('mj_email', email);
+      localStorage.setItem('mj_full_name', fullName);
+      localStorage.setItem('mj_phone', phone);
+
+      // Supabase members 테이블에 INSERT 시도 (테이블 없으면 무시 — localStorage만으로도 작동)
+      try {
+        await supabase.from('members').upsert({
+          email, full_name: fullName, phone, nickname, gender: 'female',
+          password_hash: userPw  // 단순 저장 — 영석님이 후에 해시 적용 가능
+        }, { onConflict: 'email' });
+      } catch (e) {
+        console.warn('members table insert skip:', e);
+      }
 
       // 비번 체크
       const pw = document.getElementById('hostPassword').value;
@@ -1432,10 +1446,15 @@
       else window.location.href = 'index.html';
     });
 
+    // 이미 가입한 회원이면 자동 입장 (모든 필수 정보 localStorage에 있으면)
+    const savedEmail = localStorage.getItem('mj_email');
+    const savedGender = localStorage.getItem('mj_gender');
     if (nickname) document.getElementById('nicknameInput').value = nickname;
+    if (savedEmail) document.getElementById('regEmail').value = savedEmail;
+    if (localStorage.getItem('mj_full_name')) document.getElementById('regName').value = localStorage.getItem('mj_full_name');
+    if (localStorage.getItem('mj_phone')) document.getElementById('regPhone').value = localStorage.getItem('mj_phone');
 
-    // 이미 등록한 회원이면 모달 skip + 자동 입장
-    if (nickname && localStorage.getItem('mj_gender') === 'female') {
+    if (nickname && savedEmail && savedGender === 'female') {
       const em = document.getElementById('enterModal');
       em.classList.add('hidden');
       em.style.display = 'none';
