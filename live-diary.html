@@ -834,8 +834,16 @@
           // 손그림/지우개 모드면 이미지 클릭 무시 → 캔버스로 통과해서 그림 그릴 수 있게
           if (drawingMode || eraserMode) return;
 
-          // 두 손가락 → 핀치 (사진만, 그리고 드래그 중이 아닐 때만)
-          if (e.touches && e.touches.length >= 2 && item.type === 'photo' && !dragging) {
+          // 두 손가락 → 핀치 (사진만). 드래그 중이어도 두 손가락이면 핀치로 전환
+          if (e.touches && e.touches.length >= 2 && item.type === 'photo') {
+            // 드래그 중이었으면 정리
+            if (dragging) {
+              dragging = false;
+              document.removeEventListener('mousemove', moveDrag);
+              document.removeEventListener('touchmove', moveDrag);
+              document.removeEventListener('mouseup', endDrag);
+              document.removeEventListener('touchend', endDrag);
+            }
             e.preventDefault(); e.stopPropagation();
             pinching = true; dragging = false;
             const [t1, t2] = e.touches;
@@ -950,12 +958,15 @@
           const b = document.createElement('button');
           b.textContent = label;
           Object.assign(b.style, {
-            width: '34px', height: '34px', border: '0',
+            width: '44px', height: '44px', border: '0',
             background: 'rgba(255,255,255,0.95)', color: '#1a1a1a',
-            borderRadius: '4px', cursor: 'pointer',
-            fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '600',
-            lineHeight: '1', padding: '0', touchAction: 'manipulation'
+            borderRadius: '6px', cursor: 'pointer',
+            fontSize: '18px', fontFamily: 'sans-serif', fontWeight: '700',
+            lineHeight: '1', padding: '0', touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'rgba(0,0,0,0.1)'
           });
+          // 폰에서 click 안 잡히는 경우 대비 — touchstart에서 stopPropagation, touchend에서 click 트리거
+          b.addEventListener('touchstart', (ev) => { ev.stopPropagation(); }, { passive: true });
           return b;
         };
         const bDown = mkBtn('－'), bUp = mkBtn('＋'), bRotL = mkBtn('↶'), bRotR = mkBtn('↷');
@@ -979,10 +990,19 @@
             console.error('photo transform err', error);
           }
         }
-        bUp.addEventListener('click', e => { e.stopPropagation(); applyTransform({ scale: Math.min((item.scale || 1) + 0.25, 4) }); });
-        bDown.addEventListener('click', e => { e.stopPropagation(); applyTransform({ scale: Math.max((item.scale || 1) - 0.25, 0.3) }); });
-        bRotL.addEventListener('click', e => { e.stopPropagation(); applyTransform({ rotation: (item.rotation || 0) - 22 }); });
-        bRotR.addEventListener('click', e => { e.stopPropagation(); applyTransform({ rotation: (item.rotation || 0) + 22 }); });
+        const onUp = e => { e.stopPropagation(); e.preventDefault(); applyTransform({ scale: Math.min((item.scale || 1) + 0.25, 4) }); };
+        const onDown = e => { e.stopPropagation(); e.preventDefault(); applyTransform({ scale: Math.max((item.scale || 1) - 0.25, 0.3) }); };
+        const onRotL = e => { e.stopPropagation(); e.preventDefault(); applyTransform({ rotation: (item.rotation || 0) - 22 }); };
+        const onRotR = e => { e.stopPropagation(); e.preventDefault(); applyTransform({ rotation: (item.rotation || 0) + 22 }); };
+        bUp.addEventListener('click', onUp);
+        bDown.addEventListener('click', onDown);
+        bRotL.addEventListener('click', onRotL);
+        bRotR.addEventListener('click', onRotR);
+        // iOS Safari 보강 — touchend에서도 직접 발동
+        bUp.addEventListener('touchend', onUp, { passive: false });
+        bDown.addEventListener('touchend', onDown, { passive: false });
+        bRotL.addEventListener('touchend', onRotL, { passive: false });
+        bRotR.addEventListener('touchend', onRotR, { passive: false });
       }
       itemsLayer.appendChild(el);
     }
