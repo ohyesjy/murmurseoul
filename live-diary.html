@@ -219,7 +219,8 @@
   .modal { background: #fff; border-radius: 8px; padding: 26px 22px; max-width: 360px; width: 100%; text-align: center; }
   .modal h2 { font-family: "Special Elite", monospace; font-size: 14px; letter-spacing: 0.16em; margin: 0 0 8px; }
   .modal p { font-size: 12px; color: #666; margin: 0 0 14px; line-height: 1.6; }
-  .modal input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; margin-bottom: 8px; -webkit-user-select: text; user-select: text; font-family: inherit; }
+  .modal input { width: 100%; padding: 12px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; margin-bottom: 8px; -webkit-user-select: text; user-select: text; font-family: inherit; touch-action: manipulation; }
+  .modal .btn { min-height: 48px; touch-action: manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.1) !important; }
   .role-choice { display: flex; gap: 8px; margin: 12px 0; }
   .role-choice .btn { flex: 1; padding: 12px; font-size: 11px; }
   .role-choice .btn.selected { background: #c8243a; color: #fff; border-color: #c8243a; }
@@ -337,10 +338,11 @@
       <p>그림일기 LIVE에 들어왔어요.<br/>닉네임을 입력해주세요.</p>
       <input type="text" id="nicknameInput" placeholder="nickname / ニックネーム" maxlength="20" />
       <input type="password" id="hostPassword" placeholder="관리자 비밀번호 (선택)" maxlength="40" style="margin-top:6px;" />
-      <p style="font-size: 10px; color: #999; margin: 6px 0;">비밀번호 입력 시 HOST 모드 (그림+사진+제목 편집)</p>
-      <div style="display:flex; gap:8px; margin-top:4px;">
-        <button class="btn" id="btnCancel" style="flex:1; padding:10px; background:#e8e4d8; color:#1a1a1a;">캔슬</button>
-        <button class="btn primary" id="btnEnter" style="flex:1; padding:10px;">등록 ▸</button>
+      <p style="font-size: 13px; color: #c8243a; margin: 10px 0 6px; font-weight: 600; line-height: 1.4;">ゲストの方はパスワード不要です</p>
+      <p style="font-size: 10px; color: #999; margin: 4px 0 8px;">비밀번호 입력 시 HOST 모드 (그림+사진+제목 편집)</p>
+      <div style="display:flex; gap:10px; margin-top:6px;">
+        <button class="btn" id="btnCancel" style="flex:1; padding:14px 12px; min-height:50px; background:#e8e4d8; color:#1a1a1a; font-size:15px;">캔슬</button>
+        <button class="btn primary" id="btnEnter" style="flex:1; padding:14px 12px; min-height:50px; font-size:15px;">등록 ▸</button>
       </div>
     </div>
   </div>
