@@ -1770,6 +1770,18 @@
     // 자동 로그인 — Supabase에서 status='approved' 확인된 회원이면 모달 skip
     (async () => {
       if (!nickname || !savedEmail) return;
+      // host는 members 테이블 체크 skip (host 진입 시 별도 처리)
+      const savedRole = localStorage.getItem('mj_role');
+      if (savedRole === 'host') {
+        const em = document.getElementById('enterModal');
+        em.classList.add('hidden');
+        em.style.display = 'none';
+        try { applyRole(); } catch (e) {}
+        try { resizeCanvas(); } catch (e) {}
+        try { loadAll(); } catch (e) {}
+        try { subscribeRealtime(); } catch (e) {}
+        return;
+      }
       try {
         const { data, error } = await supabase.from('members').select('status').eq('email', savedEmail).maybeSingle();
         if (error || !data || data.status !== 'approved') return;
