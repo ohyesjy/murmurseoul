@@ -1037,7 +1037,7 @@
         el.innerHTML = `<img src="${item.content}" />`;
       } else if (item.type === 'note') {
         // 캔버스 텍스트 — 자동 줄바꿈 X, 사용자가 명시한 \n 만 줄바꿈
-        el.style.transform = `rotate(${item.rotation || 0}deg)`;
+        el.style.transform = `translate(-50%, -50%) rotate(${item.rotation || 0}deg)`;
         el.style.fontSize = '15px';
         el.style.fontFamily = '"Hachi Maru Pop", "Zen Kaku Gothic New", sans-serif';
         el.style.color = '#1a1a1a';
