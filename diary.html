@@ -75,6 +75,24 @@
     gap: 8px;
   }
   .snap-card .meta .name { color: #c8243a; }
+  .snap-card { position: relative; }
+  .snap-card .host-del {
+    position: absolute; top: 6px; right: 6px;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    font-size: 14px;
+    line-height: 26px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 5;
+    display: none;
+    border: none;
+    padding: 0;
+  }
+  body.host-mode .snap-card .host-del { display: block; }
+  .snap-card .host-del:hover { background: #c8243a; }
 
   .empty-card {
     border: 1px dashed #c8243a;
@@ -175,6 +193,19 @@
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightboxImg');
 
+    // ── host mode (admin.html과 동일한 키 공유) ──
+    const ADMIN_PASSWORD = '0013';
+    const isHost = () => localStorage.getItem('mj_admin_pw') === ADMIN_PASSWORD;
+    if (isHost()) document.body.classList.add('host-mode');
+
+    async function hostDelete(id, card) {
+      if (!confirm('이 사진을 영구 삭제할까요?\n削除すると元に戻せません。')) return;
+      const { error } = await supabase.from('diary_items').delete().eq('id', id);
+      if (error) { alert('삭제 실패: ' + error.message); return; }
+      card.remove();
+      if (!gallery.querySelector('.snap-card')) emptyCard.style.display = '';
+    }
+
     function renderSnap(s) {
       const card = document.createElement('div');
       card.className = 'snap-card';
@@ -186,10 +217,15 @@
           <span>${date} · ${time}</span>
           <span class="name">${s.nickname ? '@' + s.nickname : ''}</span>
         </div>
+        <button class="host-del" title="삭제">×</button>
       `;
       card.addEventListener('click', () => {
         lightboxImg.src = s.content;
         lightbox.classList.add('show');
+      });
+      card.querySelector('.host-del').addEventListener('click', (e) => {
+        e.stopPropagation();
+        hostDelete(s.id, card);
       });
       return card;
     }
