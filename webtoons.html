@@ -578,6 +578,18 @@
         { t: '"無職時代に隣にいてくれた人を思い出して、ご飯が喉を通らなくなった。"', a: '@noodle_night' },
         { t: '"食べ物の数だけ恋愛の黒歴史がある——名コピーすぎる。"', a: '@cheese_fan' },
         { t: '"絵柄やわらかいのに、刺さるところは刺さる。20代の終わりに読みたい一作。"', a: '@late20s_jp' }
+      ],
+      // 퇴근길에 뱀을 주웠습니다 (CMS — eroi)
+      'snake-reviews': [
+        { t: '"会社帰りにうっかり拾った蛇が、こんなに愛おしくなる日が来るとは…"', a: '@seoul_ol_jp' },
+        { t: '"蛇旦那が家事ぜんぶこなしてくれる。罪深い妄想を全部叶えてくれる作品。"', a: '@reader_chika' },
+        { t: '"YUJU先生の絵がきれいすぎる。一巻完結だから夜中にこっそり一気読みできた。"', a: '@midnight_yuju' }
+      ],
+      // 썰:관계주의 (CMS — eroi)
+      'sseol-reviews': [
+        { t: '"江南タワー皮膚科のリアル。表向きはきれいでも、皮膚一枚めくればドロドロ。"', a: '@gangnam_ol' },
+        { t: '"\"恋愛\"じゃなくて\"関係\"を読む作品。これが韓国の今のリアルなんだ。"', a: '@reader_mio' },
+        { t: '"ハイパーリアリズム描写が刺さりすぎ。深夜にこっそり一気読み確定。"', a: '@office_seoul' }
       ]
     };
 
@@ -661,6 +673,8 @@
       const t = title || '';
       if (t.includes('만취') || t.includes('酔っぱらい') || t.includes('マンチィ')) return 'manchwi-reviews';
       if (t.includes('사내연애') || t.includes('社内恋愛')) return 'sanae-reviews';
+      if (t.includes('뱀을 주웠') || t.includes('蛇を拾い') || t.includes('ペムル')) return 'snake-reviews';
+      if (t.includes('썰:관계') || t.includes('関係主義') || t.includes('クァンゲジュイ')) return 'sseol-reviews';
       return null;
     }
 
